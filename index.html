@@ -7,111 +7,210 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
-        table { width: 100%; border-collapse: collapse; border: 2px solid black; }
-        td { border: 1px solid black; padding: 4px; font-size: 11px; vertical-align: middle; }
-        .bg-yellow-header { background-color: #ffff00; font-weight: bold; text-align: center; }
-        /* Dropdown width fixed as requested */
-        .small-select { width: 90px; font-weight: bold; border: 1px solid #ccc; font-size: 10px; cursor: pointer; }
-        .violation-red { background-color: #fee2e2 !important; border: 2px solid red !important; }
-        input[type="file"] { font-size: 8px; width: 80px; display: block; margin-top: 2px; }
-        input:read-only { border: none; background: transparent; font-weight: bold; color: #1e40af; }
+        body { background-color: #f1f5f9; font-family: 'Arial', sans-serif; padding-bottom: 50px; }
+        .main-container { max-width: 1200px; margin: 20px auto; background: white; border: 3px solid black; }
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        td { border: 2px solid black; padding: 12px; font-size: 16px; font-weight: bold; vertical-align: middle; }
+        .bg-yellow-header { background-color: #ffff00; font-weight: bold; text-align: center; font-size: 18px; height: 50px; border-top: 4px solid black; }
+        
+        /* Fixed Dropdown Width as requested */
+        .status-dropdown { 
+            width: 110px; 
+            padding: 6px; 
+            font-weight: bold; 
+            border: 2px solid #333; 
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .violation-bg { background-color: #fee2e2 !important; border: 3px solid red !important; }
+        .photo-btn { font-size: 10px; margin-top: 5px; display: block; width: 110px; border: 1px solid #ccc; padding: 2px; }
+        
+        input[type="text"], input[type="datetime-local"] { 
+            width: 100%; padding: 10px; border: 1px solid #999; font-size: 16px; font-weight: bold;
+        }
+        input:read-only { background-color: #f8fafc; color: #1e40af; border: none; }
+        .header-title { font-size: 30px; font-weight: 900; background: black; color: white; padding: 15px; text-align: center; }
     </style>
 </head>
-<body class="bg-gray-200 p-2 md:p-6">
+<body>
 
-<div class="max-w-6xl mx-auto bg-white shadow-2xl border-2 border-black">
-    <div class="p-4 border-b-2 border-black flex items-center justify-between">
-        <img src="ir_logo.png" alt="Logo" class="w-16 h-16">
+<div class="main-container">
+    <div class="flex items-center justify-between p-6 border-b-4 border-black">
+        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/4/41/IR_Logo.png/220px-IR_Logo.png" class="w-24 h-24">
         <div class="text-center flex-1">
-            <h2 class="text-lg font-bold">SOUTH EAST CENTRAL RAILWAY</h2>
-            <h1 class="text-xl font-black bg-black text-white px-6 mt-1">CVVRS CREW ANALYSIS REPORT</h1>
+            <h2 class="text-2xl font-bold uppercase">South East Central Railway</h2>
+            <h3 class="text-lg font-semibold text-blue-800 uppercase">Electrical (OP) Department - Raipur Division</h3>
+            <h1 class="header-title mt-2 uppercase">CVVRS Crew Analysis Report</h1>
         </div>
+        <div class="w-24"></div>
     </div>
 
     <form id="cvvrsForm">
-        <div class="grid grid-cols-2 divide-x-2 divide-black border-b-2 border-black p-2 bg-slate-50">
-            <div class="p-2">
-                <input type="text" id="lp_id" onchange="lookup('lp')" placeholder="LP CMS ID" class="border p-1 w-full font-bold mb-1">
-                <div class="text-[10px]"><b>NAME:</b> <input type="text" id="lp_name" readonly></div>
-                <div class="text-[10px]"><b>DESIG:</b> <input type="text" id="lp_desig" readonly></div>
-                <div class="text-[10px]"><b>GRADE:</b> <input type="text" id="lp_gcli" readonly></div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 bg-gray-50 border-b-2 border-black">
+            <div class="space-y-2">
+                <label class="font-bold text-red-700">CLI CMS ID:</label>
+                <input type="text" id="cli_id" onchange="lookup('cli')" class="border-2 border-red-400" placeholder="ENTER ID" required>
+                <input type="text" id="cli_name" readonly placeholder="CLI Name">
+                <input type="text" id="cli_desig" readonly placeholder="Designation">
             </div>
-            <div class="p-2">
-                <input type="text" id="alp_id" onchange="lookup('alp')" placeholder="ALP CMS ID" class="border p-1 w-full font-bold mb-1">
-                <div class="text-[10px]"><b>NAME:</b> <input type="text" id="alp_name" readonly></div>
-                <div class="text-[10px]"><b>DESIG:</b> <input type="text" id="alp_desig" readonly></div>
-                <div class="text-[10px]"><b>GRADE:</b> <input type="text" id="alp_gcli" readonly></div>
+            <div class="grid grid-cols-2 gap-4">
+                <div><label class="text-xs font-bold">TRAIN NO</label><input type="text" id="train_no" required></div>
+                <div><label class="text-xs font-bold">LOCO NO</label><input type="text" id="loco_no" required></div>
+                <div><label class="text-xs font-bold">FROM</label><input type="text" id="from_stn"></div>
+                <div><label class="text-xs font-bold">TO</label><input type="text" id="to_stn"></div>
+            </div>
+            <div class="space-y-2">
+                <div><label class="text-xs font-bold text-blue-700">DEPARTURE (DEP)</label><input type="datetime-local" id="dep_time"></div>
+                <div><label class="text-xs font-bold text-red-700">ARRIVAL (ARR)</label><input type="datetime-local" id="arr_time"></div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 divide-x-4 divide-black border-b-2 border-black">
+            <div class="p-6 bg-blue-50">
+                <label class="font-black text-blue-900 text-xl uppercase">Loco Pilot (LP)</label>
+                <input type="text" id="lp_id" onchange="lookup('lp')" class="mt-2 border-2 border-blue-400" placeholder="LP CMS ID" required>
+                <div class="mt-4 space-y-2">
+                    <p><b>NAME:</b> <input type="text" id="lp_name" readonly></p>
+                    <p><b>DESIG:</b> <input type="text" id="lp_desig" readonly></p>
+                    <p><b>GRADE:</b> <input type="text" id="lp_gcli" readonly></p>
+                </div>
+            </div>
+            <div class="p-6 bg-orange-50">
+                <label class="font-black text-orange-900 text-xl uppercase">Asstt. Loco Pilot (ALP)</label>
+                <input type="text" id="alp_id" onchange="lookup('alp')" class="mt-2 border-2 border-orange-400" placeholder="ALP CMS ID" required>
+                <div class="mt-4 space-y-2">
+                    <p><b>NAME:</b> <input type="text" id="alp_name" readonly></p>
+                    <p><b>DESIG:</b> <input type="text" id="alp_desig" readonly></p>
+                    <p><b>GRADE:</b> <input type="text" id="alp_gcli" readonly></p>
+                </div>
             </div>
         </div>
 
         <table id="obsTable">
-            <tr class="bg-yellow-header"><td colspan="2">During CTO / LOCO PILOT</td><td colspan="2">During CTO / ALP</td></tr>
+            <tr class="bg-yellow-header"><td colspan="2">During CTO+A15:D37 / LOCO PILOT</td><td colspan="2">During CTO / ASTT. LOCO PILOT</td></tr>
             <tr>
-                <td>Checking Logbook & BPC</td>
-                <td>
-                    <select name="lp_1" class="small-select"><option>YES</option><option>No</option><option>VIOLATION</option></select>
-                    <input type="file" name="img_lp_1">
-                </td>
-                <td>Checking RS Valve working</td>
-                <td>
-                    <select name="alp_1" class="small-select"><option>Yes</option><option>No</option><option>VIOLATION</option></select>
-                    <input type="file" name="img_alp_1">
-                </td>
+                <td width="35%">1. Checking Logbook & BPC</td>
+                <td width="15%"><select name="lp_1" class="status-dropdown"><option>YES</option><option>No</option><option>VIOLATION</option></select><input type="file" name="img_lp_1" class="photo-btn"></td>
+                <td width="35%">1. Checking RS Valve working</td>
+                <td width="15%"><select name="alp_1" class="status-dropdown"><option>Yes</option><option>No</option><option>VIOLATION</option></select><input type="file" name="img_alp_1" class="photo-btn"></td>
+            </tr>
+            <tr>
+                <td>2. Checking Safety Items & HTC</td>
+                <td><select name="lp_2" class="status-dropdown"><option>YES</option><option>No</option></select><input type="file" name="img_lp_2" class="photo-btn"></td>
+                <td>2. Checking Safety Items & HTC</td>
+                <td><select name="alp_2" class="status-dropdown"><option>Yes</option><option>No</option></select><input type="file" name="img_alp_2" class="photo-btn"></td>
+            </tr>
+            <tr>
+                <td>3. Energy Meter & SPM check</td>
+                <td><select name="lp_3" class="status-dropdown"><option>YES</option><option>No</option></select><input type="file" name="img_lp_3" class="photo-btn"></td>
+                <td>3. Energy Meter & SPM check & Input</td>
+                <td><select name="alp_3" class="status-dropdown"><option>Yes</option><option>No</option></select><input type="file" name="img_alp_3" class="photo-btn"></td>
             </tr>
 
-            <tr class="bg-yellow-header"><td colspan="2">ON RUN / LOCO PILOT</td><td colspan="2">ON RUN / ALP</td></tr>
+            <tr class="bg-yellow-header"><td colspan="2">ON RUN / LOCO PILOT</td><td colspan="2">ON RUN / ASTT. LOCO PILOT</td></tr>
             <tr>
-                <td>Use of Mobile Phone</td>
-                <td>
-                    <select name="lp_6" class="small-select"><option>No</option><option>YES</option><option>VIOLATION</option></select>
-                    <input type="file" name="img_lp_6">
-                </td>
-                <td>Use of Mobile Phone</td>
-                <td>
-                    <select name="alp_6" class="small-select"><option>No</option><option>YES</option><option>VIOLATION</option></select>
-                    <input type="file" name="img_alp_6">
-                </td>
+                <td>4. Conducting BFT & BPT</td>
+                <td><select name="lp_4" class="status-dropdown"><option>YES</option><option>No</option></select><input type="file" name="img_lp_4" class="photo-btn"></td>
+                <td>4. Standing/Holding RS (Danger)</td>
+                <td><select name="alp_4" class="status-dropdown"><option>Yes</option><option>No</option></select><input type="file" name="img_alp_4" class="photo-btn"></td>
             </tr>
             <tr>
-                <td>Micro Sleep</td>
-                <td>
-                    <select name="lp_7" class="small-select"><option>No</option><option>YES</option><option>VIOLATION</option></select>
-                    <input type="file" name="img_lp_7">
-                </td>
-                <td>Micro Sleep</td>
-                <td>
-                    <select name="alp_7" class="small-select"><option>No</option><option>YES</option><option>VIOLATION</option></select>
-                    <input type="file" name="img_alp_7">
-                </td>
+                <td>5. Calling Signals (Gesture)</td>
+                <td><select name="lp_5" class="status-dropdown"><option>YES</option><option>No</option></select><input type="file" name="img_lp_5" class="photo-btn"></td>
+                <td>5. Calling Signals (Gesture)</td>
+                <td><select name="alp_5" class="status-dropdown"><option>Yes</option><option>No</option></select><input type="file" name="img_alp_5" class="photo-btn"></td>
             </tr>
             <tr>
-                <td>Alertness</td>
-                <td>
-                    <select name="lp_10" class="small-select"><option>Very Good</option><option>Fair</option><option>Poor</option></select>
-                    <input type="file" name="img_lp_10">
-                </td>
-                <td>Alertness</td>
-                <td>
-                    <select name="alp_10" class="small-select"><option>Very Good</option><option>Fair</option><option>Poor</option></select>
-                    <input type="file" name="img_alp_10">
-                </td>
+                <td>6. Use of Mobile Phone</td>
+                <td><select name="lp_6" class="status-dropdown"><option>No</option><option>YES</option><option>VIOLATION</option></select><input type="file" name="img_lp_6" class="photo-btn"></td>
+                <td>6. Use of Mobile Phone</td>
+                <td><select name="alp_6" class="status-dropdown"><option>No</option><option>YES</option><option>VIOLATION</option></select><input type="file" name="img_alp_6" class="photo-btn"></td>
+            </tr>
+            <tr>
+                <td>7. Micro Sleep</td>
+                <td><select name="lp_7" class="status-dropdown"><option>No</option><option>YES</option><option>VIOLATION</option></select><input type="file" name="img_lp_7" class="photo-btn"></td>
+                <td>7. Micro Sleep</td>
+                <td><select name="alp_7" class="status-dropdown"><option>No</option><option>YES</option><option>VIOLATION</option></select><input type="file" name="img_alp_7" class="photo-btn"></td>
+            </tr>
+            <tr>
+                <td>8. Exchange of Signals</td>
+                <td><select name="lp_8" class="status-dropdown"><option>YES</option><option>No</option></select><input type="file" name="img_lp_8" class="photo-btn"></td>
+                <td>8. Exchange of Signals</td>
+                <td><select name="alp_8" class="status-dropdown"><option>Yes</option><option>No</option></select><input type="file" name="img_alp_8" class="photo-btn"></td>
+            </tr>
+            <tr>
+                <td>9. Action (Neutral Section)</td>
+                <td><select name="lp_9" class="status-dropdown"><option>YES</option><option>No</option></select><input type="file" name="img_lp_9" class="photo-btn"></td>
+                <td>9. Formation in curve/Caution</td>
+                <td><select name="alp_9" class="status-dropdown"><option>Yes</option><option>No</option></select><input type="file" name="img_alp_9" class="photo-btn"></td>
+            </tr>
+            <tr>
+                <td>10. Alertness</td>
+                <td><select name="lp_10" class="status-dropdown"><option>Very Good</option><option>Fair</option><option>Poor</option></select><input type="file" name="img_lp_10" class="photo-btn"></td>
+                <td>10. Alertness</td>
+                <td><select name="alp_10" class="status-dropdown"><option>Very Good</option><option>Fair</option><option>Poor</option></select><input type="file" name="img_alp_10" class="photo-btn"></td>
+            </tr>
+
+            <tr class="bg-yellow-header"><td colspan="2">AT HALTS / LOCO PILOT</td><td colspan="2">AT HALTS / ASTT. LOCO PILOT</td></tr>
+            <tr>
+                <td>11. Application of A9 & SA9</td>
+                <td><select name="lp_11" class="status-dropdown"><option>YES</option><option>No</option></select><input type="file" name="img_lp_11" class="photo-btn"></td>
+                <td>11. Ensure A9 & SA9 Application</td>
+                <td><select name="alp_11" class="status-dropdown"><option>YES</option><option>No</option></select><input type="file" name="img_alp_11" class="photo-btn"></td>
+            </tr>
+            <tr>
+                <td>12. Reverser in Neutral</td>
+                <td><select name="lp_12" class="status-dropdown"><option>YES</option><option>No</option></select><input type="file" name="img_lp_12" class="photo-btn"></td>
+                <td>12. Ensure Reverser in Neutral</td>
+                <td><select name="alp_12" class="status-dropdown"><option>YES</option><option>No</option></select><input type="file" name="img_alp_12" class="photo-btn"></td>
+            </tr>
+            <tr>
+                <td>13. Dimming of Headlight</td>
+                <td><select name="lp_13" class="status-dropdown"><option>Yes</option><option>No</option><option>DAY TIME</option></select><input type="file" name="img_lp_13" class="photo-btn"></td>
+                <td>13. Ensure Headlight Dimming</td>
+                <td><select name="alp_13" class="status-dropdown"><option>Yes</option><option>No</option><option>DAY TIME</option></select><input type="file" name="img_alp_13" class="photo-btn"></td>
+            </tr>
+            <tr>
+                <td>14. Undergear & MR Check</td>
+                <td><select name="lp_14" class="status-dropdown"><option>YES</option><option>No</option></select><input type="file" name="img_lp_14" class="photo-btn"></td>
+                <td>14. Undergear & MR Check</td>
+                <td><select name="alp_14" class="status-dropdown"><option>YES</option><option>No</option></select><input type="file" name="img_alp_14" class="photo-btn"></td>
+            </tr>
+            <tr>
+                <td>15. Whistle before start</td>
+                <td><select name="lp_15" class="status-dropdown"><option>YES</option><option>No</option></select><input type="file" name="img_lp_15" class="photo-btn"></td>
+                <td>15. Signal Exchange before start</td>
+                <td><select name="alp_15" class="status-dropdown"><option>YES</option><option>No</option></select><input type="file" name="img_alp_15" class="photo-btn"></td>
+            </tr>
+
+            <tr class="bg-yellow-header"><td colspan="2">At Time of CHO / LOCO PILOT</td><td colspan="2">At Time of CHO / ASTT. LOCO PILOT</td></tr>
+            <tr>
+                <td>16. Packing Personal belongings</td>
+                <td><select name="lp_16" class="status-dropdown"><option>Yes</option><option>No</option></select><input type="file" name="img_lp_16" class="photo-btn"></td>
+                <td>16. Packing Personal belongings</td>
+                <td><select name="alp_16" class="status-dropdown"><option>Yes</option><option>No</option></select><input type="file" name="img_alp_16" class="photo-btn"></td>
+            </tr>
+            
+            <tr class="bg-gray-100">
+                <td colspan="2"><b>Performance:</b> <select name="perf" class="status-dropdown ml-2"><option>Very Good</option><option>Fair</option><option>Poor</option></select></td>
+                <td colspan="2"><b>Other Abnormalities:</b> <input type="text" name="abnorm" class="p-1 border ml-2" placeholder="NIL"></td>
             </tr>
         </table>
 
-        <div class="p-6 bg-slate-900 text-center">
-            <p id="statusMsg" class="text-yellow-400 font-bold mb-2"></p>
-            <button type="submit" id="submitBtn" class="bg-yellow-500 text-black px-12 py-3 rounded-full font-bold uppercase hover:bg-white transition-all">
-                Download PDF & Sync
+        <div class="p-10 bg-slate-900 text-center border-t-4 border-black">
+            <p id="statusMsg" class="text-yellow-400 font-bold mb-4 text-xl"></p>
+            <button type="submit" id="submitBtn" class="bg-yellow-500 text-black px-24 py-5 rounded-full font-black text-2xl hover:bg-white transition-all uppercase shadow-2xl">
+                DOWNLOAD PDF & SYNC DATA
             </button>
         </div>
     </form>
 </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby__yyf6tBaMvI69wNqBSqmquKAyqB2cpLhhxBkfP_GXYGN7ysw8Yvtr4mQ5p_19p-q/exec";
-    const GITHUB_RAW = "https://raw.githubusercontent.com/mlachhwani/cvvrs/main/";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby__yyf6tBaMvI69wNqBSqmquKAyqB2cpLhhxBkfP_GXYGN7ysw8Yvtr4mQ5p_19p-q/exec"; 
+    const GITHUB_RAW = "https://raw.githubusercontent.com/mlachhwani/cvvrs/main/"; 
 
-    // Triple Fetch Logic
     async function lookup(type) {
         let id = document.getElementById(type+'_id').value.toUpperCase();
         if(!id) return;
@@ -124,28 +223,27 @@
                 document.getElementById(type+'_desig').value = found[2].trim();
                 if(document.getElementById(type+'_gcli')) document.getElementById(type+'_gcli').value = found[3].trim();
             }
-        } catch(e) { console.error("Lookup failed"); }
+        } catch(e) { console.error("CSV Fetch Error"); }
     }
 
-    // Compulsory Photo Logic for Violations
+    // MANDATORY PHOTO ON VIOLATION
     document.querySelectorAll('select').forEach(sel => {
         sel.onchange = function() {
             const val = this.value;
             const fileInput = this.parentElement.querySelector('input[type="file"]');
             let isV = false;
 
-            // Define Violation Criteria
-            if(this.name.includes('6') || this.name.includes('7')) { // Mobile/Sleep
+            if(this.name.includes('6') || this.name.includes('7')) { 
                 if(val === "YES" || val === "VIOLATION") isV = true;
             } else if(val === "No" || val === "VIOLATION" || val === "Poor") {
                 isV = true;
             }
 
             if(isV) {
-                this.parentElement.classList.add('violation-red');
+                this.parentElement.classList.add('violation-bg');
                 fileInput.setAttribute('required', 'true');
             } else {
-                this.parentElement.classList.remove('violation-red');
+                this.parentElement.classList.remove('violation-bg');
                 fileInput.removeAttribute('required');
             }
         };
@@ -154,23 +252,26 @@
     document.getElementById('cvvrsForm').onsubmit = async function(e) {
         e.preventDefault();
         const btn = document.getElementById('submitBtn');
+        const status = document.getElementById('statusMsg');
         btn.disabled = true;
-        
-        // 1. Generate PDF
+        status.innerText = "⏳ GENERATING PDF & SYNCING...";
+
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        doc.text("CVVRS ANALYSIS REPORT", 105, 20, {align:'center'});
-        doc.autoTable({ html: '#obsTable', startY: 30, theme: 'grid' });
-        doc.save("CVVRS_Report.pdf");
+        doc.text("CVVRS ANALYSIS REPORT - SECR RAIPUR", 105, 15, {align:'center'});
+        doc.autoTable({ html: '#obsTable', startY: 25, theme: 'grid', styles: {fontSize: 8, fontStyle: 'bold'} });
+        doc.save(`CVVRS_${document.getElementById('loco_no').value}.pdf`);
 
-        // 2. Sync to Google Drive/Sheet
         const fd = new FormData(this);
-        const data = Object.fromEntries(fd.entries());
+        const obj = Object.fromEntries(fd.entries());
         try {
-            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
-            alert("Data Synced Successfully!");
-        } catch(err) { alert("Sync Error!"); }
-        btn.disabled = false;
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(obj) });
+            status.innerText = "✅ SYNC SUCCESSFUL!";
+            setTimeout(() => location.reload(), 2000);
+        } catch(err) {
+            status.innerText = "⚠️ SYNC FAILED, PDF SAVED.";
+            btn.disabled = false;
+        }
     };
 </script>
 </body>
