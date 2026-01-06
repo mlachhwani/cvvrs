@@ -1,116 +1,119 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CVVRS Smart Report | Mukesh Favorite</title>
+    <title>CVVRS ANALYSIS SYSTEM</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .violation-red { background-color: #fee2e2 !important; border: 2px solid #ef4444 !important; }
-        .mandatory-msg { color: #ef4444; font-size: 0.65rem; font-weight: bold; }
-        input:read-only { background-color: #f9fafb; color: #1e40af; font-weight: bold; }
+        .section-header { background: #1e293b; color: white; padding: 6px 12px; font-weight: bold; font-size: 13px; text-transform: uppercase; margin-top: 15px; }
+        .point-label { font-size: 12px; font-weight: 600; color: #374151; }
+        input:read-only { background-color: #f9fafb; font-weight: bold; color: #1e40af; }
     </style>
 </head>
-<body class="bg-slate-100 p-2 md:p-6 min-h-screen font-sans">
+<body class="bg-gray-100 p-2 md:p-6">
 
-<div id="report-container" class="max-w-5xl mx-auto bg-white shadow-2xl rounded-xl overflow-hidden border-t-8 border-red-800">
-    <div class="bg-slate-900 p-6 text-white flex justify-between items-center">
-        <div>
-            <h1 class="text-2xl font-black uppercase tracking-tighter">CVVRS CREW ANALYSIS</h1>
-            <p class="text-[10px] text-red-400 font-bold uppercase">Smart Sync Enabled | Mukesh Favorite</p>
-        </div>
+<div class="max-w-5xl mx-auto bg-white shadow-xl border-t-4 border-red-700">
+    <div class="p-4 border-b text-center bg-slate-50">
+        <h1 class="text-xl font-black uppercase tracking-tight">CVVRS CREW ANALYSIS REPORT</h1>
     </div>
 
-    <form id="cvvrsForm" class="p-4 md:p-8 space-y-6">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 bg-gray-50 p-5 rounded-xl border">
+    <form id="cvvrsForm" class="p-4 space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border p-4 rounded bg-gray-50">
             <div>
-                <label class="block text-[10px] font-bold text-gray-400 uppercase">CLI CMS ID</label>
-                <input type="text" id="cli_id" name="cli_id" onchange="lookup('cli')" class="w-full border-b-2 p-2 outline-none focus:border-red-600 uppercase font-bold text-lg" required>
-                <input type="text" id="cli_name" name="cli_name" readonly class="w-full mt-1 bg-transparent text-blue-700 font-bold text-sm outline-none" placeholder="CLI Name">
+                <label class="block text-[10px] font-bold">CLI CMS ID</label>
+                <input type="text" id="cli_id" name="cli_id" onchange="lookup('cli')" class="w-full border p-2 uppercase font-bold" required>
+                <input type="text" id="cli_name" name="cli_name" readonly class="w-full text-xs mt-1 border-none bg-transparent outline-none">
             </div>
-            <div>
-                <label class="block text-[10px] font-bold text-gray-400 uppercase italic">Departure</label>
-                <input type="datetime-local" name="dep_time" class="w-full border p-2 rounded" required>
+            <div><label class="block text-[10px] font-bold">DEPARTURE</label><input type="datetime-local" id="dep_time" name="dep_time" class="w-full border p-2 text-sm" required></div>
+            <div><label class="block text-[10px] font-bold">ARRIVAL</label><input type="datetime-local" id="arr_time" name="arr_time" class="w-full border p-2 text-sm" required></div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+            <input type="text" name="train_no" id="train_no" placeholder="TRAIN NO" class="border p-2 text-sm font-bold uppercase" required>
+            <input type="text" name="loco_no" id="loco_no" placeholder="LOCO NO" class="border p-2 text-sm font-bold uppercase" required>
+            <input type="text" id="from_code" name="from_stn" placeholder="FROM" onchange="lookupStation('from')" class="border p-2 text-sm uppercase">
+            <input type="text" id="to_code" name="to_stn" placeholder="TO" onchange="lookupStation('to')" class="border p-2 text-sm uppercase">
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-3 border-l-4 border-blue-600 bg-blue-50">
+                <input type="text" id="lp_id" name="lp_id" placeholder="LP CMS ID" onchange="lookup('lp')" class="w-full border p-2 font-bold uppercase mb-2" required>
+                <input type="text" id="lp_name" name="lp_name" readonly placeholder="LP Name" class="w-full border p-1 text-xs">
             </div>
-            <div>
-                <label class="block text-[10px] font-bold text-gray-400 uppercase italic">Arrival</label>
-                <input type="datetime-local" name="arr_time" class="w-full border p-2 rounded" required>
+            <div class="p-3 border-l-4 border-orange-600 bg-orange-50">
+                <input type="text" id="alp_id" name="alp_id" placeholder="ALP CMS ID" onchange="lookup('alp')" class="w-full border p-2 font-bold uppercase mb-2" required>
+                <input type="text" id="alp_name" name="alp_name" readonly placeholder="ALP Name" class="w-full border p-1 text-xs">
             </div>
         </div>
 
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <input type="text" name="train_no" placeholder="TRAIN NO" class="border p-3 rounded font-bold uppercase" required>
-            <input type="text" name="loco_no" placeholder="LOCO NO" class="border p-3 rounded font-bold uppercase" required>
-            <input type="text" id="from_code" placeholder="FROM STN" onchange="lookupStation('from')" class="border p-3 rounded uppercase font-bold">
-            <input type="text" id="to_code" placeholder="TO STN" onchange="lookupStation('to')" class="border p-3 rounded uppercase font-bold">
-        </div>
+        <div id="observationSections"></div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="p-5 border-l-8 border-blue-600 bg-blue-50 rounded">
-                <input type="text" id="lp_id" name="lp_id" placeholder="LP ID" onchange="lookup('lp')" class="w-full border p-2 rounded font-bold uppercase mb-2" required>
-                <input type="text" id="lp_name" name="lp_name" readonly placeholder="LP Name" class="w-full border p-2 rounded mb-1">
-                <input type="text" id="lp_desig" name="lp_desig" readonly placeholder="Designation" class="w-full border p-2 rounded text-xs">
-            </div>
-            <div class="p-5 border-l-8 border-orange-600 bg-orange-50 rounded">
-                <input type="text" id="alp_id" name="alp_id" placeholder="ALP ID" onchange="lookup('alp')" class="w-full border p-2 rounded font-bold uppercase mb-2" required>
-                <input type="text" id="alp_name" name="alp_name" readonly placeholder="ALP Name" class="w-full border p-2 rounded mb-1">
-                <input type="text" id="alp_desig" name="alp_desig" readonly placeholder="Designation" class="w-full border p-2 rounded text-xs">
-            </div>
-        </div>
-
-        <div class="overflow-hidden border rounded-lg">
-            <table class="w-full text-[11px] text-left">
-                <thead class="bg-slate-800 text-white uppercase">
-                    <tr><th class="p-3 w-1/3">Observation</th><th class="p-3">LP</th><th class="p-3">ALP</th></tr>
-                </thead>
-                <tbody id="obsBody" class="divide-y"></tbody>
-            </table>
-        </div>
-
-        <button type="submit" id="submitBtn" class="w-full bg-red-800 text-white font-black py-4 rounded-xl shadow-xl hover:bg-black uppercase tracking-widest">
-            Submit & Sync to Drive
+        <button type="submit" id="submitBtn" class="w-full bg-red-800 text-white font-black py-4 rounded shadow-lg hover:bg-black uppercase mt-6">
+            Submit & Generate Report
         </button>
-        <p id="lockStatus" class="text-center text-xs text-red-600 font-bold mt-2"></p>
     </form>
 </div>
 
 <script>
-    // --- SETTINGS ---
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby__yyf6tBaMvI69wNqBSqmquKAyqB2cpLhhxBkfP_GXYGN7ysw8Yvtr4mQ5p_19p-q/exec";
     const GITHUB_USER = "mlachhwani";
     const GITHUB_REPO = "cvvrs";
     const GITHUB_RAW = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/`;
 
-    const points = [
-        {p: "Logbook/RS Valve", lpd:"YES", alpd:"Yes"}, {p: "Safety Items/HTC", lpd:"YES", alpd:"Yes"},
-        {p: "Energy Meter/SPM", lpd:"YES", alpd:"Yes"}, {p: "BFT & BPT", lpd:"YES", alpd:"Yes"},
-        {p: "Signal Call Gesture", lpd:"YES", alpd:"Yes"}, {p: "Mobile Phone Use", lpd:"No", alpd:"No"},
-        {p: "Micro Sleep", lpd:"No", alpd:"No"}, {p: "Exchange of Signals", lpd:"YES", alpd:"Yes"},
-        {p: "Neutral Action", lpd:"YES", alpd:"Yes"}, {p: "Alertness", lpd:"Very Good", alpd:"Very Good"},
-        {p: "A9 & SA9 Application", lpd:"YES", alpd:"YES"}, {p: "Reverser Neutral", lpd:"YES", alpd:"YES"},
-        {p: "Headlight Dimming", lpd:"Yes/DAY TIME", alpd:"Yes/DAY TIME"}, {p: "Undergear Check", lpd:"YES", alpd:"YES"},
-        {p: "Whistle Start", lpd:"YES", alpd:"YES"}, {p: "Packing Belongings", lpd:"Yes", alpd:"Yes"},
-        {p: "Abnormalities", lpd:"NIL", alpd:"NIL"}
+    const sections = [
+        { title: "During CTO (Sign ON)", points: [
+            {id: 1, p: "Logbook & BPC Check / RS Valve Working", lp: "YES", alp: "Yes"},
+            {id: 2, p: "Safety Items & HTC / Safety Items & HTC", lp: "YES", alp: "Yes"},
+            {id: 3, p: "Energy Meter & SPM / Energy Meter/SPM/Input", lp: "YES", alp: "Yes"}
+        ]},
+        { title: "ON RUN", points: [
+            {id: 4, p: "Signal Call Gesture / Signal Call Gesture", lp: "YES", alp: "Yes"},
+            {id: 5, p: "Exchange of Signals / Exchange of Signals", lp: "YES", alp: "Yes"},
+            {id: 6, p: "Neutral Section Action / Formation & Caution", lp: "YES", alp: "Yes"},
+            {id: 7, p: "Use of Mobile Phone / Use of Mobile Phone", lp: "No", alp: "No"},
+            {id: 8, p: "Micro Sleep / Micro Sleep", lp: "No", alp: "No"},
+            {id: 9, p: "Alertness / Alertness", lp: "Very Good", alp: "Very Good"},
+            {id: 10, p: "Whistle before Start / Signal Exchange", lp: "YES", alp: "YES"}
+        ]},
+        { title: "AT HALTS", points: [
+            {id: 11, p: "Conducting BFT & BPT / Standing & Holding RS", lp: "YES", alp: "Yes"},
+            {id: 12, p: "Undergear/MR Check / Undergear/MR Check", lp: "YES", alp: "YES"},
+            {id: 13, p: "Headlight Dimming / Ensure Dimming", lp: "Yes/DAY", alp: "Yes/DAY"}
+        ]},
+        { title: "At the Time of CHO (Sign OFF)", points: [
+            {id: 14, p: "A9 & SA9 Application / Ensure A9 & SA9", lp: "YES", alp: "YES"},
+            {id: 15, p: "Reverser in Neutral / Ensure Reverser Neutral", lp: "YES", alp: "YES"},
+            {id: 16, p: "Packing Belongings / Packing Belongings", lp: "Yes", alp: "Yes"},
+            {id: 17, p: "Other Abnormalities", lp: "NIL", alp: "NIL"}
+        ]}
     ];
 
-    const obsBody = document.getElementById('obsBody');
-    points.forEach((item, i) => {
-        obsBody.innerHTML += `<tr>
-            <td class="p-2 bg-gray-50 font-bold border-r">${item.p}</td>
-            <td class="p-2 border-r" id="cell_lp_${i}">
-                ${i<16 ? `<select name="lp_val_${i}" onchange="checkV('lp',${i})" class="w-full border p-1 rounded font-bold"><option>${item.lpd}</option><option>POOR</option><option>VIOLATION</option></select>` : 
-                `<input type="text" name="lp_val_${i}" value="NIL" oninput="checkV('lp',${i})" class="w-full border p-1 rounded uppercase">`}
-                <div id="lp_up_${i}" class="hidden mt-1"><input type="file" name="img_lp_${i}" onchange="lockLogic()" class="text-[9px]"></div>
-            </td>
-            <td class="p-2" id="cell_alp_${i}">
-                ${i<16 ? `<select name="alp_val_${i}" onchange="checkV('alp',${i})" class="w-full border p-1 rounded font-bold"><option>${item.alpd}</option><option>POOR</option><option>VIOLATION</option></select>` : 
-                `<input type="text" name="alp_val_${i}" value="NIL" oninput="checkV('alp',${i})" class="w-full border p-1 rounded uppercase">`}
-                <div id="alp_up_${i}" class="hidden mt-1"><input type="file" name="img_alp_${i}" onchange="lockLogic()" class="text-[9px]"></div>
-            </td>
-        </tr>`;
+    const container = document.getElementById('observationSections');
+    sections.forEach(sec => {
+        let html = `<div class="section-header">${sec.title}</div><div class="bg-white border-x border-b p-2 space-y-3">`;
+        sec.points.forEach(pt => {
+            html += `
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-2 items-center border-b pb-2" id="row_${pt.id}">
+                <div class="point-label" id="label_${pt.id}">${pt.id}. ${pt.p}</div>
+                <div class="flex flex-col gap-1 border-r pr-2" id="lp_cell_${pt.id}">
+                    <div class="flex gap-2"><span class="text-[9px] font-bold text-blue-600">LP</span>
+                    ${pt.id === 17 ? `<input type="text" name="lp_val_${pt.id}" value="NIL" oninput="checkV('lp',${pt.id},'NIL')" class="border p-1 text-xs w-full">` : 
+                    `<select name="lp_val_${pt.id}" onchange="checkV('lp',${pt.id},'${pt.lp}')" class="border p-1 text-xs w-full font-bold"><option>${pt.lp}</option><option>POOR</option><option>VIOLATION</option></select>`}</div>
+                    <div id="lp_up_${pt.id}" class="hidden"><input type="file" name="img_lp_${pt.id}" class="text-[8px] w-full"></div>
+                </div>
+                <div class="flex flex-col gap-1" id="alp_cell_${pt.id}">
+                    <div class="flex gap-2"><span class="text-[9px] font-bold text-orange-600">ALP</span>
+                    ${pt.id === 17 ? `<input type="text" name="alp_val_${pt.id}" value="NIL" oninput="checkV('alp',${pt.id},'NIL')" class="border p-1 text-xs w-full">` : 
+                    `<select name="alp_val_${pt.id}" onchange="checkV('alp',${pt.id},'${pt.alp}')" class="border p-1 text-xs w-full font-bold"><option>${pt.alp}</option><option>POOR</option><option>VIOLATION</option></select>`}</div>
+                    <div id="alp_up_${pt.id}" class="hidden"><input type="file" name="img_alp_${pt.id}" class="text-[8px] w-full"></div>
+                </div>
+            </div>`;
+        });
+        html += `</div>`; container.innerHTML += html;
     });
 
     async function lookup(type) {
@@ -120,14 +123,8 @@
             let res = await fetch(GITHUB_RAW + (type==='cli'?'cli_master.csv':'crew_master.csv'));
             let text = await res.text();
             let found = text.split("\n").map(r=>r.split(",")).find(r=>r[0].trim().toUpperCase()===id);
-            let nameInp = document.getElementById(type+'_name');
-            let desigInp = document.getElementById(type+'_desig');
-            if(found) {
-                nameInp.value = found[1].trim(); nameInp.readOnly = true;
-                if(desigInp) { desigInp.value = found[2].trim(); desigInp.readOnly = true; }
-            } else if(confirm("ID not found. Manual entry?")) {
-                nameInp.readOnly = false; if(desigInp) desigInp.readOnly = false;
-            }
+            if(found) { document.getElementById(type+'_name').value = found[1].trim(); }
+            else if(confirm("ID not found. Manual entry?")) { document.getElementById(type+'_name').readOnly = false; }
         } catch(e) {}
     }
 
@@ -141,66 +138,75 @@
         } catch(e) {}
     }
 
-    function checkV(t, i) {
-        let val = document.getElementsByName(t+'_val_'+i)[0].value;
-        let def = (t==='lp') ? points[i].lpd : points[i].alpd;
-        let isV = (i===16) ? (val.toUpperCase()!=="NIL" && val!=="") : (val !== def);
-        document.getElementById(t+'_up_'+i).classList.toggle('hidden', !isV);
-        document.getElementById('cell_'+t+'_'+i).classList.toggle('violation-red', isV);
-        lockLogic();
-    }
-
-    function lockLogic() {
-        let violations = document.querySelectorAll('.violation-red');
-        let locked = false;
-        violations.forEach(c => { if(c.querySelector('input[type="file"]') && !c.querySelector('input[type="file"]').files[0]) locked = true; });
-        document.getElementById('submitBtn').disabled = locked;
-        document.getElementById('lockStatus').innerText = locked ? "⚠️ PHOTO REQUIRED FOR VIOLATIONS" : "";
+    function checkV(t, id, def) {
+        let val = document.getElementsByName(t+'_val_'+id)[0].value;
+        let isV = (id === 17) ? (val.toUpperCase() !== "NIL" && val !== "") : (val !== def);
+        document.getElementById(t+'_up_'+id).classList.toggle('hidden', !isV);
+        document.getElementById(t+'_cell_'+id).classList.toggle('violation-red', isV);
     }
 
     document.getElementById('cvvrsForm').onsubmit = async function(e) {
         e.preventDefault();
         const btn = document.getElementById('submitBtn');
-        btn.innerText = "SYNCING TO CLOUD..."; btn.disabled = true;
+        btn.innerText = "GENERATING REPORT & SYNCING..."; btn.disabled = true;
 
         const fd = new FormData(this);
         const obj = Object.fromEntries(fd.entries());
+        obj.cli_name = document.getElementById('cli_name').value;
+        obj.lp_name = document.getElementById('lp_name').value;
+        obj.alp_name = document.getElementById('alp_name').value;
+
+        // PDF Generation with Photos
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
         
-        // Convert images to Base64
-        const fileInputs = document.querySelectorAll('input[type="file"]');
-        for (let input of fileInputs) {
-            if (input.files[0]) {
-                obj[input.name] = await new Promise(r => {
-                    const reader = new FileReader();
-                    reader.onload = () => r(reader.result);
-                    reader.readAsDataURL(input.files[0]);
+        // Header Details in PDF
+        doc.setFontSize(16); doc.text("CVVRS ANALYSIS REPORT", 105, 15, {align:'center'});
+        doc.setFontSize(10);
+        doc.text(`CLI: ${obj.cli_name} (${obj.cli_id})`, 15, 25);
+        doc.text(`TRAIN: ${obj.train_no} | LOCO: ${obj.loco_no}`, 15, 30);
+        doc.text(`FROM: ${obj.from_stn} | TO: ${obj.to_stn}`, 15, 35);
+        doc.text(`DEP: ${obj.dep_time} | ARR: ${obj.arr_time}`, 15, 40);
+        doc.text(`LP: ${obj.lp_name} (${obj.lp_id}) | ALP: ${obj.alp_name} (${obj.alp_id})`, 15, 45);
+
+        let tableRows = [];
+        sections.forEach(s => {
+            s.points.forEach(p => {
+                tableRows.push([p.id, p.p, obj['lp_val_'+p.id], obj['alp_val_'+p.id]]);
+            });
+        });
+
+        doc.autoTable({
+            startY: 50,
+            head: [['#', 'Observation Point', 'LP Status', 'ALP Status']],
+            body: tableRows,
+            theme: 'grid',
+            headStyles: { fillColor: [185, 28, 28] }
+        });
+
+        // Add Photos to PDF
+        let photoY = doc.lastAutoTable.finalY + 10;
+        const files = document.querySelectorAll('input[type="file"]');
+        for (let f of files) {
+            if (f.files[0]) {
+                const dataUrl = await new Promise(r => {
+                    const rd = new FileReader(); rd.onload=()=>r(rd.result); rd.readAsDataURL(f.files[0]);
                 });
+                obj[f.name] = dataUrl; // For Drive upload
+                
+                if(photoY > 260) { doc.addPage(); photoY = 20; }
+                doc.setFontSize(8); doc.text(`Photo Ref: ${f.name.replace('img_','')}`, 15, photoY);
+                doc.addImage(dataUrl, 'JPEG', 15, photoY + 2, 50, 35);
+                photoY += 45;
             }
         }
 
-        // PDF Generation
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        doc.setFontSize(14); doc.text("CVVRS ANALYSIS REPORT", 105, 15, {align:'center'});
-        doc.setFontSize(9); doc.text(`Loco: ${obj.loco_no} | LP: ${obj.lp_name}`, 10, 25);
-        
-        let body = points.map((p, i) => [p.p, obj['lp_val_'+i], obj['alp_val_'+i]]);
-        doc.autoTable({ startY: 30, head: [['Point', 'LP', 'ALP']], body: body, theme: 'grid' });
-        doc.save(`CVVRS_${obj.loco_no}.pdf`);
+        doc.save(`CVVRS_${obj.loco_no}_${obj.lp_id}.pdf`);
 
-        // FETCH SYNC (Direct to Apps Script)
         try {
-            await fetch(SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors', // Critical for cross-domain fetch
-                body: JSON.stringify(obj)
-            });
-            alert("✅ Data Synced Successfully!");
-            location.reload();
-        } catch (err) {
-            alert("⚠️ Sync may have completed. Check Sheet.");
-            location.reload();
-        }
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(obj) });
+            alert("REPORT SAVED & SYNCED!"); location.reload();
+        } catch(e) { location.reload(); }
     };
 </script>
 </body>
