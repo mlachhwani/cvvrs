@@ -3,69 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CVVRS ANALYSIS SYSTEM</title>
+    <title>CVVRS ANALYSIS - SECR RAIPUR</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
         .violation-red { background-color: #fee2e2 !important; border: 1px solid #ef4444 !important; }
-        .cat-header { background: #facc15; color: #000; padding: 4px 10px; font-weight: 800; font-size: 11px; text-transform: uppercase; }
-        .sub-header { background: #f8fafc; font-weight: 700; font-size: 10px; color: #475569; border-bottom: 1px solid #e2e8f0; }
-        .point-text { font-size: 10px; line-height: 1.2; font-weight: 500; color: #1e293b; }
-        select { font-size: 10px !important; padding: 1px !important; font-weight: bold; border: 1px solid #cbd5e1; width: 75px; h-6; }
-        input[type="text"] { font-size: 11px; }
-        input:read-only { background-color: #f1f5f9; color: #1e40af; }
+        .cat-header { background: #facc15; color: #000; padding: 6px; font-weight: 800; font-size: 12px; text-transform: uppercase; border: 1px solid #000; }
+        .sub-header { background: #e2e8f0; font-weight: 700; font-size: 11px; color: #1e293b; padding: 4px; border: 1px solid #cbd5e1; }
+        .point-text { font-size: 11px; font-weight: 500; color: #1e293b; padding: 4px; }
+        select { font-size: 11px !important; font-weight: bold; border: 1px solid #94a3b8; width: 90px; border-radius: 4px; }
+        input:read-only { background-color: #f8fafc; color: #1e40af; font-weight: 700; }
+        .ir-header { border-bottom: 2px double #000; margin-bottom: 10px; }
     </style>
 </head>
-<body class="bg-gray-200 p-2">
+<body class="bg-slate-200 p-2 md:p-6">
 
-<div class="max-w-5xl mx-auto bg-white shadow-2xl rounded-sm overflow-hidden border-t-4 border-blue-900">
-    <div class="p-3 bg-slate-50 border-b grid grid-cols-1 md:grid-cols-3 gap-3">
-        <div>
-            <label class="block text-[9px] font-bold text-gray-500">CLI CMS ID</label>
-            <input type="text" id="cli_id" name="cli_id" onchange="lookup('cli')" class="w-full border p-1 uppercase font-bold">
-            <input type="text" id="cli_name" readonly class="w-full text-[10px] font-bold text-blue-800 bg-transparent outline-none">
-        </div>
-        <div>
-            <label class="block text-[9px] font-bold text-gray-500">TRAIN NO & LOCO NO</label>
-            <div class="flex gap-1">
-                <input type="text" id="train_no" placeholder="TRAIN" class="w-1/2 border p-1 font-bold uppercase">
-                <input type="text" id="loco_no" placeholder="LOCO" class="w-1/2 border p-1 font-bold uppercase">
+<div class="max-w-6xl mx-auto bg-white shadow-2xl p-4 border border-gray-300">
+    <div class="ir-header pb-4 text-center relative">
+        <div class="flex justify-between items-center mb-2">
+            <div class="w-20 h-20 border flex items-center justify-center text-[10px] italic text-gray-400">
+                LOGO HERE
             </div>
-        </div>
-        <div class="grid grid-cols-2 gap-2">
-            <div><label class="block text-[9px] font-bold text-gray-500">DEPARTURE</label><input type="datetime-local" id="dep_time" class="w-full border p-1 text-[9px]"></div>
-            <div><label class="block text-[9px] font-bold text-gray-500">ARRIVAL</label><input type="datetime-local" id="arr_time" class="w-full border p-1 text-[9px]"></div>
-        </div>
+            <div class="flex-1 px-4">
+                <h2 class="text-lg font-bold">SOUTH EAST CENTRAL RAILWAY</h2>
+                <h3 class="text-md font-semibold">ELECTRICAL (OP) DEPARTMENT - RAIPUR DIVISION</h3>
+                <h1 class="text-xl font-black mt-1 border-y-2 border-black inline-block px-4">CVVRS CREW ANALYSIS REPORT</h1>
+            </div>
+            <div class="w-20"></div> </div>
     </div>
 
     <form id="cvvrsForm">
-        <div class="grid grid-cols-2 divide-x border-b bg-gray-50">
-            <div class="p-2">
-                <div class="text-[9px] font-bold text-blue-600 mb-1 uppercase">LOCO PILOT (LP)</div>
-                <input type="text" id="lp_id" name="lp_id" onchange="lookup('lp')" placeholder="LP ID" class="w-full border p-1 text-xs font-bold uppercase mb-1">
-                <input type="text" id="lp_name" readonly class="w-full text-[10px] font-bold text-gray-600 outline-none" placeholder="LP Name">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-blue-50 p-4 rounded-lg border border-blue-200 mb-6">
+            <div>
+                <label class="block text-[10px] font-bold text-blue-900 uppercase">CLI INCHARGE (CMS ID)</label>
+                <input type="text" id="cli_id" onchange="lookup('cli')" class="w-full border p-2 font-bold uppercase" placeholder="Enter ID">
+                <input type="text" id="cli_name" readonly class="w-full text-xs font-bold text-red-700 mt-1 bg-transparent outline-none" placeholder="CLI Name will appear here">
             </div>
-            <div class="p-2">
-                <div class="text-[9px] font-bold text-orange-600 mb-1 uppercase">ASTT. LOCO PILOT (ALP)</div>
-                <input type="text" id="alp_id" name="alp_id" onchange="lookup('alp')" placeholder="ALP ID" class="w-full border p-1 text-xs font-bold uppercase mb-1">
-                <input type="text" id="alp_name" readonly class="w-full text-[10px] font-bold text-gray-600 outline-none" placeholder="ALP Name">
+            <div class="grid grid-cols-2 gap-2">
+                <div><label class="block text-[10px] font-bold text-gray-600">TRAIN NO</label><input type="text" id="train_no" class="w-full border p-2 font-bold uppercase"></div>
+                <div><label class="block text-[10px] font-bold text-gray-600">LOCO NO</label><input type="text" id="loco_no" class="w-full border p-2 font-bold uppercase"></div>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+                <div><label class="block text-[10px] font-bold text-gray-600">DEPARTURE</label><input type="datetime-local" id="dep_time" class="w-full border p-1 text-xs"></div>
+                <div><label class="block text-[10px] font-bold text-gray-600">ARRIVAL</label><input type="datetime-local" id="arr_time" class="w-full border p-1 text-xs"></div>
             </div>
         </div>
 
-        <div class="grid grid-cols-12 cat-header border-b">
-            <div class="col-span-4">Category & LP Points</div>
-            <div class="col-span-2 text-center">LP Resp</div>
-            <div class="col-span-4">ALP Points</div>
-            <div class="col-span-2 text-center">ALP Resp</div>
+        <div class="grid grid-cols-2 gap-4 mb-4">
+            <div class="p-3 border-l-8 border-blue-800 bg-slate-50">
+                <label class="block text-[10px] font-bold mb-1">LOCO PILOT (LP)</label>
+                <input type="text" id="lp_id" onchange="lookup('lp')" placeholder="LP CMS ID" class="w-full border p-2 font-bold uppercase mb-1">
+                <input type="text" id="lp_name" readonly class="w-full text-xs font-semibold text-gray-600 bg-transparent outline-none">
+            </div>
+            <div class="p-3 border-l-8 border-orange-600 bg-slate-50">
+                <label class="block text-[10px] font-bold mb-1">ASTT. LOCO PILOT (ALP)</label>
+                <input type="text" id="alp_id" onchange="lookup('alp')" placeholder="ALP CMS ID" class="w-full border p-2 font-bold uppercase mb-1">
+                <input type="text" id="alp_name" readonly class="w-full text-xs font-semibold text-gray-600 bg-transparent outline-none">
+            </div>
         </div>
 
-        <div id="observationBody"></div>
+        <div class="border border-black overflow-hidden">
+            <div class="grid grid-cols-12 cat-header">
+                <div class="col-span-4 border-r border-black">Description of Observation</div>
+                <div class="col-span-4 border-r border-black text-center">Loco Pilot (LP)</div>
+                <div class="col-span-4 text-center">Asstt. Loco Pilot (ALP)</div>
+            </div>
+            <div id="observationBody"></div>
+        </div>
 
-        <div class="p-4 bg-slate-100 text-center border-t">
-            <p id="statusMsg" class="mb-2 text-[10px] font-bold text-red-600 uppercase"></p>
-            <button type="submit" id="submitBtn" class="bg-blue-900 text-white px-10 py-3 rounded font-bold text-xs hover:bg-black transition-all">
-                SYNCHRONIZE DATA & DOWNLOAD REPORT
+        <div class="mt-8 p-6 bg-slate-100 rounded border-t-4 border-slate-800 text-center">
+            <p id="statusMsg" class="mb-3 text-xs font-bold text-blue-700 uppercase italic"></p>
+            <button type="submit" id="submitBtn" class="bg-black text-white px-12 py-4 rounded-full font-black text-sm hover:bg-blue-900 shadow-xl transition-all uppercase tracking-widest">
+                Final Sync & Download Official Report
             </button>
         </div>
     </form>
@@ -76,57 +86,56 @@
     const GITHUB_RAW = "https://raw.githubusercontent.com/mlachhwani/cvvrs/main/";
 
     const layout = [
-        { cat: "During CTO", points: [
+        { cat: "I. During CTO (Sign ON)", points: [
             { lp: "Checking Logbook & BPC", lp_d: "YES", alp: "Checking RS Valve working", alp_d: "Yes" },
             { lp: "Checking Safety Items & HTC", lp_d: "YES", alp: "Checking Safety Items & HTC", alp_d: "Yes" },
-            { lp: "Energy Meter & SPM check", lp_d: "YES", alp: "Energy Meter & SPM check & Input", alp_d: "Yes" }
+            { lp: "Energy Meter & SPM check", lp_d: "YES", alp: "Energy Meter/SPM check & Input", alp_d: "Yes" }
         ]},
-        { cat: "ON RUN", points: [
-            { lp: "Conducting BFT & BPT", lp_d: "YES", alp: "Standing & Holding RS (Danger Signal)", alp_d: "Yes" },
+        { cat: "II. ON RUN (In Motion)", points: [
+            { lp: "Conducting BFT & BPT", lp_d: "YES", alp: "Standing & Holding RS (Danger)", alp_d: "Yes" },
             { lp: "Calling Out Signals (Gesture)", lp_d: "YES", alp: "Calling Out Signals (Gesture)", alp_d: "Yes" },
             { lp: "Use of Mobile Phone", lp_d: "No", alp: "Use of Mobile Phone", alp_d: "No" },
             { lp: "Micro Sleep", lp_d: "No", alp: "Micro Sleep", alp_d: "No" },
             { lp: "Exchange of Signals", lp_d: "YES", alp: "Exchange of Signals", alp_d: "Yes" },
             { lp: "Action during Neutral Section", lp_d: "YES", alp: "Formation in curve & Caution", alp_d: "Yes" },
-            { lp: "Alertness", lp_d: "Very Good", alp: "Alertness", alp_d: "Very Good" }
+            { lp: "Alertness Level", lp_d: "Very Good", alp: "Alertness Level", alp_d: "Very Good" }
         ]},
-        { cat: "AT HALTS", points: [
+        { cat: "III. AT HALTS (Stationary)", points: [
             { lp: "Application of A9 & SA9", lp_d: "YES", alp: "Ensure Application of A9 & SA9", alp_d: "YES" },
             { lp: "Reverser in Neutral", lp_d: "YES", alp: "Ensure Reverser in Neutral", alp_d: "YES" },
             { lp: "Dimming of Headlight", lp_d: "Yes/DAY TIME", alp: "Ensure Dimming of Headlight", alp_d: "Yes/DAY TIME" },
             { lp: "Undergear & Machine Room", lp_d: "YES", alp: "Undergear & Machine Room", alp_d: "YES" },
-            { lp: "Proper whistle before start", lp_d: "YES", alp: "Proper Signal Exchange before start", alp_d: "YES" }
+            { lp: "Whistle before start", lp_d: "YES", alp: "Signal Exchange before start", alp_d: "YES" }
         ]},
-        { cat: "At the Time of CHO", points: [
+        { cat: "IV. At the Time of CHO (Sign OFF)", points: [
             { lp: "Packing of Personal belongings", lp_d: "Yes", alp: "Packing of Personal belongings", alp_d: "Yes" },
-            { lp: "Overall Performance", lp_d: "Very Good", alp: "Any Other Abnormalities", alp_d: "Very Good" },
+            { lp: "Overall Performance", lp_d: "Very Good", alp: "Overall Performance", alp_d: "Very Good" },
             { lp: "Any Other Abnormalities", lp_d: "NIL", alp: "Any Other Abnormalities", alp_d: "NIL" }
         ]}
     ];
 
     const obsBody = document.getElementById('observationBody');
-    let pointCounter = 1;
+    let pointIdx = 1;
     layout.forEach(sec => {
-        obsBody.innerHTML += `<div class="sub-header px-2 py-1">${sec.cat}</div>`;
+        obsBody.innerHTML += `<div class="sub-header px-4">${sec.cat}</div>`;
         sec.points.forEach(p => {
             obsBody.innerHTML += `
-            <div class="grid grid-cols-12 gap-1 p-1 border-b items-center">
-                <div class="col-span-4 point-text">${pointCounter}. ${p.lp}</div>
-                <div class="col-span-2 flex flex-col items-center border-r" id="lp_cell_${pointCounter}">
-                    <select name="lp_val_${pointCounter}" onchange="checkV('lp',${pointCounter},'${p.lp_d}')">
+            <div class="grid grid-cols-12 border-b border-gray-300 items-stretch" id="row_${pointIdx}">
+                <div class="col-span-4 point-text border-r bg-slate-50 flex items-center">${pointIdx}. ${p.lp} / ${p.alp}</div>
+                <div class="col-span-4 flex flex-col items-center justify-center p-2 border-r" id="lp_cell_${pointIdx}">
+                    <select name="lp_val_${pointIdx}" onchange="checkV('lp',${pointIdx},'${p.lp_d}')" class="mb-1">
                         <option>${p.lp_d}</option><option>POOR</option><option>VIOLATION</option>
                     </select>
-                    <input type="file" name="img_lp_${pointCounter}" class="hidden mt-1 text-[7px] w-full">
+                    <input type="file" name="img_lp_${pointIdx}" class="hidden text-[8px] w-full">
                 </div>
-                <div class="col-span-4 point-text pl-1">${p.alp}</div>
-                <div class="col-span-2 flex flex-col items-center" id="alp_cell_${pointCounter}">
-                    <select name="alp_val_${pointCounter}" onchange="checkV('alp',${pointCounter},'${p.alp_d}')">
+                <div class="col-span-4 flex flex-col items-center justify-center p-2" id="alp_cell_${pointIdx}">
+                    <select name="alp_val_${pointIdx}" onchange="checkV('alp',${pointIdx},'${p.alp_d}')" class="mb-1">
                         <option>${p.alp_d}</option><option>POOR</option><option>VIOLATION</option>
                     </select>
-                    <input type="file" name="img_alp_${pointCounter}" class="hidden mt-1 text-[7px] w-full">
+                    <input type="file" name="img_alp_${pointIdx}" class="hidden text-[8px] w-full">
                 </div>
             </div>`;
-            pointCounter++;
+            pointIdx++;
         });
     });
 
@@ -154,16 +163,15 @@
         const btn = document.getElementById('submitBtn');
         const status = document.getElementById('statusMsg');
         btn.disabled = true;
-        status.innerText = "⏳ STEP 1: UPLOADING DATA TO GOOGLE CLOUD...";
+        status.innerText = "⏳ CONNECTING TO SECR SERVER... UPLOADING DATA & PHOTOS...";
 
         const fd = new FormData(this);
         const obj = Object.fromEntries(fd.entries());
-        // Basic fields
+        // Populate essential fields manually from IDs
         ['cli_id','cli_name','lp_name','alp_name','train_no','loco_no','dep_time','arr_time'].forEach(k => {
             const el = document.getElementById(k); if(el) obj[k] = el.value;
         });
 
-        // Convert Photos
         const files = document.querySelectorAll('input[type="file"]');
         for (let f of files) {
             if (f.files[0]) {
@@ -174,26 +182,62 @@
         }
 
         try {
-            // STEP 1: Sync to Google Script
             await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(obj) });
-            
-            status.innerText = "✅ SYNC SUCCESSFUL! STEP 2: GENERATING REPORT...";
-            
-            // STEP 2: PDF Generation (Only after success)
+            status.innerText = "✅ SYNC COMPLETE! FINALIZING PDF REPORT...";
+
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.setFontSize(14); doc.text("CVVRS ANALYSIS REPORT", 105, 15, {align:'center'});
-            doc.setFontSize(9);
-            doc.text(`CLI: ${obj.cli_name} | TRAIN: ${obj.train_no} | LOCO: ${obj.loco_no}`, 15, 25);
-            doc.text(`LP: ${obj.lp_name} | ALP: ${obj.alp_name}`, 15, 30);
+            const doc = new jsPDF('p', 'mm', 'a4');
             
-            // Table generation here...
-            doc.save(`CVVRS_${obj.loco_no}.pdf`);
+            // Official PDF Header
+            doc.setFontSize(10); doc.text("SOUTH EAST CENTRAL RAILWAY", 105, 10, {align:'center'});
+            doc.setFontSize(8); doc.text("ELECTRICAL (OP) DEPARTMENT - RAIPUR DIVISION", 105, 15, {align:'center'});
+            doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text("CVVRS CREW ANALYSIS REPORT", 105, 22, {align:'center'});
             
-            alert("REPORT SAVED TO DRIVE & DOWNLOADED!");
+            doc.setFontSize(9); doc.setFont(undefined, 'normal');
+            doc.text(`CLI INCHARGE: ${obj.cli_name} (${obj.cli_id})`, 15, 30);
+            doc.text(`TRAIN/LOCO: ${obj.train_no} / ${obj.loco_no}`, 15, 35);
+            doc.text(`JOURNEY: ${obj.dep_time} TO ${obj.arr_time}`, 15, 40);
+            doc.text(`CREW: LP-${obj.lp_name} | ALP-${obj.alp_name}`, 15, 45);
+
+            // Table
+            let rows = [];
+            let i = 1;
+            layout.forEach(s => {
+                s.points.forEach(p => {
+                    rows.push([i, p.lp + "\n" + p.alp, obj['lp_val_'+i], obj['alp_val_'+i]]);
+                    i++;
+                });
+            });
+
+            doc.autoTable({
+                startY: 50,
+                head: [['SN', 'Observation Description', 'LP Status', 'ALP Status']],
+                body: rows,
+                theme: 'grid',
+                headStyles: { fillColor: [0, 0, 0] },
+                styles: { fontSize: 8 }
+            });
+
+            // Photos on New Page if needed
+            let finalY = doc.lastAutoTable.finalY;
+            if (Object.keys(obj).some(k => k.startsWith('img_'))) {
+                doc.addPage();
+                doc.text("VIOLATION EVIDENCE PHOTOS:", 15, 15);
+                let px = 15, py = 20;
+                for (let key in obj) {
+                    if (key.startsWith('img_')) {
+                        doc.addImage(obj[key], 'JPEG', px, py, 60, 45);
+                        doc.text(`Ref: ${key.toUpperCase()}`, px, py + 50);
+                        px += 65; if(px > 150) { px = 15; py += 60; }
+                    }
+                }
+            }
+
+            doc.save(`SECR_CVVRS_${obj.loco_no}.pdf`);
+            alert("SUCCESS: Data Synced & Report Downloaded.");
             location.reload();
-        } catch(err) {
-            alert("SYNC FAILED. Check connection.");
+        } catch(e) {
+            alert("Error: Check Internet or Script URL");
             btn.disabled = false;
         }
     };
