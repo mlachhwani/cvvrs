@@ -7,155 +7,142 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid black; padding: 5px; font-size: 11px; vertical-align: middle; }
-        .bg-yellow { background-color: #ffff00; font-weight: bold; text-align: center; text-transform: uppercase; }
+        table { width: 100%; border-collapse: collapse; border: 2px solid black; }
+        td { border: 1px solid black; padding: 4px; font-size: 11px; }
+        .bg-yellow { background-color: #ffff00; font-weight: bold; text-align: center; }
         .violation-red { background-color: #fee2e2 !important; border: 2px solid red !important; }
         select { width: 100%; font-weight: bold; border: none; background: transparent; }
-        input[type="file"] { font-size: 9px; width: 100%; margin-top: 2px; }
-        .crew-box { padding: 10px; border-bottom: 2px solid black; }
+        input:read-only { border: none; background: transparent; font-weight: bold; color: #1e40af; }
     </style>
 </head>
 <body class="bg-gray-100 p-2 md:p-6">
 
-<div class="max-w-6xl mx-auto bg-white shadow-2xl border-2 border-black">
+<div class="max-w-6xl mx-auto bg-white shadow-2xl border-2 border-black" id="reportContent">
     <div class="p-4 border-b-2 border-black flex items-center justify-between">
-        <img src="ir_logo.png" alt="Logo" class="w-20 h-20">
+        <img src="ir_logo.png" alt="Logo" class="w-16 h-16">
         <div class="text-center flex-1">
-            <h2 class="text-xl font-bold">SOUTH EAST CENTRAL RAILWAY</h2>
-            <h3 class="text-sm font-semibold text-blue-900">ELECTRICAL (OP) DEPARTMENT - RAIPUR DIVISION</h3>
-            <h1 class="text-2xl font-black bg-black text-white px-6 mt-1">CVVRS CREW ANALYSIS REPORT</h1>
+            <h2 class="text-lg font-bold uppercase">South East Central Railway</h2>
+            <h3 class="text-xs font-semibold text-blue-900 uppercase">Electrical (OP) Department - Raipur Division</h3>
+            <h1 class="text-xl font-black bg-black text-white px-6 mt-1 uppercase">CVVRS Crew Analysis Report</h1>
         </div>
-        <div class="w-20"></div>
     </div>
 
     <form id="cvvrsForm">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-slate-50 border-b-2 border-black">
+        <div class="grid grid-cols-3 gap-4 p-4 bg-gray-50 border-b-2 border-black">
             <div>
-                <label class="block text-[10px] font-bold">CLI CMS ID:</label>
-                <input type="text" id="cli_id" onchange="lookup('cli')" class="w-full border p-2 font-bold uppercase" placeholder="ENTER ID">
-                <input type="text" id="cli_name" readonly class="w-full text-xs font-bold text-blue-800 mt-1 bg-transparent">
-                <input type="text" id="cli_desig" readonly class="w-full text-[10px] text-gray-500 bg-transparent">
+                <label class="text-[10px] font-bold">CLI ID:</label>
+                <input type="text" id="cli_id" onchange="lookup('cli')" class="w-full border p-1 uppercase font-bold" required>
+                <input type="text" id="cli_name" readonly class="text-xs block">
+                <input type="text" id="cli_desig" readonly class="text-[9px] text-gray-500 block">
             </div>
-            <div class="grid grid-cols-2 gap-2">
-                <input type="text" id="train_no" placeholder="TRAIN NO" class="border p-2 font-bold uppercase">
-                <input type="text" id="loco_no" placeholder="LOCO NO" class="border p-2 font-bold uppercase">
-                <input type="text" id="from_stn" placeholder="FROM" class="border p-2 uppercase">
-                <input type="text" id="to_stn" placeholder="TO" class="border p-2 uppercase">
+            <div class="grid grid-cols-2 gap-1">
+                <input type="text" id="train_no" placeholder="TRAIN" class="border p-1 text-xs" required>
+                <input type="text" id="loco_no" placeholder="LOCO" class="border p-1 text-xs" required>
+                <input type="text" id="from_stn" placeholder="FROM" class="border p-1 text-xs">
+                <input type="text" id="to_stn" placeholder="TO" class="border p-1 text-xs">
             </div>
-            <div class="space-y-1">
-                <div class="flex items-center gap-1"><span class="text-[9px] font-bold">DEP:</span><input type="datetime-local" id="dep_time" class="border p-1 text-xs w-full"></div>
-                <div class="flex items-center gap-1"><span class="text-[9px] font-bold">ARR:</span><input type="datetime-local" id="arr_time" class="border p-1 text-xs w-full"></div>
+            <div class="text-[10px]">
+                DEP: <input type="datetime-local" id="dep_time" class="border mb-1 w-full"><br>
+                ARR: <input type="datetime-local" id="arr_time" class="border w-full">
             </div>
         </div>
 
         <div class="grid grid-cols-2 divide-x-2 divide-black border-b-2 border-black">
-            <div class="crew-box bg-blue-50">
-                <label class="text-[10px] font-bold text-blue-900">LOCO PILOT (LP)</label>
-                <input type="text" id="lp_id" onchange="lookup('lp')" placeholder="LP CMS ID" class="w-full border p-2 font-bold uppercase mb-2">
-                <div class="space-y-1">
-                    <div class="text-[11px]"><b>NAME:</b> <input type="text" id="lp_name" readonly class="bg-transparent outline-none"></div>
-                    <div class="text-[11px]"><b>DESIG:</b> <input type="text" id="lp_desig" readonly class="bg-transparent outline-none text-red-700"></div>
-                    <div class="text-[11px]"><b>G/CLI:</b> <input type="text" id="lp_gcli" readonly class="bg-transparent outline-none text-gray-600 italic"></div>
-                </div>
+            <div class="p-3 bg-blue-50">
+                <input type="text" id="lp_id" onchange="lookup('lp')" placeholder="LP CMS ID" class="w-full border p-1 font-bold mb-1" required>
+                <div class="text-[11px]">NAME: <input type="text" id="lp_name" readonly></div>
+                <div class="text-[11px]">DESIG: <input type="text" id="lp_desig" readonly></div>
+                <div class="text-[11px]">GRADE: <input type="text" id="lp_gcli" readonly></div>
             </div>
-            <div class="crew-box bg-orange-50">
-                <label class="text-[10px] font-bold text-orange-900">ASTT. LOCO PILOT (ALP)</label>
-                <input type="text" id="alp_id" onchange="lookup('alp')" placeholder="ALP CMS ID" class="w-full border p-2 font-bold uppercase mb-2">
-                <div class="space-y-1">
-                    <div class="text-[11px]"><b>NAME:</b> <input type="text" id="alp_name" readonly class="bg-transparent outline-none"></div>
-                    <div class="text-[11px]"><b>DESIG:</b> <input type="text" id="alp_desig" readonly class="bg-transparent outline-none text-red-700"></div>
-                    <div class="text-[11px]"><b>G/CLI:</b> <input type="text" id="alp_gcli" readonly class="bg-transparent outline-none text-gray-600 italic"></div>
-                </div>
+            <div class="p-3 bg-orange-50">
+                <input type="text" id="alp_id" onchange="lookup('alp')" placeholder="ALP CMS ID" class="w-full border p-1 font-bold mb-1" required>
+                <div class="text-[11px]">NAME: <input type="text" id="alp_name" readonly></div>
+                <div class="text-[11px]">DESIG: <input type="text" id="alp_desig" readonly></div>
+                <div class="text-[11px]">GRADE: <input type="text" id="alp_gcli" readonly></div>
             </div>
         </div>
 
-        <table>
-            <tr class="bg-yellow"><td colspan="2">During CTO+A15:D37 / LOCO PILOT</td><td colspan="2">During CTO / ASTT. LOCO PILOT</td></tr>
-            <tr><td>Checking Logbook & BPC</td><td><select name="lp_1"><option>YES</option><option>No</option><option>VIOLATION</option></select><input type="file" name="img_lp_1" class="hidden"></td><td>Checking RS Valve working</td><td><select name="alp_1"><option>Yes</option><option>No</option><option>VIOLATION</option></select><input type="file" name="img_alp_1" class="hidden"></td></tr>
-            <tr><td>Checking Safety Items & HTC</td><td><select name="lp_2"><option>YES</option><option>No</option><option>VIOLATION</option></select><input type="file" name="img_lp_2" class="hidden"></td><td>Checking Safety Items & HTC</td><td><select name="alp_2"><option>Yes</option><option>No</option><option>VIOLATION</option></select><input type="file" name="img_alp_2" class="hidden"></td></tr>
-            <tr><td>Energy Meter & SPM check</td><td><select name="lp_3"><option>YES</option><option>No</option><option>VIOLATION</option></select><input type="file" name="img_lp_3" class="hidden"></td><td>Energy Meter & SPM check & Input</td><td><select name="alp_3"><option>Yes</option><option>No</option><option>VIOLATION</option></select><input type="file" name="img_alp_3" class="hidden"></td></tr>
-
-            <tr class="bg-yellow"><td colspan="2">ON RUN / LOCO PILOT</td><td colspan="2">ON RUN / ASTT. LOCO PILOT</td></tr>
-            <tr><td>Conducting BFT & BPT</td><td><select name="lp_4"><option>YES</option><option>No</option><option>VIOLATION</option></select><input type="file" name="img_lp_4" class="hidden"></td><td>Standing & Holding RS (Danger Signal)</td><td><select name="alp_4"><option>Yes</option><option>No</option><option>VIOLATION</option></select><input type="file" name="img_alp_4" class="hidden"></td></tr>
-            <tr><td>Calling Out Signals (Gesture)</td><td><select name="lp_5"><option>YES</option><option>No</option><option>VIOLATION</option></select><input type="file" name="img_lp_5" class="hidden"></td><td>Calling Out Signals (Gesture)</td><td><select name="alp_5"><option>Yes</option><option>No</option><option>VIOLATION</option></select><input type="file" name="img_alp_5" class="hidden"></td></tr>
-            <tr><td>Use of Mobile Phone</td><td><select name="lp_6"><option>No</option><option>YES</option><option>VIOLATION</option></select><input type="file" name="img_lp_6" class="hidden"></td><td>Use of Mobile Phone</td><td><select name="alp_6"><option>No</option><option>YES</option><option>VIOLATION</option></select><input type="file" name="img_alp_6" class="hidden"></td></tr>
-            <tr><td>Micro Sleep</td><td><select name="lp_7"><option>No</option><option>YES</option><option>VIOLATION</option></select><input type="file" name="img_lp_7" class="hidden"></td><td>Micro Sleep</td><td><select name="alp_7"><option>No</option><option>YES</option><option>VIOLATION</option></select><input type="file" name="img_alp_7" class="hidden"></td></tr>
-            <tr><td>Exchange of Signals</td><td><select name="lp_8"><option>YES</option><option>No</option><option>VIOLATION</option></select><input type="file" name="img_lp_8" class="hidden"></td><td>Exchange of Signals</td><td><select name="alp_8"><option>Yes</option><option>No</option><option>VIOLATION</option></select><input type="file" name="img_alp_8" class="hidden"></td></tr>
-            <tr><td>Action (Neutral Section)</td><td><select name="lp_9"><option>YES</option><option>No</option><option>VIOLATION</option></select><input type="file" name="img_lp_9" class="hidden"></td><td>Formation in curve & Caution Spot</td><td><select name="alp_9"><option>Yes</option><option>No</option><option>VIOLATION</option></select><input type="file" name="img_alp_9" class="hidden"></td></tr>
-            <tr><td>Alertness</td><td><select name="lp_10"><option>Very Good</option><option>Fair</option><option>Poor</option></select></td><td>Alertness</td><td><select name="alp_10"><option>Very Good</option><option>Fair</option><option>Poor</option></select></td></tr>
-
-            <tr class="bg-yellow"><td colspan="2">AT HALTS / LOCO PILOT</td><td colspan="2">AT HALTS / ASTT. LOCO PILOT</td></tr>
-            <tr><td>Application of A9 & SA9</td><td><select name="lp_11"><option>YES</option><option>No</option><option>VIOLATION</option></select><input type="file" name="img_lp_11" class="hidden"></td><td>Ensure Application of A9 & SA9</td><td><select name="alp_11"><option>YES</option><option>No</option><option>VIOLATION</option></select><input type="file" name="img_alp_11" class="hidden"></td></tr>
-            <tr><td>Reverser in Neutral</td><td><select name="lp_12"><option>YES</option><option>No</option><option>VIOLATION</option></select><input type="file" name="img_lp_12" class="hidden"></td><td>Ensure Reverser in Neutral</td><td><select name="alp_12"><option>YES</option><option>No</option><option>VIOLATION</option></select><input type="file" name="img_alp_12" class="hidden"></td></tr>
-            <tr><td>Dimming of Headlight</td><td><select name="lp_13"><option>Yes</option><option>No</option><option>DAY TIME</option></select></td><td>Ensure Dimming of Headlight</td><td><select name="alp_13"><option>Yes</option><option>No</option><option>DAY TIME</option></select></td></tr>
-            <tr><td>Undergear & Machine Room</td><td><select name="lp_14"><option>YES</option><option>No</option><option>VIOLATION</option></select><input type="file" name="img_lp_14" class="hidden"></td><td>Undergear & Machine Room</td><td><select name="alp_14"><option>YES</option><option>No</option><option>VIOLATION</option></select><input type="file" name="img_alp_14" class="hidden"></td></tr>
-            <tr><td>Proper whistle before start</td><td><select name="lp_15"><option>YES</option><option>No</option><option>VIOLATION</option></select><input type="file" name="img_lp_15" class="hidden"></td><td>Proper Signal Exchange before start</td><td><select name="alp_15"><option>YES</option><option>No</option><option>VIOLATION</option></select><input type="file" name="img_alp_15" class="hidden"></td></tr>
-
-            <tr class="bg-yellow"><td colspan="2">At CHO / LOCO PILOT</td><td colspan="2">At CHO / ASTT. LOCO PILOT</td></tr>
-            <tr><td>Packing of Personal belongings</td><td><select name="lp_16"><option>Yes</option><option>No</option><option>VIOLATION</option></select></td><td>Packing of Personal belongings</td><td><select name="alp_16"><option>Yes</option><option>No</option><option>VIOLATION</option></select></td></tr>
-            <tr class="bg-gray-50"><td><b>Overall Performance</b></td><td><select name="lp_perf"><option>Very Good</option><option>Fair</option><option>Poor</option></select></td><td><b>Any Other Abnormalities</b></td><td><input type="text" id="alp_abnorm" class="w-full text-xs" placeholder="NIL"></td></tr>
+        <table id="obsTable">
+            <tr class="bg-yellow"><td colspan="2">During CTO / LOCO PILOT</td><td colspan="2">During CTO / ALP</td></tr>
+            <tr><td>1. Checking Logbook & BPC</td><td><select name="lp_1"><option>YES</option><option>No</option></select></td><td>1. Checking RS Valve working</td><td><select name="alp_1"><option>Yes</option><option>No</option></select></td></tr>
+            <tr class="bg-yellow"><td colspan="2">ON RUN / LOCO PILOT</td><td colspan="2">ON RUN / ALP</td></tr>
+            <tr><td>6. Use of Mobile Phone</td><td><select name="lp_6"><option>No</option><option>YES</option></select></td><td>6. Use of Mobile Phone</td><td><select name="alp_6"><option>No</option><option>YES</option></select></td></tr>
+            <tr><td>7. Micro Sleep</td><td><select name="lp_7"><option>No</option><option>YES</option></select></td><td>7. Micro Sleep</td><td><select name="alp_7"><option>No</option><option>YES</option></select></td></tr>
+            <tr class="bg-gray-200"><td colspan="2">Overall Performance (LP)</td><td colspan="2">Abnormalities (ALP)</td></tr>
+            <tr><td colspan="2"><select name="lp_perf"><option>Very Good</option><option>Fair</option><option>Poor</option></select></td><td colspan="2"><input type="text" name="alp_ab" class="w-full" placeholder="NIL"></td></tr>
         </table>
 
         <div class="p-6 bg-slate-900 text-center">
             <p id="statusMsg" class="text-yellow-400 font-bold mb-2"></p>
-            <button type="submit" id="submitBtn" class="bg-yellow-500 text-black px-16 py-4 rounded-full font-black hover:bg-white uppercase tracking-wider shadow-xl">
-                SYNCHRONIZE & GENERATE PDF
+            <button type="submit" id="submitBtn" class="bg-yellow-500 text-black px-12 py-3 rounded-full font-bold uppercase hover:bg-white transition-all">
+                Download PDF & Sync Data
             </button>
         </div>
     </form>
 </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby__yyf6tBaMvI69wNqBSqmquKAyqB2cpLhhxBkfP_GXYGN7ysw8Yvtr4mQ5p_19p-q/exec";
-    const GITHUB_RAW = "https://raw.githubusercontent.com/mlachhwani/cvvrs/main/";
+    // Replace this with your actual Web App URL
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby__yyf6tBaMvI69wNqBSqmquKAyqB2cpLhhxBkfP_GXYGN7ysw8Yvtr4mQ5p_19p-q/exec"; 
+    const GITHUB_RAW = "https://raw.githubusercontent.com/mlachhwani/cvvrs/main/"; 
 
-    // TRIPLE FETCH LOGIC (Name, Desig, Grade)
     async function lookup(type) {
         let id = document.getElementById(type+'_id').value.toUpperCase();
         if(!id) return;
         try {
-            let res = await fetch(GITHUB_RAW + (type==='cli'?'cli_master.csv':'crew_master.csv'));
-            let text = await res.text();
-            let found = text.split("\n").map(r=>r.split(",")).find(r=>r[0].trim().toUpperCase()===id);
+            const res = await fetch(GITHUB_RAW + (type==='cli'?'cli_master.csv':'crew_master.csv'));
+            const text = await res.text();
+            const rows = text.split("\n").map(r => r.split(","));
+            const found = rows.find(r => r[0].trim().toUpperCase() === id);
             if(found) {
                 document.getElementById(type+'_name').value = found[1].trim();
                 document.getElementById(type+'_desig').value = found[2].trim();
                 if(document.getElementById(type+'_gcli')) document.getElementById(type+'_gcli').value = found[3].trim();
             }
-        } catch(e) { console.error("CSV Fetch Error"); }
+        } catch(e) { console.error("Lookup failed"); }
     }
-
-    // Correcting Auto-Violation Handling
-    document.querySelectorAll('select').forEach(sel => {
-        sel.onchange = function() {
-            // Defalt "No" for Mobile/Sleep, default "YES" for others
-            const val = this.value;
-            const name = this.name;
-            let isViolation = false;
-
-            if(name.includes('6') || name.includes('7')) { // Mobile & Sleep
-                if(val === "YES" || val === "VIOLATION") isViolation = true;
-            } else {
-                if(val === "No" || val === "VIOLATION" || val === "Poor") isViolation = true;
-            }
-
-            const fileInput = this.parentElement.querySelector('input[type="file"]');
-            if(fileInput) fileInput.classList.toggle('hidden', !isViolation);
-            this.parentElement.classList.toggle('violation-red', isViolation);
-        };
-    });
 
     document.getElementById('cvvrsForm').onsubmit = async function(e) {
         e.preventDefault();
         const btn = document.getElementById('submitBtn');
         const status = document.getElementById('statusMsg');
         btn.disabled = true;
-        status.innerText = "⏳ UPLOADING DATA TO SECR SERVER...";
+        status.innerText = "⏳ PROCESSING REPORT...";
 
-        // Form Submission & PDF Logic...
-        alert("SYNC SUCCESSFUL!");
-        location.reload();
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        // PDF Generation (Instant)
+        doc.setFontSize(16); doc.text("CVVRS ANALYSIS REPORT - SECR RAIPUR", 105, 20, {align:'center'});
+        doc.setFontSize(10); doc.text(`LP: ${document.getElementById('lp_name').value}`, 20, 40);
+        doc.text(`ALP: ${document.getElementById('alp_name').value}`, 20, 45);
+        
+        // Automatic Table in PDF
+        doc.autoTable({ html: '#obsTable', startY: 60, theme: 'grid', styles: {fontSize: 8} });
+        
+        // Save PDF First so user gets the file immediately
+        doc.save(`CVVRS_${document.getElementById('loco_no').value}.pdf`);
+        
+        // Now attempt to sync with Drive
+        status.innerText = "⏳ SYNCING DATA TO DRIVE...";
+        const fd = new FormData(this);
+        const dataObj = Object.fromEntries(fd.entries());
+        dataObj.train_no = document.getElementById('train_no').value;
+        dataObj.loco_no = document.getElementById('loco_no').value;
+
+        try {
+            await fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                cache: 'no-cache',
+                body: JSON.stringify(dataObj)
+            });
+            status.innerText = "✅ SUCCESS! DATA SAVED & PDF DOWNLOADED.";
+            setTimeout(() => location.reload(), 3000);
+        } catch(err) {
+            status.innerText = "❌ SYNC FAILED (Internet/URL Error) but PDF Saved.";
+            btn.disabled = false;
+        }
     };
 </script>
 </body>
