@@ -6,317 +6,230 @@
     <title>CVVRS Smart Report | Mukesh Favorite</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .violation-red { background-color: #fee2e2 !important; border: 2px solid #ef4444 !important; }
-        .mandatory-msg { color: #ef4444; font-size: 0.65rem; font-weight: bold; margin-top: 2px; }
-        select, input { font-size: 0.85rem !important; }
-        .pdf-header { background: #1e293b; color: white; padding: 15px; }
+        .mandatory-msg { color: #ef4444; font-size: 0.65rem; font-weight: bold; }
+        input:read-only { background-color: #f3f4f6; color: #1e40af; }
     </style>
 </head>
-<body class="bg-slate-200 p-2 md:p-6 shadow-inner min-h-screen">
+<body class="bg-slate-100 p-2 md:p-6 min-h-screen">
 
-<div id="report-container" class="max-w-6xl mx-auto bg-white shadow-2xl rounded-xl overflow-hidden border-t-8 border-red-800 mb-10">
+<div id="form-wrapper" class="max-w-5xl mx-auto bg-white shadow-2xl rounded-xl overflow-hidden border-t-8 border-red-800">
     <div class="bg-slate-900 p-6 text-white flex justify-between items-center">
         <div>
-            <h1 class="text-2xl font-black tracking-tighter uppercase">CVVRS CREW ANALYSIS SYSTEM</h1>
-            <p class="text-xs text-red-400 font-bold uppercase tracking-widest">Smart Violation Tracker | Mukesh Favorite</p>
-        </div>
-        <div class="text-right hidden md:block">
-            <p class="text-[10px] bg-green-600 px-2 py-1 rounded font-bold">MASTER SYNC: ACTIVE</p>
+            <h1 class="text-2xl font-black uppercase">CVVRS CREW ANALYSIS v2.0</h1>
+            <p class="text-xs text-red-400 font-bold uppercase italic">Personalized for Mukesh</p>
         </div>
     </div>
 
-    <form id="cvvrsForm" class="p-4 md:p-8 space-y-8">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 bg-gray-50 p-5 rounded-xl border border-gray-200">
+    <form id="cvvrsForm" class="p-6 space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-gray-50 p-4 rounded-lg border">
             <div>
-                <label class="block text-[10px] font-black text-gray-400 uppercase">Analysing CLI CMS ID</label>
-                <input type="text" id="cli_id" name="cli_id" class="w-full border-b-2 border-gray-300 p-2 focus:border-red-600 outline-none uppercase font-bold" onchange="lookup('cli')" required placeholder="Enter CLI ID">
-                <input type="text" id="cli_name" name="cli_name" readonly class="w-full mt-1 bg-transparent text-blue-800 font-bold text-sm outline-none" placeholder="CLI Name auto-fills...">
+                <label class="block text-[10px] font-bold text-gray-400">CLI CMS ID</label>
+                <input type="text" id="cli_id" name="cli_id" onchange="lookup('cli')" class="w-full border-b p-2 font-bold uppercase outline-none focus:border-red-500" required>
+                <input type="text" id="cli_name" name="cli_name" readonly class="w-full text-xs font-bold text-blue-700 outline-none mt-1">
             </div>
             <div>
-                <label class="block text-[10px] font-black text-gray-400 uppercase italic">Departure (Date & Time)</label>
-                <input type="datetime-local" id="dep_time" name="dep_time" class="w-full border-b-2 border-gray-300 p-2 outline-none focus:border-blue-600" required>
+                <label class="block text-[10px] font-bold text-gray-400">DEPARTURE</label>
+                <input type="datetime-local" id="dep_time" name="dep_time" class="w-full border p-2 rounded text-sm" required>
             </div>
             <div>
-                <label class="block text-[10px] font-black text-gray-400 uppercase italic">Arrival (Date & Time)</label>
-                <input type="datetime-local" id="arr_time" name="arr_time" class="w-full border-b-2 border-gray-300 p-2 outline-none focus:border-blue-600" required>
+                <label class="block text-[10px] font-bold text-gray-400">ARRIVAL</label>
+                <input type="datetime-local" id="arr_time" name="arr_time" class="w-full border p-2 rounded text-sm" required>
             </div>
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="col-span-1">
-                <label class="block text-[10px] font-black text-gray-400">TRAIN NO</label>
-                <input type="text" name="train_no" class="w-full border p-2 rounded" required placeholder="e.g. 12855">
-            </div>
-            <div class="col-span-1">
-                <label class="block text-[10px] font-black text-gray-400">LOCO NO & BASE</label>
-                <input type="text" name="loco_no" class="w-full border p-2 rounded" required placeholder="37188/BIA">
+            <input type="text" name="train_no" placeholder="TRAIN NO" class="border p-2 rounded text-sm uppercase" required>
+            <input type="text" name="loco_no" id="loco_no" placeholder="LOCO NO" class="border p-2 rounded text-sm uppercase" required>
+            <div>
+                <input type="text" id="from_code" placeholder="FROM STN" onchange="lookupStation('from')" class="w-full border p-2 rounded text-sm uppercase">
+                <span id="stn_from_name" class="text-[9px] font-bold text-blue-600 block"></span>
             </div>
             <div>
-                <label class="block text-[10px] font-black text-gray-400">FROM (STN CODE)</label>
-                <input type="text" id="from_code" class="w-full border p-2 rounded uppercase" onchange="lookupStation('from')">
-                <input type="hidden" name="from_stn" id="from_stn">
-                <span id="stn_from_name" class="text-[10px] text-blue-600 font-bold"></span>
-            </div>
-            <div>
-                <label class="block text-[10px] font-black text-gray-400">TO (STN CODE)</label>
-                <input type="text" id="to_code" class="w-full border p-2 rounded uppercase" onchange="lookupStation('to')">
-                <input type="hidden" name="to_stn" id="to_stn">
-                <span id="stn_to_name" class="text-[10px] text-blue-600 font-bold"></span>
+                <input type="text" id="to_code" placeholder="TO STN" onchange="lookupStation('to')" class="w-full border p-2 rounded text-sm uppercase">
+                <span id="stn_to_name" class="text-[9px] font-bold text-blue-600 block"></span>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div class="p-5 border-t-4 border-blue-600 bg-blue-50 rounded-lg shadow-inner">
-                <h3 class="font-black text-blue-900 mb-4 flex justify-between uppercase">LOCO PILOT (LP) <span class="text-red-600 bg-white px-2 rounded" id="lp_hq_display">HQ: -</span></h3>
-                <div class="space-y-3">
-                    <input type="text" id="lp_id" name="lp_id" placeholder="Enter LP CMS ID" class="w-full border p-2 rounded uppercase font-bold" onchange="lookup('lp')" required>
-                    <input type="text" id="lp_name" name="lp_name" readonly placeholder="LP Name" class="w-full border p-2 rounded bg-white font-semibold">
-                    <input type="text" id="lp_desig" name="lp_desig" readonly placeholder="Designation" class="w-full border p-2 rounded bg-white text-xs">
-                </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="p-4 bg-blue-50 border-t-4 border-blue-500 rounded">
+                <h3 class="text-xs font-bold mb-2">LP DETAILS <span id="lp_hq_display" class="float-right text-red-600"></span></h3>
+                <input type="text" id="lp_id" name="lp_id" placeholder="LP CMS ID" onchange="lookup('lp')" class="w-full border p-2 rounded mb-2 uppercase font-bold" required>
+                <input type="text" id="lp_name" name="lp_name" placeholder="Name" readonly class="w-full border p-2 rounded mb-1 text-sm">
+                <input type="text" id="lp_desig" name="lp_desig" placeholder="Designation" readonly class="w-full border p-2 rounded text-xs">
             </div>
-            <div class="p-5 border-t-4 border-orange-600 bg-orange-50 rounded-lg shadow-inner">
-                <h3 class="font-black text-orange-900 mb-4 flex justify-between uppercase">ASTT. LOCO PILOT (ALP) <span class="text-red-600 bg-white px-2 rounded" id="alp_hq_display">HQ: -</span></h3>
-                <div class="space-y-3">
-                    <input type="text" id="alp_id" name="alp_id" placeholder="Enter ALP CMS ID" class="w-full border p-2 rounded uppercase font-bold" onchange="lookup('alp')" required>
-                    <input type="text" id="alp_name" name="alp_name" readonly placeholder="ALP Name" class="w-full border p-2 rounded bg-white font-semibold">
-                    <input type="text" id="alp_desig" name="alp_desig" readonly placeholder="Designation" class="w-full border p-2 rounded bg-white text-xs">
-                </div>
+            <div class="p-4 bg-orange-50 border-t-4 border-orange-500 rounded">
+                <h3 class="text-xs font-bold mb-2">ALP DETAILS <span id="alp_hq_display" class="float-right text-red-600"></span></h3>
+                <input type="text" id="alp_id" name="alp_id" placeholder="ALP CMS ID" onchange="lookup('alp')" class="w-full border p-2 rounded mb-2 uppercase font-bold" required>
+                <input type="text" id="alp_name" name="alp_name" placeholder="Name" readonly class="w-full border p-2 rounded mb-1 text-sm">
+                <input type="text" id="alp_desig" name="alp_desig" placeholder="Designation" readonly class="w-full border p-2 rounded text-xs">
             </div>
         </div>
 
-        <div class="overflow-x-auto rounded-lg border border-gray-300">
-            <table class="w-full text-xs text-left">
-                <thead class="bg-slate-800 text-white uppercase italic">
+        <div class="overflow-x-auto border rounded-lg shadow-sm">
+            <table class="w-full text-[11px] text-left">
+                <thead class="bg-slate-700 text-white">
                     <tr>
-                        <th class="p-4 w-1/3 border-r border-slate-700">Observation Description</th>
-                        <th class="p-4 border-r border-slate-700 text-center">LP Response</th>
-                        <th class="p-4 text-center">ALP Response</th>
+                        <th class="p-2 border-r border-slate-600 w-1/2">Points of Analysis</th>
+                        <th class="p-2 border-r border-slate-600 text-center">LP Status</th>
+                        <th class="p-2 text-center">ALP Status</th>
                     </tr>
                 </thead>
-                <tbody id="masterTableBody" class="divide-y divide-gray-200">
-                    </tbody>
+                <tbody id="obsRows" class="divide-y bg-white"></tbody>
             </table>
         </div>
 
-        <div class="bg-slate-100 p-6 rounded-xl border-2 border-dashed border-gray-400">
-            <button type="submit" id="submitBtn" class="w-full bg-red-800 hover:bg-black text-white font-black py-5 rounded-2xl shadow-2xl transition-all uppercase tracking-widest text-lg">
-                <i class="fas fa-file-pdf mr-2"></i> Sync to Cloud & Download Report
-            </button>
-            <p id="msg-area" class="text-center mt-3 font-bold text-red-600 animate-pulse"></p>
-        </div>
+        <button type="submit" id="submitBtn" class="w-full bg-red-700 text-white font-black py-4 rounded-xl hover:bg-black transition-all">
+            SUBMIT & DOWNLOAD PDF REPORT
+        </button>
+        <p id="lockMsg" class="text-center text-xs font-bold text-red-600 animate-pulse"></p>
     </form>
 </div>
 
 <script>
-    // --- MANDATORY CONFIGURATION ---
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyGC4muB_VGcMcc5Be5hzGqWnapa-kxloN55SZbZwUucvEZ2ziG2NwGHPpHRh-_zfJu/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx7n-k5h4ulmBfd_BTQYO6OPhfTJnVCT16FvabTLK4_CNbUNkNGkG5t7SvxCZOWf0RU/exec";
     const GITHUB_USER = "mlachhwani";
     const GITHUB_REPO = "cvvrs";
     const GITHUB_RAW = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/`;
 
-    // --- DATA POINTS FROM YOUR SAMPLE ---
     const points = [
-        {lp: "Logbook & BPC Check", lpD: "YES", alp: "RS Valve Working", alpD: "Yes"},
-        {lp: "Safety Items & HTC", lpD: "YES", alp: "Safety Items & HTC", alpD: "Yes"},
-        {lp: "Energy Meter & SPM", lpD: "YES", alp: "Energy Meter/SPM/Input", alpD: "Yes"},
-        {lp: "Conducting BFT & BPT", lpD: "YES", alp: "Standing & Holding RS", alpD: "Yes"},
-        {lp: "Signal Call Gesture", lpD: "YES", alp: "Signal Call Gesture", alpD: "Yes"},
-        {lp: "Use of Mobile Phone", lpD: "No", alp: "Use of Mobile Phone", alpD: "No"},
-        {lp: "Micro Sleep", lpD: "No", alp: "Micro Sleep", alpD: "No"},
-        {lp: "Exchange of Signals", lpD: "YES", alp: "Exchange of Signals", alpD: "Yes"},
-        {lp: "Neutral Section Action", lpD: "YES", alp: "Formation/Caution Check", alpD: "Yes"},
-        {lp: "Alertness", lpD: "Very Good", alp: "Alertness", alpD: "Very Good"},
-        {lp: "A9 & SA9 Application", lpD: "YES", alp: "Ensure A9 & SA9", alpD: "YES"},
-        {lp: "Reverser in Neutral", lpD: "YES", alp: "Ensure Reverser Neutral", alpD: "YES"},
-        {lp: "Headlight Dimming", lpD: "Yes/DAY TIME", alp: "Ensure Dimming", alpD: "Yes/DAY TIME"},
-        {lp: "Undergear/Machine Room", lpD: "YES", alp: "Undergear/Machine Room", alpD: "YES"},
-        {lp: "Whistle before start", lpD: "YES", alp: "Signal Exchange Start", alpD: "YES"},
-        {lp: "Packing belongings", lpD: "Yes", alp: "Packing belongings", alpD: "Yes"},
-        {lp: "Any Other Abnormalities", lpD: "NIL", alp: "Any Other Abnormalities", alpD: "NIL"}
+        {p: "Logbook/RS Valve", lpd:"YES", alpd:"Yes"}, {p: "Safety Items/HTC", lpd:"YES", alpd:"Yes"},
+        {p: "Energy Meter/SPM", lpd:"YES", alpd:"Yes"}, {p: "BFT & BPT/Holding RS", lpd:"YES", alpd:"Yes"},
+        {p: "Signal Call Gesture", lpd:"YES", alpd:"Yes"}, {p: "Mobile Phone Use", lpd:"No", alpd:"No"},
+        {p: "Micro Sleep", lpd:"No", alpd:"No"}, {p: "Exchange of Signals", lpd:"YES", alpd:"Yes"},
+        {p: "Neutral/Caution Check", lpd:"YES", alpd:"Yes"}, {p: "Alertness", lpd:"Very Good", alpd:"Very Good"},
+        {p: "A9 & SA9 Application", lpd:"YES", alpd:"YES"}, {p: "Reverser Neutral", lpd:"YES", alpd:"YES"},
+        {p: "Headlight Dimming", lpd:"Yes/DAY TIME", alpd:"Yes/DAY TIME"}, {p: "Undergear/MR Check", lpd:"YES", alpd:"YES"},
+        {p: "Whistle before start", lpd:"YES", alpd:"YES"}, {p: "Packing Belongings", lpd:"Yes", alpd:"Yes"},
+        {p: "Other Abnormalities", lpd:"NIL", alpd:"NIL"}
     ];
 
-    // --- RENDER FORM TABLE ---
-    const tableBody = document.getElementById('masterTableBody');
+    const tbody = document.getElementById('obsRows');
     points.forEach((item, i) => {
-        let row = `
-        <tr class="hover:bg-gray-50">
-            <td class="p-3 border-r bg-gray-50">
-                <div class="text-[10px] text-gray-400 font-bold mb-1">POINT #${i+1}</div>
-                <div class="font-bold text-gray-700">${item.lp} / ${item.alp}</div>
-            </td>
+        let row = `<tr>
+            <td class="p-2 font-bold text-gray-600 border-r bg-gray-50">${item.p}</td>
             <td class="p-2 border-r transition-all" id="cell_lp_${i}">
-                ${i<16 ? `
-                <select name="lp_val_${i}" onchange="validateViolation('lp', ${i})" class="w-full border p-1 rounded font-bold">
-                    <option value="${item.lpD}">${item.lpD}</option>
-                    <option value="VIOLATION">VIOLATION</option>
-                    <option value="POOR">POOR</option>
-                </select>` : `
-                <input type="text" name="lp_val_${i}" value="NIL" placeholder="NIL" oninput="validateViolation('lp', ${i})" class="w-full border p-1 rounded font-bold">`}
-                <div id="lp_upload_${i}" class="hidden mt-2 p-1 bg-red-50 border border-red-200 rounded">
-                    <input type="file" name="lp_img_${i}" accept="image/*" class="text-[9px]" onchange="checkLocks()">
-                    <div class="mandatory-msg"><i class="fas fa-camera"></i> PHOTO MANDATORY</div>
-                </div>
+                ${i<16 ? `<select name="lp_val_${i}" onchange="checkV('lp',${i})" class="w-full border rounded p-1"><option>${item.lpd}</option><option>POOR</option><option>VIOLATION</option></select>` : 
+                `<input name="lp_val_${i}" value="NIL" oninput="checkV('lp',${i})" class="w-full border p-1 rounded">`}
+                <div id="lp_up_${i}" class="hidden mt-1"><input type="file" name="img_lp_${i}" class="text-[9px]" onchange="lock()"> <span class="mandatory-msg">PIC REQD</span></div>
             </td>
-            <td class="p-2 transition-all" id="cell_alp_${i}">
-                ${i<16 ? `
-                <select name="alp_val_${i}" onchange="validateViolation('alp', ${i})" class="w-full border p-1 rounded font-bold">
-                    <option value="${item.alpD}">${item.alpD}</option>
-                    <option value="VIOLATION">VIOLATION</option>
-                    <option value="POOR">POOR</option>
-                </select>` : `
-                <input type="text" name="alp_val_${i}" value="NIL" placeholder="NIL" oninput="validateViolation('alp', ${i})" class="w-full border p-1 rounded font-bold">`}
-                <div id="alp_upload_${i}" class="hidden mt-2 p-1 bg-red-50 border border-red-200 rounded">
-                    <input type="file" name="alp_img_${i}" accept="image/*" class="text-[9px]" onchange="checkLocks()">
-                    <div class="mandatory-msg"><i class="fas fa-camera"></i> PHOTO MANDATORY</div>
-                </div>
+            <td class="p-2" id="cell_alp_${i}">
+                ${i<16 ? `<select name="alp_val_${i}" onchange="checkV('alp',${i})" class="w-full border rounded p-1"><option>${item.alpd}</option><option>POOR</option><option>VIOLATION</option></select>` : 
+                `<input name="alp_val_${i}" value="NIL" oninput="checkV('alp',${i})" class="w-full border p-1 rounded">`}
+                <div id="alp_up_${i}" class="hidden mt-1"><input type="file" name="img_alp_${i}" class="text-[9px]" onchange="lock()"> <span class="mandatory-msg">PIC REQD</span></div>
             </td>
         </tr>`;
-        tableBody.innerHTML += row;
+        tbody.innerHTML += row;
     });
 
-    // --- VIOLATION CHECKER ---
-    function validateViolation(type, idx) {
-        const input = document.getElementsByName(`${type}_val_${idx}`)[0];
-        const val = input.value;
-        const defaultVal = (type === 'lp') ? points[idx].lpD : points[idx].alpD;
-        const uploadBox = document.getElementById(`${type}_upload_${idx}`);
-        const cell = document.getElementById(`cell_${type}_${idx}`);
-
-        // For Abnormality row (index 16), anything other than "NIL" is violation
-        const isViolation = (idx === 16) ? (val.toUpperCase() !== "NIL" && val !== "") : (val !== defaultVal);
-
-        if (isViolation) {
-            cell.classList.add('violation-red');
-            uploadBox.classList.remove('hidden');
-        } else {
-            cell.classList.remove('violation-red');
-            uploadBox.classList.add('hidden');
-            // Clear file if violation removed
-            uploadBox.querySelector('input').value = "";
-        }
-        checkLocks();
-    }
-
-    function checkLocks() {
-        const violations = document.querySelectorAll('.violation-red');
-        let locked = false;
-        violations.forEach(cell => {
-            const fileInput = cell.querySelector('input[type="file"]');
-            if (fileInput && fileInput.files.length === 0) locked = true;
-        });
-
-        const btn = document.getElementById('submitBtn');
-        const msg = document.getElementById('msg-area');
-        if (locked) {
-            btn.disabled = true;
-            btn.classList.add('opacity-40', 'cursor-not-allowed');
-            msg.innerText = "⚠️ SUBMIT LOCKED: UPLOAD PHOTOS FOR ALL HIGHLIGHTED VIOLATIONS";
-        } else {
-            btn.disabled = false;
-            btn.classList.remove('opacity-40', 'cursor-not-allowed');
-            msg.innerText = "";
-        }
-    }
-
-    // --- MASTER LOOKUPS ---
     async function lookup(type) {
-        const idInput = document.getElementById(type + '_id');
-        const id = idInput.value.toUpperCase();
+        let id = document.getElementById(type+'_id').value.toUpperCase();
         if(!id) return;
+        let hq = id.match(/^[a-zA-Z]+/);
+        if(type !== 'cli') document.getElementById(type+'_hq_display').innerText = "HQ: "+(hq?hq[0]:"-");
 
-        // Auto HQ Extraction
-        const hqMatch = id.match(/^[a-zA-Z]+/);
-        if(type !== 'cli') document.getElementById(type + '_hq_display').innerText = "HQ: " + (hqMatch ? hqMatch[0] : "-");
+        let res = await fetch(GITHUB_RAW + (type==='cli'?'cli_master.csv':'crew_master.csv'));
+        let text = await res.text();
+        let found = text.split("\n").map(r=>r.split(",")).find(r=>r[0].trim().toUpperCase()===id);
+        
+        let nameInp = document.getElementById(type+'_name');
+        let desigInp = document.getElementById(type+'_desig');
 
-        try {
-            const fileName = (type === 'cli') ? 'cli_master.csv' : 'crew_master.csv';
-            const response = await fetch(GITHUB_RAW + fileName);
-            const text = await response.text();
-            const rows = text.split("\n").map(r => r.split(",").map(c => c.trim()));
-            const found = rows.find(r => r[0].toUpperCase() === id);
-
-            if (found) {
-                document.getElementById(type + '_name').value = found[1];
-                if(type !== 'cli') document.getElementById(type + '_desig').value = found[2];
-            } else {
-                alert(id + " NOT FOUND IN MASTER!");
+        if(found) {
+            nameInp.value = found[1].trim(); nameInp.readOnly = true;
+            if(desigInp) { desigInp.value = found[2].trim(); desigInp.readOnly = true; }
+        } else {
+            if(confirm("ID not in Master. Manual entry?")) {
+                nameInp.readOnly = false; nameInp.focus();
+                if(desigInp) desigInp.readOnly = false;
             }
-        } catch(e) { console.error("Lookup Error:", e); }
+        }
     }
 
-    async function lookupStation(field) {
-        const codeInput = document.getElementById(field + '_code');
-        const code = codeInput.value.toUpperCase();
-        if(!code) return;
-
-        try {
-            const response = await fetch(GITHUB_RAW + 'station_master.csv');
-            const text = await response.text();
-            const rows = text.split("\n").map(r => r.split(",").map(c => c.trim()));
-            const found = rows.find(r => r[0].toUpperCase() === code);
-
-            if (found) {
-                document.getElementById(field + '_stn').value = found[1];
-                document.getElementById('stn_' + field + '_name').innerText = "📍 " + found[1];
-            }
-        } catch(e) { console.error("Station Error:", e); }
+    async function lookupStation(f) {
+        let code = document.getElementById(f+'_code').value.toUpperCase();
+        let res = await fetch(GITHUB_RAW + 'station_master.csv');
+        let text = await res.text();
+        let found = text.split("\n").map(r=>r.split(",")).find(r=>r[0].trim().toUpperCase()===code);
+        if(found) { document.getElementById('stn_'+f+'_name').innerText = found[1].trim(); }
     }
 
-    // --- FINAL SUBMISSION & PDF ---
+    function checkV(t, i) {
+        let v = document.getElementsByName(t+'_val_'+i)[0].value;
+        let def = (t==='lp')?points[i].lpd:points[i].alpd;
+        let isV = (i===16)?(v.toUpperCase()!=="NIL"):(v!==def);
+        let up = document.getElementById(t+'_up_'+i);
+        let cell = document.getElementById('cell_'+t+'_'+i);
+        if(isV) { up.classList.remove('hidden'); cell.classList.add('violation-red'); }
+        else { up.classList.add('hidden'); cell.classList.remove('violation-red'); }
+        lock();
+    }
+
+    function lock() {
+        let btn = document.getElementById('submitBtn'), msg = document.getElementById('lockMsg');
+        let vs = document.querySelectorAll('.violation-red'), bad = false;
+        vs.forEach(c => { if(c.querySelector('input[type="file"]') && !c.querySelector('input[type="file"]').files[0]) bad=true; });
+        btn.disabled = bad; btn.classList.toggle('opacity-50', bad);
+        msg.innerText = bad ? "⚠️ UPLOAD PHOTOS FOR VIOLATIONS" : "";
+    }
+
     document.getElementById('cvvrsForm').onsubmit = async function(e) {
         e.preventDefault();
-        const btn = document.getElementById('submitBtn');
-        btn.innerText = "GENERATING REPORT & UPLOADING...";
-        btn.disabled = true;
-
-        // 1. PDF Generation
-        const { jsPDF } = window.jspdf;
-        const container = document.getElementById('report-container');
+        this.submitBtn.innerText = "PROCESSING..."; this.submitBtn.disabled = true;
         
-        await html2canvas(container, { scale: 2 }).then(canvas => {
-            const imgData = canvas.toDataURL('image/jpeg', 0.8);
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            const w = pdf.internal.pageSize.getWidth();
-            const h = (canvas.height * w) / canvas.width;
-            pdf.addImage(imgData, 'JPEG', 0, 0, w, h);
-            pdf.save(`CVVRS_${document.getElementsByName('loco_no')[0].value}.pdf`);
+        const fd = new FormData(this);
+        const obj = Object.fromEntries(fd.entries());
+        
+        // Convert images to Base64 & Prepare PDF
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.setFontSize(18); doc.text("CVVRS ANALYSIS REPORT", 105, 15, {align:'center'});
+        doc.setFontSize(10); doc.text(`Loco: ${obj.loco_no} | Train: ${obj.train_no} | CLI: ${obj.cli_name}`, 10, 25);
+
+        let tableData = [];
+        points.forEach((p, i) => {
+            tableData.push([p.p, obj['lp_val_'+i], obj['alp_val_'+i]]);
         });
 
-        // 2. Data Upload to Google Sheets
-        const formData = new FormData(this);
-        const dataObj = Object.fromEntries(formData.entries());
-        
-        // Convert images to Base64
-        const fileInputs = document.querySelectorAll('input[type="file"]');
-        const imagePromises = Array.from(fileInputs).map(input => {
-            if (input.files[0]) {
-                return new Promise(resolve => {
-                    const reader = new FileReader();
-                    reader.onload = () => resolve({ key: input.name, data: reader.result });
-                    reader.readAsDataURL(input.files[0]);
-                });
+        doc.autoTable({
+            startY: 30,
+            head: [['Observation Point', 'LP Status', 'ALP Status']],
+            body: tableData,
+            theme: 'grid',
+            headStyles: { fillColor: [30, 41, 59] },
+            didParseCell: function(data) {
+                if(data.column.index > 0 && (data.cell.text[0] === 'VIOLATION' || data.cell.text[0] === 'POOR')) {
+                    data.cell.styles.fillColor = [254, 226, 226];
+                    data.cell.styles.textColor = [185, 28, 28];
+                }
             }
-            return null;
-        }).filter(p => p !== null);
+        });
 
-        const images = await Promise.all(imagePromises);
-        images.forEach(img => { dataObj[img.key] = img.data; });
-
-        try {
-            await fetch(SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                body: JSON.stringify(dataObj)
-            });
-            alert("SUCCESS! Data synced and PDF downloaded.");
-            location.reload();
-        } catch (err) {
-            alert("Upload failed but PDF was saved. Check internet.");
-            btn.disabled = false;
+        // Add Photos to PDF at the end
+        const files = document.querySelectorAll('input[type="file"]');
+        let photoY = doc.lastAutoTable.finalY + 10;
+        
+        for(let f of files) {
+            if(f.files[0]) {
+                const reader = new FileReader();
+                const dataUrl = await new Promise(r => { reader.onload=()=>r(reader.result); reader.readAsDataURL(f.files[0]); });
+                obj[f.name] = dataUrl;
+                if(photoY > 250) { doc.addPage(); photoY = 20; }
+                doc.addImage(dataUrl, 'JPEG', 10, photoY, 40, 30);
+                doc.text("Ref: "+f.name, 55, photoY + 15);
+                photoY += 35;
+            }
         }
+
+        doc.save(`CVVRS_${obj.loco_no}.pdf`);
+
+        // Send to Apps Script
+        google.script.run.withSuccessHandler(()=>{
+            alert("Success!"); location.reload();
+        }).processFinalReport(obj);
     };
 </script>
 </body>
