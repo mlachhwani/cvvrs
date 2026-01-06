@@ -2,125 +2,116 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CVVRS ANALYSIS - SECR RAIPUR</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
         table { width: 100%; border-collapse: collapse; border: 2px solid black; }
-        th, td { border: 1px solid black; padding: 5px; font-size: 11px; vertical-align: middle; }
-        .bg-yellow-header { background-color: #ffff00; font-weight: bold; text-align: center; text-transform: uppercase; }
+        td { border: 1px solid black; padding: 4px; font-size: 11px; vertical-align: middle; }
+        .bg-yellow-header { background-color: #ffff00; font-weight: bold; text-align: center; }
+        /* Dropdown width fixed as requested */
+        .small-select { width: 90px; font-weight: bold; border: 1px solid #ccc; font-size: 10px; cursor: pointer; }
         .violation-red { background-color: #fee2e2 !important; border: 2px solid red !important; }
-        select { width: 100%; font-weight: bold; border: none; background: transparent; outline: none; cursor: pointer; }
+        input[type="file"] { font-size: 8px; width: 80px; display: block; margin-top: 2px; }
         input:read-only { border: none; background: transparent; font-weight: bold; color: #1e40af; }
-        .input-field { border: 1px solid #94a3b8; padding: 4px; border-radius: 4px; width: 100%; }
     </style>
 </head>
-<body class="bg-slate-200 p-2 md:p-6">
+<body class="bg-gray-200 p-2 md:p-6">
 
-<div class="max-w-6xl mx-auto bg-white shadow-2xl border-2 border-black" id="printableArea">
+<div class="max-w-6xl mx-auto bg-white shadow-2xl border-2 border-black">
     <div class="p-4 border-b-2 border-black flex items-center justify-between">
-        <img src="ir_logo.png" alt="Logo" class="w-20 h-20 object-contain">
+        <img src="ir_logo.png" alt="Logo" class="w-16 h-16">
         <div class="text-center flex-1">
-            <h2 class="text-xl font-bold">SOUTH EAST CENTRAL RAILWAY</h2>
-            <h3 class="text-sm font-semibold text-blue-900">ELECTRICAL (OP) DEPARTMENT - RAIPUR DIVISION</h3>
-            <h1 class="text-2xl font-black bg-black text-white px-8 mt-1">CVVRS CREW ANALYSIS REPORT</h1>
+            <h2 class="text-lg font-bold">SOUTH EAST CENTRAL RAILWAY</h2>
+            <h1 class="text-xl font-black bg-black text-white px-6 mt-1">CVVRS CREW ANALYSIS REPORT</h1>
         </div>
-        <div class="w-20"></div>
     </div>
 
     <form id="cvvrsForm">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-slate-50 border-b-2 border-black">
-            <div>
-                <label class="text-[10px] font-bold text-red-700">CLI CMS ID:</label>
-                <input type="text" id="cli_id" onchange="lookup('cli')" class="input-field font-bold uppercase" placeholder="ENTER CMS ID" required>
-                <input type="text" id="cli_name" readonly class="text-xs w-full mt-1" placeholder="CLI Name">
-                <input type="text" id="cli_desig" readonly class="text-[10px] text-gray-500 w-full" placeholder="Designation">
+        <div class="grid grid-cols-2 divide-x-2 divide-black border-b-2 border-black p-2 bg-slate-50">
+            <div class="p-2">
+                <input type="text" id="lp_id" onchange="lookup('lp')" placeholder="LP CMS ID" class="border p-1 w-full font-bold mb-1">
+                <div class="text-[10px]"><b>NAME:</b> <input type="text" id="lp_name" readonly></div>
+                <div class="text-[10px]"><b>DESIG:</b> <input type="text" id="lp_desig" readonly></div>
+                <div class="text-[10px]"><b>GRADE:</b> <input type="text" id="lp_gcli" readonly></div>
             </div>
-            <div class="grid grid-cols-2 gap-2">
-                <input type="text" id="train_no" placeholder="TRAIN NO" class="input-field font-bold uppercase" required>
-                <input type="text" id="loco_no" placeholder="LOCO NO" class="input-field font-bold uppercase" required>
-                <input type="text" id="from_stn" placeholder="FROM" class="input-field uppercase">
-                <input type="text" id="to_stn" placeholder="TO" class="input-field uppercase">
-            </div>
-            <div class="text-[10px] space-y-1">
-                <div class="flex items-center gap-1"><span>DEP:</span><input type="datetime-local" id="dep_time" class="input-field flex-1"></div>
-                <div class="flex items-center gap-1"><span>ARR:</span><input type="datetime-local" id="arr_time" class="input-field flex-1"></div>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-2 divide-x-2 divide-black border-b-2 border-black">
-            <div class="p-4 bg-blue-50">
-                <label class="text-[10px] font-black text-blue-900">LOCO PILOT (LP)</label>
-                <input type="text" id="lp_id" onchange="lookup('lp')" placeholder="LP CMS ID" class="input-field font-bold uppercase mb-2" required>
-                <div class="space-y-1">
-                    <div class="text-[11px]"><b>NAME:</b> <input type="text" id="lp_name" readonly class="w-full"></div>
-                    <div class="text-[11px]"><b>DESIG:</b> <input type="text" id="lp_desig" readonly class="w-full"></div>
-                    <div class="text-[11px]"><b>GRADE:</b> <input type="text" id="lp_gcli" readonly class="w-full"></div>
-                </div>
-            </div>
-            <div class="p-4 bg-orange-50">
-                <label class="text-[10px] font-black text-orange-900">ASTT. LOCO PILOT (ALP)</label>
-                <input type="text" id="alp_id" onchange="lookup('alp')" placeholder="ALP CMS ID" class="input-field font-bold uppercase mb-2" required>
-                <div class="space-y-1">
-                    <div class="text-[11px]"><b>NAME:</b> <input type="text" id="alp_name" readonly class="w-full"></div>
-                    <div class="text-[11px]"><b>DESIG:</b> <input type="text" id="alp_desig" readonly class="w-full"></div>
-                    <div class="text-[11px]"><b>GRADE:</b> <input type="text" id="alp_gcli" readonly class="w-full"></div>
-                </div>
+            <div class="p-2">
+                <input type="text" id="alp_id" onchange="lookup('alp')" placeholder="ALP CMS ID" class="border p-1 w-full font-bold mb-1">
+                <div class="text-[10px]"><b>NAME:</b> <input type="text" id="alp_name" readonly></div>
+                <div class="text-[10px]"><b>DESIG:</b> <input type="text" id="alp_desig" readonly></div>
+                <div class="text-[10px]"><b>GRADE:</b> <input type="text" id="alp_gcli" readonly></div>
             </div>
         </div>
 
         <table id="obsTable">
-            <tr class="bg-yellow-header"><td colspan="2">During CTO+A15:D37 / LOCO PILOT</td><td colspan="2">During CTO / ASTT. LOCO PILOT</td></tr>
-            <tr><td>Checking Logbook & BPC</td><td><select name="lp_1"><option>YES</option><option>No</option></select></td><td>Checking RS Valve working</td><td><select name="alp_1"><option>Yes</option><option>No</option></select></td></tr>
-            <tr><td>Checking Safety Items & HTC</td><td><select name="lp_2"><option>YES</option><option>No</option></select></td><td>Checking Safety Items & HTC</td><td><select name="alp_2"><option>Yes</option><option>No</option></select></td></tr>
-            <tr><td>Energy Meter & SPM check</td><td><select name="lp_3"><option>YES</option><option>No</option></select></td><td>Energy Meter & SPM check & Input</td><td><select name="alp_3"><option>Yes</option><option>No</option></select></td></tr>
+            <tr class="bg-yellow-header"><td colspan="2">During CTO / LOCO PILOT</td><td colspan="2">During CTO / ALP</td></tr>
+            <tr>
+                <td>Checking Logbook & BPC</td>
+                <td>
+                    <select name="lp_1" class="small-select"><option>YES</option><option>No</option><option>VIOLATION</option></select>
+                    <input type="file" name="img_lp_1">
+                </td>
+                <td>Checking RS Valve working</td>
+                <td>
+                    <select name="alp_1" class="small-select"><option>Yes</option><option>No</option><option>VIOLATION</option></select>
+                    <input type="file" name="img_alp_1">
+                </td>
+            </tr>
 
-            <tr class="bg-yellow-header"><td colspan="2">ON RUN / LOCO PILOT</td><td colspan="2">ON RUN / ASTT. LOCO PILOT</td></tr>
-            <tr><td>Conducting BFT & BPT</td><td><select name="lp_4"><option>YES</option><option>No</option></select></td><td>Standing & Holding RS (Danger Signal)</td><td><select name="alp_4"><option>Yes</option><option>No</option></select></td></tr>
-            <tr><td>Signal Calling Gesture</td><td><select name="lp_5"><option>YES</option><option>No</option></select></td><td>Signal Calling Gesture</td><td><select name="alp_5"><option>Yes</option><option>No</option></select></td></tr>
-            <tr><td>Use of Mobile Phone</td><td><select name="lp_6"><option>No</option><option>YES</option></select></td><td>Use of Mobile Phone</td><td><select name="alp_6"><option>No</option><option>YES</option></select></td></tr>
-            <tr><td>Micro Sleep</td><td><select name="lp_7"><option>No</option><option>YES</option></select></td><td>Micro Sleep</td><td><select name="alp_7"><option>No</option><option>YES</option></select></td></tr>
-            <tr><td>Exchange of Signals</td><td><select name="lp_8"><option>YES</option><option>No</option></select></td><td>Exchange of Signals</td><td><select name="alp_8"><option>Yes</option><option>No</option></select></td></tr>
-            <tr><td>Proper Action (Neutral Section)</td><td><select name="lp_9"><option>YES</option><option>No</option></select></td><td>Checking Formation/Caution Spot</td><td><select name="alp_9"><option>Yes</option><option>No</option></select></td></tr>
-            <tr><td>Alertness</td><td><select name="lp_10"><option>Very Good</option><option>Fair</option><option>Poor</option></select></td><td>Alertness</td><td><select name="alp_10"><option>Very Good</option><option>Fair</option><option>Poor</option></select></td></tr>
-
-            <tr class="bg-yellow-header"><td colspan="2">AT HALTS / LOCO PILOT</td><td colspan="2">AT HALTS / ASTT. LOCO PILOT</td></tr>
-            <tr><td>Application of A9 & SA9</td><td><select name="lp_11"><option>YES</option><option>No</option></select></td><td>Ensure Application of A9 & SA9</td><td><select name="alp_11"><option>YES</option><option>No</option></select></td></tr>
-            <tr><td>Reverser in Neutral</td><td><select name="lp_12"><option>YES</option><option>No</option></select></td><td>Ensure Reverser in Neutral</td><td><select name="alp_12"><option>YES</option><option>No</option></select></td></tr>
-            <tr><td>Dimming of Headlight</td><td><select name="lp_13"><option>Yes</option><option>No</option><option>DAY TIME</option></select></td><td>Ensure Dimming of Headlight</td><td><select name="alp_13"><option>Yes</option><option>No</option><option>DAY TIME</option></select></td></tr>
-            <tr><td>Undergear & Machine Room</td><td><select name="lp_14"><option>YES</option><option>No</option></select></td><td>Undergear & Machine Room</td><td><select name="alp_14"><option>YES</option><option>No</option></select></td></tr>
-            <tr><td>Proper Whistle before start</td><td><select name="lp_15"><option>YES</option><option>No</option></select></td><td>Proper Signal Exchange before start</td><td><select name="alp_15"><option>YES</option><option>No</option></select></td></tr>
-
-            <tr class="bg-yellow-header"><td colspan="2">At the Time of CHO / LOCO PILOT</td><td colspan="2">At the Time of CHO / ASTT. LOCO PILOT</td></tr>
-            <tr><td>Packing Personal belongings</td><td><select name="lp_16"><option>Yes</option><option>No</option></select></td><td>Packing Personal belongings</td><td><select name="alp_16"><option>Yes</option><option>No</option></select></td></tr>
-            
-            <tr class="bg-slate-50">
-                <td><b>Performance</b></td>
-                <td><select name="lp_perf"><option>Very Good</option><option>Fair</option><option>Poor</option></select></td>
-                <td><b>Abnormalities (ALP)</b></td>
-                <td><input type="text" name="alp_abnorm" class="w-full text-xs" placeholder="NIL"></td>
+            <tr class="bg-yellow-header"><td colspan="2">ON RUN / LOCO PILOT</td><td colspan="2">ON RUN / ALP</td></tr>
+            <tr>
+                <td>Use of Mobile Phone</td>
+                <td>
+                    <select name="lp_6" class="small-select"><option>No</option><option>YES</option><option>VIOLATION</option></select>
+                    <input type="file" name="img_lp_6">
+                </td>
+                <td>Use of Mobile Phone</td>
+                <td>
+                    <select name="alp_6" class="small-select"><option>No</option><option>YES</option><option>VIOLATION</option></select>
+                    <input type="file" name="img_alp_6">
+                </td>
             </tr>
             <tr>
-                <td colspan="2"><b>Any Other Abnormalities (LP)</b></td>
-                <td colspan="2"><input type="text" name="lp_abnorm" class="w-full" placeholder="NIL"></td>
+                <td>Micro Sleep</td>
+                <td>
+                    <select name="lp_7" class="small-select"><option>No</option><option>YES</option><option>VIOLATION</option></select>
+                    <input type="file" name="img_lp_7">
+                </td>
+                <td>Micro Sleep</td>
+                <td>
+                    <select name="alp_7" class="small-select"><option>No</option><option>YES</option><option>VIOLATION</option></select>
+                    <input type="file" name="img_alp_7">
+                </td>
+            </tr>
+            <tr>
+                <td>Alertness</td>
+                <td>
+                    <select name="lp_10" class="small-select"><option>Very Good</option><option>Fair</option><option>Poor</option></select>
+                    <input type="file" name="img_lp_10">
+                </td>
+                <td>Alertness</td>
+                <td>
+                    <select name="alp_10" class="small-select"><option>Very Good</option><option>Fair</option><option>Poor</option></select>
+                    <input type="file" name="img_alp_10">
+                </td>
             </tr>
         </table>
 
-        <div class="p-6 bg-slate-900 text-center rounded-b">
-            <p id="statusMsg" class="text-yellow-400 font-bold mb-4"></p>
-            <button type="submit" id="submitBtn" class="bg-yellow-500 text-black px-20 py-4 rounded-full font-black text-xl hover:bg-white transition-all uppercase tracking-tighter shadow-2xl">
-                Download PDF & Sync Data
+        <div class="p-6 bg-slate-900 text-center">
+            <p id="statusMsg" class="text-yellow-400 font-bold mb-2"></p>
+            <button type="submit" id="submitBtn" class="bg-yellow-500 text-black px-12 py-3 rounded-full font-bold uppercase hover:bg-white transition-all">
+                Download PDF & Sync
             </button>
         </div>
     </form>
 </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby__yyf6tBaMvI69wNqBSqmquKAyqB2cpLhhxBkfP_GXYGN7ysw8Yvtr4mQ5p_19p-q/exec"; 
-    const GITHUB_RAW = "https://raw.githubusercontent.com/mlachhwani/cvvrs/main/"; 
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby__yyf6tBaMvI69wNqBSqmquKAyqB2cpLhhxBkfP_GXYGN7ysw8Yvtr4mQ5p_19p-q/exec";
+    const GITHUB_RAW = "https://raw.githubusercontent.com/mlachhwani/cvvrs/main/";
 
+    // Triple Fetch Logic
     async function lookup(type) {
         let id = document.getElementById(type+'_id').value.toUpperCase();
         if(!id) return;
@@ -133,41 +124,53 @@
                 document.getElementById(type+'_desig').value = found[2].trim();
                 if(document.getElementById(type+'_gcli')) document.getElementById(type+'_gcli').value = found[3].trim();
             }
-        } catch(e) { console.error("CSV lookup failed"); }
+        } catch(e) { console.error("Lookup failed"); }
     }
+
+    // Compulsory Photo Logic for Violations
+    document.querySelectorAll('select').forEach(sel => {
+        sel.onchange = function() {
+            const val = this.value;
+            const fileInput = this.parentElement.querySelector('input[type="file"]');
+            let isV = false;
+
+            // Define Violation Criteria
+            if(this.name.includes('6') || this.name.includes('7')) { // Mobile/Sleep
+                if(val === "YES" || val === "VIOLATION") isV = true;
+            } else if(val === "No" || val === "VIOLATION" || val === "Poor") {
+                isV = true;
+            }
+
+            if(isV) {
+                this.parentElement.classList.add('violation-red');
+                fileInput.setAttribute('required', 'true');
+            } else {
+                this.parentElement.classList.remove('violation-red');
+                fileInput.removeAttribute('required');
+            }
+        };
+    });
 
     document.getElementById('cvvrsForm').onsubmit = async function(e) {
         e.preventDefault();
         const btn = document.getElementById('submitBtn');
-        const status = document.getElementById('statusMsg');
         btn.disabled = true;
-        status.innerText = "⏳ STEP 1: GENERATING PDF...";
-
+        
+        // 1. Generate PDF
         const { jsPDF } = window.jspdf;
-        const doc = new jsPDF('p', 'mm', 'a4');
-        
-        doc.setFontSize(14); doc.text("SOUTH EAST CENTRAL RAILWAY", 105, 15, {align:'center'});
-        doc.setFontSize(10); doc.text("RAIPUR DIVISION - CVVRS ANALYSIS REPORT", 105, 20, {align:'center'});
-        
-        doc.autoTable({ html: '#obsTable', startY: 60, theme: 'grid', styles: {fontSize: 8} });
-        doc.save(`CVVRS_${document.getElementById('loco_no').value}.pdf`);
+        const doc = new jsPDF();
+        doc.text("CVVRS ANALYSIS REPORT", 105, 20, {align:'center'});
+        doc.autoTable({ html: '#obsTable', startY: 30, theme: 'grid' });
+        doc.save("CVVRS_Report.pdf");
 
-        status.innerText = "⏳ STEP 2: SYNCING TO CLOUD...";
+        // 2. Sync to Google Drive/Sheet
         const fd = new FormData(this);
-        const dataObj = Object.fromEntries(fd.entries());
-        dataObj.train_no = document.getElementById('train_no').value;
-        dataObj.loco_no = document.getElementById('loco_no').value;
-        dataObj.lp_name = document.getElementById('lp_name').value;
-        dataObj.alp_name = document.getElementById('alp_name').value;
-
+        const data = Object.fromEntries(fd.entries());
         try {
-            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(dataObj) });
-            status.innerText = "✅ SYNC SUCCESSFUL!";
-            setTimeout(() => location.reload(), 2000);
-        } catch(err) {
-            status.innerText = "⚠️ PDF SAVED, BUT SYNC FAILED.";
-            btn.disabled = false;
-        }
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
+            alert("Data Synced Successfully!");
+        } catch(err) { alert("Sync Error!"); }
+        btn.disabled = false;
     };
 </script>
 </body>
