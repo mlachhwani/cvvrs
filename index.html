@@ -1,360 +1,111 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <title>CVVRS ANALYSIS - SECR RAIPUR</title>
+    <title>CVVRS ANALYSIS - SECR</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
-        body { background-color: #f0f2f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; }
-        .form-card { max-width: 1200px; margin: auto; background: white; border: 4px solid black; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        
-        /* Header Fix */
-        .ir-logo { width: 100px; height: 100px; }
-        .main-title { background: black; color: white; padding: 15px; font-size: 32px; font-weight: 900; letter-spacing: 1px; }
-
-        /* Table & Font Fix */
-        table { width: 100%; border-collapse: collapse; }
-        td { border: 2px solid black; padding: 14px; font-size: 17px; font-weight: 700; color: #1a1a1a; vertical-align: middle; }
-        .bg-yellow-section { background-color: #ffff00; text-align: center; font-size: 19px; text-transform: uppercase; }
-
-        /* Dropdown & Input Fixes */
-        .status-dropdown { 
-            width: 115px; 
-            padding: 8px; 
-            border: 2px solid #000; 
-            border-radius: 4px; 
-            font-size: 14px; 
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .violation-highlight { background-color: #ffcccc !important; border: 3px solid red !important; }
-        .photo-input { font-size: 11px; margin-top: 6px; display: block; width: 115px; }
-
-        input[type="text"], input[type="datetime-local"] { 
-            width: 100%; padding: 12px; border: 1px solid #777; font-size: 17px; font-weight: bold; 
-        }
-        input:read-only { background-color: #eef2f7; color: #003366; border: none; }
+        body { background: #f3f4f6; font-weight: bold; font-family: sans-serif; }
+        .box { max-width: 1150px; margin: auto; background: white; border: 3px solid black; }
+        td { border: 2px solid black; padding: 5px; font-size: 12px; }
+        .section-h { background: #1e293b; color: #fbbf24; text-align: center; font-weight: 800; font-size: 13px; }
+        .drop { width: 95px; border: 2px solid black; font-weight: 900; }
+        input { border: 1px solid #999; padding: 4px; width: 100%; }
     </style>
 </head>
 <body>
-
-<div class="form-card">
-    <div class="flex items-center p-6 border-b-4 border-black bg-white">
-        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/4/41/IR_Logo.png/220px-IR_Logo.png" class="ir-logo">
-        <div class="flex-1 text-center">
-            <h2 class="text-2xl font-black uppercase text-gray-800">South East Central Railway</h2>
-            <h3 class="text-lg font-bold text-blue-800 uppercase">Electrical (OP) Department - Raipur Division</h3>
-            <div class="main-title mt-3 uppercase">CVVRS Crew Analysis Report</div>
-        </div>
-        <div class="w-[100px]"></div> </div>
-
-    <form id="cvvrsForm">
-        <div class="p-8 grid grid-cols-1 md:grid-cols-3 gap-8 border-b-4 border-black bg-gray-50">
-            <div class="space-y-3">
-                <label class="text-red-700 font-black text-lg">CLI CMS ID:</label>
-                <input type="text" id="cli_id" onchange="lookup('cli')" class="border-2 border-red-500 shadow-sm" required>
-                <input type="text" id="cli_name" readonly placeholder="CLI Name will auto-fill">
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-                <input type="text" id="train_no" placeholder="TRAIN NO" required>
-                <input type="text" id="loco_no" placeholder="LOCO NO" required>
-                <input type="text" id="from_stn" placeholder="FROM">
-                <input type="text" id="to_stn" placeholder="TO">
-            </div>
-            <div class="space-y-2">
-                <label class="text-xs font-black text-gray-600">DEPARTURE / ARRIVAL</label>
-                <input type="datetime-local" id="dep_time">
-                <input type="datetime-local" id="arr_time">
-            </div>
-        </div>
-
-        <div class="grid grid-cols-2 divide-x-4 divide-black border-b-4 border-black">
-            <div class="p-8 bg-blue-50">
-                <label class="block text-blue-900 font-black text-xl mb-4">LOCO PILOT (LP)</label>
-                <input type="text" id="lp_id" onchange="lookup('lp')" class="border-2 border-blue-400 mb-4" placeholder="ENTER LP ID" required>
-                <div class="space-y-2">
-                    <p>NAME: <input type="text" id="lp_name" readonly></p>
-                    <p>DESIG: <input type="text" id="lp_desig" readonly></p>
-                    <p>GRADE: <input type="text" id="lp_gcli" readonly></p>
-                </div>
-            </div>
-            <div class="p-8 bg-orange-50">
-                <label class="block text-orange-900 font-black text-xl mb-4">ASTT. LOCO PILOT (ALP)</label>
-                <input type="text" id="alp_id" onchange="lookup('alp')" class="border-2 border-orange-400 mb-4" placeholder="ENTER ALP ID" required>
-                <div class="space-y-2">
-                    <p>NAME: <input type="text" id="alp_name" readonly></p>
-                    <p>DESIG: <input type="text" id="alp_desig" readonly></p>
-                    <p>GRADE: <input type="text" id="alp_gcli" readonly></p>
-                </div>
-            </div>
-        </div>
-
-        <table id="obsTable">
-            <tr class="bg-yellow-section font-black">
-                <td colspan="2">During CTO / LOCO PILOT</td>
-                <td colspan="2">During CTO / ALP</td>
-            </tr>
-            <tr>
-                <td width="35%">1. Checking Logbook & BPC</td>
-                <td width="15%">
-                    <select name="lp_1" class="status-dropdown"><option>YES</option><option>No</option></select>
-                    <input type="file" class="photo-input">
-                </td>
-                <td width="35%">1. Checking RS Valve working</td>
-                <td width="15%">
-                    <select name="alp_1" class="status-dropdown"><option>Yes</option><option>No</option></select>
-                    <input type="file" class="photo-input">
-                </td>
-            </tr>
-            <tr class="bg-yellow-section font-black">
-                <td colspan="2">ON RUN / LOCO PILOT</td>
-                <td colspan="2">ON RUN / ALP</td>
-            </tr>
-            <tr>
-                <td>6. Use of Mobile Phone</td>
-                <td>
-                    <select name="lp_6" class="status-dropdown"><option>No</option><option>YES</option></select>
-                    <input type="file" class="photo-input">
-                </td>
-                <td>6. Use of Mobile Phone</td>
-                <td>
-                    <select name="alp_6" class="status-dropdown"><option>No</option><option>YES</option></select>
-                    <input type="file" class="photo-input">
-                </td>
-            </tr>
-            <tr class="bg-gray-100">
-                <td colspan="2">Overall Performance: 
-                    <select id="lp_perf" class="status-dropdown ml-4"><option>Very Good</option><option>Fair</option><option>Poor</option></select>
-                </td>
-                <td colspan="2">Any Abnormalities: 
-                    <input type="text" id="alp_ab" class="ml-2 border p-1 w-2/3" placeholder="NIL">
-                </td>
-            </tr>
-        </table>
-
-        <div class="p-12 bg-gray-900 text-center">
-            <p id="statusMsg" class="text-yellow-400 font-bold mb-6 text-xl"></p>
-            <button type="submit" id="submitBtn" class="bg-yellow-500 text-black px-32 py-6 rounded-full font-black text-2xl hover:bg-white transition-all shadow-2xl uppercase">
-                Download PDF & Sync Data
-            </button>
-        </div>
-    </form>
-</div>
-
-<script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw1rVtQFHYHJSOP5HyDBG36ImtPFRHdsukSIjzEkJMNzZMNiv-c6MgROZjqcSH8Cs54/exec"; // <--- Naya URL yaha daalein
-    const GITHUB_RAW = "https://raw.githubusercontent.com/mlachhwani/cvvrs/main/";
-
-    async function lookup(type) {
-        let id = document.getElementById(type+'_id').value.toUpperCase();
-        if(!id) return;
-        try {
-            const res = await fetch(GITHUB_RAW + (type==='cli'?'cli_master.csv':'crew_master.csv'));
-            const text = await res.text();
-            const found = text.split("\n").map(r => r.split(",")).find(r => r[0].trim().toUpperCase() === id);
-            if(found) {
-                document.getElementById(type+'_name').value = found[1].trim();
-                if(type !== 'cli') {
-                    document.getElementById(type+'_desig').value = found[2].trim();
-                    document.getElementById(type+'_gcli').value = found[3].trim();
-                }
-            }
-        } catch(e) { console.error("Master List Error"); }
-    }
-
-    // Photo Mandatory Logic
-    document.querySelectorAll('select').forEach(sel => {
-        sel.onchange = function() {
-            const file = this.parentElement.querySelector('input[type="file"]');
-            const isViolation = (this.value === "No") || 
-                              (this.value === "YES" && (this.name.includes('6') || this.name.includes('7'))) ||
-                              (this.value === "Poor");
-            
-            if(isViolation) {
-                this.parentElement.classList.add('violation-highlight');
-                file.required = true;
-            } else {
-                this.parentElement.classList.remove('violation-highlight');
-                file.required = false;
-            }
-        };
-    });
-
-    document.getElementById('cvvrsForm').onsubmit = async function(e) {
-        e.preventDefault();
-        const btn = document.getElementById('submitBtn');
-        const status = document.getElementById('statusMsg');
-        btn.disabled = true;
-        status.innerText = "⏳ PROCESSING DATA...";
-
-        const dataObj = {
-            cli_id: document.getElementById('cli_id').value,
-            cli_name: document.getElementById('cli_name').value,
-            train_no: document.getElementById('train_no').value,
-            loco_no: document.getElementById('loco_no').value,
-            from_stn: document.getElementById('from_stn').value,
-            to_stn: document.getElementById('to_stn').value,
-            lp_name: document.getElementById('lp_name').value,
-            alp_name: document.getElementById('alp_name').value,
-            lp_perf: document.getElementById('lp_perf').value,
-            alp_abnorm: document.getElementById('alp_ab').value
-        };
-
-        try {
-            // PDF Download
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.setFontSize(18);
-            doc.text("CVVRS ANALYSIS REPORT - SECR", 105, 15, {align:'center'});
-            doc.autoTable({ html: '#obsTable', startY: 25, theme: 'grid', headStyles: {fillColor: [0,0,0]} });
-            doc.save(`CVVRS_${dataObj.loco_no}_${dataObj.train_no}.pdf`);
-
-            // Sync to Sheet
-            await fetch(SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                body: JSON.stringify(dataObj)
-            });
-
-            status.innerText = "✅ REPORT DOWNLOADED & SYNCED!";
-            setTimeout(() => location.reload(), 2000);
-        } catch(err) {
-            status.innerText = "❌ ERROR: " + err.message;
-            btn.disabled = false;
-        }
-    };
-</script>
-</body>
-</html><!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>CVVRS ANALYSIS - SECR RAIPUR</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-    <style>
-        body { background-color: #f1f5f9; font-family: 'Arial', sans-serif; padding-bottom: 50px; }
-        .main-container { max-width: 1200px; margin: 20px auto; background: white; border: 3px solid black; }
-        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-        td { border: 2px solid black; padding: 12px; font-size: 16px; font-weight: bold; vertical-align: middle; }
-        .bg-yellow-header { background-color: #ffff00; font-weight: bold; text-align: center; font-size: 18px; height: 50px; border-top: 4px solid black; }
-        .status-dropdown { width: 115px; padding: 6px; font-weight: bold; border: 2px solid #333; border-radius: 4px; font-size: 14px; }
-        .violation-bg { background-color: #fee2e2 !important; border: 3px solid red !important; }
-        input[type="text"], input[type="datetime-local"] { width: 100%; padding: 10px; border: 1px solid #999; font-size: 16px; font-weight: bold; }
-        .photo-btn { font-size: 10px; margin-top: 5px; display: block; width: 115px; }
-    </style>
-</head>
-<body>
-
-<div class="main-container">
-    <div class="flex items-center justify-between p-6 border-b-4 border-black">
-        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/4/41/IR_Logo.png/220px-IR_Logo.png" class="w-24 h-24">
+<div class="box">
+    <div class="flex items-center p-2 border-b-4 border-black">
+        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/4/41/IR_Logo.png/220px-IR_Logo.png" width="50">
         <div class="text-center flex-1">
-            <h2 class="text-2xl font-bold uppercase">South East Central Railway</h2>
-            <h1 class="bg-black text-white text-3xl font-black py-3 mt-2 uppercase">CVVRS Crew Analysis Report</h1>
+            <h1 class="text-xl">SOUTH EAST CENTRAL RAILWAY</h1>
+            <h2 class="bg-black text-white text-lg py-1 mt-1 uppercase">CVVRS CREW ANALYSIS REPORT</h2>
         </div>
-        <div class="w-24"></div>
     </div>
-
-    <form id="cvvrsForm">
-        <div class="p-6 bg-slate-100 border-b-2 border-black grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="space-y-2">
-                <label class="font-bold text-red-700">CLI CMS ID:</label>
-                <input type="text" id="cli_id" onchange="lookup('cli')" class="border-2 border-red-500" required>
-                <input type="text" id="cli_name" readonly placeholder="CLI Name">
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-                <input type="text" id="train_no" placeholder="TRAIN NO" required>
-                <input type="text" id="loco_no" placeholder="LOCO NO" required>
-                <input type="text" id="from_stn" placeholder="FROM">
-                <input type="text" id="to_stn" placeholder="TO">
+    <form id="f">
+        <div class="p-3 grid grid-cols-3 gap-4 bg-gray-50 border-b-2 border-black">
+            <div>
+                DATE: <input type="text" id="aDate" readonly class="bg-gray-100 mb-2">
+                CLI ID: <input type="text" id="cli_id" onchange="lk('cli')" placeholder="Enter ID">
+                <input type="text" id="cli_nm" readonly class="text-blue-700 border-none bg-transparent">
             </div>
             <div>
-                <label class="text-[10px] font-bold">DEP/ARR</label>
-                <input type="datetime-local" id="dep_time" class="mb-1">
-                <input type="datetime-local" id="arr_time">
+                TRAIN: <input type="text" id="tr" class="mb-1" placeholder="Train No">
+                LOCO: <input type="text" id="lc" class="mb-1" placeholder="Loco No">
+                WORK DATE: <input type="date" id="wDate">
+            </div>
+            <div>
+                FROM: <input type="text" id="fr_cd" onchange="st('fr')" placeholder="Code">
+                TO: <input type="text" id="to_cd" onchange="st('to')" placeholder="Code">
+                <span id="fr_nm" class="text-[10px]"></span> - <span id="to_nm" class="text-[10px]"></span>
+                <input type="hidden" id="fr_full"><input type="hidden" id="to_full">
             </div>
         </div>
-
-        <table id="obsTable">
-            <tr class="bg-yellow-header"><td colspan="2">LOCO PILOT (LP) Observations</td><td colspan="2">ALP Observations</td></tr>
-            <tr>
-                <td width="35%">1. Checking Logbook & BPC</td>
-                <td width="15%"><select name="lp_1" class="status-dropdown"><option>YES</option><option>No</option></select><input type="file" class="photo-btn"></td>
-                <td width="35%">1. Checking RS Valve</td>
-                <td width="15%"><select name="alp_1" class="status-dropdown"><option>Yes</option><option>No</option></select><input type="file" class="photo-btn"></td>
+        <div class="grid grid-cols-2 divide-x-2 divide-black border-b-2 border-black bg-blue-50 p-2">
+            <div>
+                LP ID: <input type="text" id="lp_id" onchange="cr('lp')">
+                <input type="text" id="lp_nm" readonly class="bg-transparent border-none text-blue-800"><br>
+                <span id="lp_info" class="text-[10px]"></span>
+            </div>
+            <div>
+                ALP ID: <input type="text" id="alp_id" onchange="cr('alp')">
+                <input type="text" id="alp_nm" readonly class="bg-transparent border-none text-orange-800"><br>
+                <span id="alp_info" class="text-[10px]"></span>
+            </div>
+        </div>
+        <table id="t">
+            <tr class="section-h"><td colspan="2">LOCO PILOT (LP)</td><td colspan="2">ASTT. LOCO PILOT (ALP)</td></tr>
+            <tr class="bg-gray-200 text-center"><td colspan="4">PART I: DURING CTO</td></tr>
+            <tr><td>1. Logbook & BPC</td><td><select class="drop"><option>YES</option><option>No</option></select></td><td>1. RS Valve Check</td><td><select class="drop"><option>YES</option><option>No</option></select></td></tr>
+            <tr><td>2. Safety Items</td><td><select class="drop"><option>YES</option><option>No</option></select></td><td>2. Safety Items</td><td><select class="drop"><option>YES</option><option>No</option></select></td></tr>
+            <tr><td>3. Energy Meter</td><td><select class="drop"><option>YES</option><option>No</option></select></td><td>3. Energy & Input</td><td><select class="drop"><option>YES</option><option>No</option></select></td></tr>
+            <tr class="bg-gray-200 text-center"><td colspan="4">PART II: ON RUN</td></tr>
+            <tr><td>4. BFT & BPT</td><td><select class="drop"><option>YES</option><option>No</option></select></td><td>4. Holding RS</td><td><select class="drop"><option>YES</option><option>No</option></select></td></tr>
+            <tr><td>6. Mobile Phone</td><td><select class="drop"><option>No</option><option>YES</option></select></td><td>6. Mobile Phone</td><td><select class="drop"><option>No</option><option>YES</option></select></td></tr>
+            <tr><td>7. Micro Sleep</td><td><select class="drop"><option>No</option><option>YES</option></select></td><td>7. Micro Sleep</td><td><select class="drop"><option>No</option><option>YES</option></select></td></tr>
+            <tr class="bg-gray-200 text-center"><td colspan="4">PART III: AT HALTS</td></tr>
+            <tr><td>11. A9 & SA9</td><td><select class="drop"><option>YES</option><option>No</option></select></td><td>11. Ensure A9 & SA9</td><td><select class="drop"><option>YES</option><option>No</option></select></td></tr>
+            <tr><td>12. Reverser Neutral</td><td><select class="drop"><option>YES</option><option>No</option></select></td><td>12. Reverser Neutral</td><td><select class="drop"><option>YES</option><option>No</option></select></td></tr>
+            <tr class="bg-blue-100 font-bold">
+                <td colspan="2">LP PERF: <select id="pf" class="drop"><option>Very Good</option><option>Fair</option></select></td>
+                <td colspan="2">ALP ABNORM: <input type="text" id="ab" placeholder="NIL" style="width:60%"></td>
             </tr>
-            </table>
-
-        <div class="p-10 bg-slate-900 text-center">
-            <p id="statusMsg" class="text-yellow-400 font-bold mb-4 text-xl"></p>
-            <button type="submit" id="submitBtn" class="bg-yellow-500 text-black px-24 py-5 rounded-full font-black text-2xl uppercase">SYNC DATA & GET PDF</button>
+        </table>
+        <div class="p-4 text-center bg-gray-900">
+            <p id="m" class="text-yellow-400 mb-2"></p>
+            <button type="submit" class="bg-yellow-500 px-12 py-3 font-black rounded-full uppercase">SAVE REPORT</button>
         </div>
     </form>
 </div>
-
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzHZdIbS9UvSwHEUUCxgi7nHdgUp6vt60P48SjmzIorqXkBYip-obiGLPi7OogXZzP9/exec"; 
-    const GITHUB_RAW = "https://raw.githubusercontent.com/mlachhwani/cvvrs/main/";
+    const U = "https://script.google.com/macros/s/AKfycbzq2w67W816Yagjvbi3GL0KU0Uki63WjfTOzPdlfli5HdyZN0ig1mHuqn7HMB7rZuUe/exec";
+    const R = "https://raw.githubusercontent.com/mukeshrai/cvvrs/main/";
+    document.getElementById('aDate').value = new Date().toLocaleDateString('en-GB');
 
-    async function lookup(type) {
-        let id = document.getElementById(type+'_id').value.toUpperCase();
-        if(!id) return;
-        try {
-            const res = await fetch(GITHUB_RAW + (type==='cli'?'cli_master.csv':'crew_master.csv'));
-            const text = await res.text();
-            const found = text.split("\n").map(r => r.split(",")).find(r => r[0].trim().toUpperCase() === id);
-            if(found) {
-                document.getElementById(type+'_name').value = found[1].trim();
-            }
-        } catch(e) { console.error("CSV Fetch Error"); }
+    async function lk(t){
+        const r=await fetch(R+'cli_master.csv'); const tx=await r.text();
+        const f=tx.split("\n").map(x=>x.split(",")).find(x=>x[0].trim().toUpperCase()===document.getElementById('cli_id').value.toUpperCase());
+        if(f) document.getElementById('cli_nm').value=f[1].trim();
     }
-
-    document.getElementById('cvvrsForm').onsubmit = async function(e) {
-        e.preventDefault();
-        const btn = document.getElementById('submitBtn');
-        const status = document.getElementById('statusMsg');
-        btn.disabled = true;
-        status.innerText = "⏳ PROCESSING...";
-
-        // Collect exact data to send
-        const obj = {
-            cli_id: document.getElementById('cli_id').value,
-            cli_name: document.getElementById('cli_name').value,
-            train_no: document.getElementById('train_no').value,
-            loco_no: document.getElementById('loco_no').value,
-            from_stn: document.getElementById('from_stn').value,
-            to_stn: document.getElementById('to_stn').value,
-            lp_name: document.getElementById('lp_name').value || "N/A",
-            alp_name: document.getElementById('alp_name').value || "N/A",
-            lp_perf: "Very Good", // Default or get from dropdown
-            lp_abnorm: "NIL"
-        };
-
-        try {
-            // PDF Download
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.text("CVVRS ANALYSIS REPORT", 105, 15, {align:'center'});
-            doc.autoTable({ html: '#obsTable', startY: 25 });
-            doc.save(`CVVRS_${obj.loco_no}.pdf`);
-
-            // Sync with Google Sheet
-            await fetch(SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                body: JSON.stringify(obj)
-            });
-
-            status.innerText = "✅ DATA SYNCED & PDF DOWNLOADED!";
-            setTimeout(() => location.reload(), 2000);
-        } catch(err) {
-            status.innerText = "❌ ERROR: " + err.message;
-            btn.disabled = false;
-        }
+    async function st(i){
+        const r=await fetch(R+'station_master.csv'); const tx=await r.text();
+        const f=tx.split("\n").map(x=>x.split(",")).find(x=>x[0].trim().toUpperCase()===document.getElementById(i+'_cd').value.toUpperCase());
+        if(f) { document.getElementById(i+'_nm').innerText=f[1].trim(); document.getElementById(i+'_full').value=f[1].trim(); }
+    }
+    async function cr(p){
+        const r=await fetch(R+'crew_master.csv'); const tx=await r.text();
+        const f=tx.split("\n").map(x=>x.split(",")).find(x=>x[0].trim().toUpperCase()===document.getElementById(p+'_id').value.toUpperCase());
+        if(f) { document.getElementById(p+'_nm').value=f[1].trim(); document.getElementById(p+'_info').innerText=`${f[2]} | ${f[3]}`; }
+    }
+    document.getElementById('f').onsubmit=async function(e){
+        e.preventDefault(); document.getElementById('m').innerText="SAVING...";
+        const d={aDate:document.getElementById('aDate').value,cli_id:document.getElementById('cli_id').value,cli_nm:document.getElementById('cli_nm').value,tr:document.getElementById('tr').value,wDate:document.getElementById('wDate').value,lc:document.getElementById('lc').value,fr_cd:document.getElementById('fr_cd').value,fr_nm:document.getElementById('fr_full').value,to_cd:document.getElementById('to_cd').value,to_nm:document.getElementById('to_full').value,lp_id:document.getElementById('lp_id').value,lp_nm:document.getElementById('lp_nm').value,alp_id:document.getElementById('alp_id').value,alp_nm:document.getElementById('alp_nm').value,lp_perf:document.getElementById('pf').value,alp_abnorm:document.getElementById('ab').value};
+        try{ 
+            const {jsPDF}=window.jspdf; const doc=new jsPDF(); doc.text("CVVRS ANALYSIS",10,10); doc.autoTable({html:'#t',startY:20}); doc.save(`CVVRS_${d.lc}.pdf`);
+            await fetch(U,{method:'POST',mode:'no-cors',body:JSON.stringify(d)}); document.getElementById('m').innerText="SUCCESS!"; setTimeout(()=>location.reload(),2000);
+        }catch(x){}
     };
 </script>
 </body>
