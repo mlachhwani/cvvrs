@@ -1,140 +1,275 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SECR CVVRS ANALYSIS - FINAL</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body { background-color: #f1f5f9; }
-        .master-card { background: white; border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); border-top: 10px solid #003366; }
-        .point-row { border-bottom: 1px solid #e2e8f0; transition: background 0.2s; }
-        .point-row:hover { background-color: #f8fafc; }
-        .input-focus:focus { border-color: #003366; box-shadow: 0 0 0 4px rgba(0,51,102,0.1); outline: none; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CVVRS ANALYSIS | SECR</title>
+
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #f4f6f8;
+  --card: #ffffff;
+  --text: #212121;
+  --muted: #555;
+  --border: #e0e0e0;
+  --primary: #1976d2;
+}
+[data-theme="dark"] {
+  --bg: #111418;
+  --card: #1e252b;
+  --text: #e5e5e5;
+  --muted: #9da4ad;
+  --border: #2e343d;
+  --primary: #64b5f6;
+}
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  margin: 0;
+  padding: 0;
+}
+.container {
+  max-width: 1080px;
+  margin: auto;
+  padding: 20px;
+}
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 20px;
+  position: relative;
+}
+.header img {
+  position: absolute;
+  left: 0;
+  height: 56px;
+}
+.header h1, .header h2, .header h3 {
+  margin: 0;
+  line-height: 1.2;
+}
+h1 { font-size: 20px; font-weight: 700; }
+h2 { font-size: 16px; font-weight: 500; }
+h3 { font-size: 18px; font-weight: 700; margin-top: 6px; }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+.label {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 4px;
+  display: block;
+}
+input, select, textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  font-size: 14px;
+  outline: none;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--primary);
+}
+.row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.col-6 {
+  flex: 1 1 calc(50% - 12px);
+}
+.col-4 {
+  flex: 1 1 calc(33.33% - 12px);
+}
+.col-12 {
+  flex: 1 1 100%;
+}
+.theme-toggle {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text);
+}
+button.primary {
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 12px 18px;
+  cursor: pointer;
+  font-size: 15px;
+}
+button.primary:hover {
+  opacity: 0.9;
+}
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+}
+.photo-item {
+  border: 2px solid var(--border);
+  padding: 6px;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 12px;
+}
+.photo-item img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+@media (max-width: 600px) {
+  .col-6, .col-4 { flex: 1 1 100%; }
+  .header img { height: 40px; }
+}
+</style>
 </head>
-<body class="p-4 md:p-10">
 
-    <div class="max-w-7xl mx-auto mb-6 p-6 bg-yellow-50 border-2 border-yellow-400 rounded-3xl shadow-sm">
-        <label class="block text-xs font-black text-yellow-800 mb-2 uppercase tracking-widest">🔗 STEP 1: Paste Your Deployed Web App URL Below</label>
-        <input type="text" id="SCRIPT_URL" placeholder="https://script.google.com/macros/s/AKfycbzzZ6L1w1wSqD8dDaF4DMqU4MG61hBzRbugGkN3MlJLXJnE5F-2pDczDfxUnyEpVxr8/exec" 
-               class="w-full p-4 border-2 border-yellow-500 rounded-2xl font-mono text-sm">
+<body>
+
+<button class="theme-toggle" onclick="toggleTheme()">Toggle Theme</button>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <img src="ir_logo.png" alt="IR Logo">
+    <div>
+      <h1>SOUTH EAST CENTRAL RAILWAY</h1>
+      <h2>ELECTRICAL (OP) DEPARTMENT, RAIPUR DIVISION</h2>
+      <h3>CVVRS ANALYSIS REPORT</h3>
     </div>
+  </div>
 
-    <div class="max-w-7xl mx-auto bg-[#003366] text-white p-10 rounded-t-[40px] shadow-2xl flex flex-col md:flex-row items-center gap-8 mb-0">
-        <div class="bg-white p-3 rounded-full shadow-lg">
-            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/4/41/IR_Logo.svg/1200px-IR_Logo.svg.png" class="h-24 w-24">
-        </div>
-        <div class="text-center md:text-left">
-            <h1 class="text-3xl md:text-6xl font-black tracking-tighter">SOUTH EAST CENTRAL RAILWAY</h1>
-            <p class="text-lg md:text-2xl font-bold tracking-[0.4em] mt-2 text-yellow-400 uppercase">Raipur Division | Electrical OP (CVVRS)</p>
-        </div>
+  <!-- CLI DETAILS -->
+  <div class="card">
+    <h3>CLI DETAILS</h3>
+    <div class="row">
+      <div class="col-6">
+        <label class="label">CLI ID</label>
+        <input id="cli_id" placeholder="Enter CLI ID">
+      </div>
+      <div class="col-6">
+        <label class="label">CLI Name</label>
+        <input id="cli_name" placeholder="Enter CLI Name">
+      </div>
     </div>
+  </div>
 
-    <div class="max-w-7xl mx-auto bg-white p-8 md:p-12 rounded-b-[40px] shadow-2xl space-y-10">
-        
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 pb-10 border-b-2 border-gray-100">
-            <div class="space-y-2">
-                <label class="font-black text-gray-400 text-[10px] uppercase">CLI CMS ID</label>
-                <input type="text" id="cli_id" onchange="getMaster('cli')" class="w-full p-4 border-2 rounded-2xl font-bold uppercase input-focus bg-gray-50">
-                <p id="cli_name" class="text-blue-700 font-black text-xs italic uppercase"></p>
-            </div>
-            <div class="space-y-2">
-                <label class="font-black text-gray-400 text-[10px] uppercase">Station (From - To)</label>
-                <div class="flex gap-2">
-                    <input type="text" id="stn_from" placeholder="FROM" class="w-1/2 p-4 border-2 rounded-2xl font-bold uppercase input-focus bg-gray-50">
-                    <input type="text" id="stn_to" placeholder="TO" class="w-1/2 p-4 border-2 rounded-2xl font-bold uppercase input-focus bg-gray-50">
-                </div>
-            </div>
-            <div class="space-y-2">
-                <label class="font-black text-gray-400 text-[10px] uppercase">Train & Loco No</label>
-                <div class="flex gap-2">
-                    <input type="text" id="train_no" placeholder="TRAIN" class="w-1/2 p-4 border-2 rounded-2xl font-bold input-focus bg-gray-50">
-                    <input type="text" id="loco_no" placeholder="LOCO" class="w-1/2 p-4 border-2 rounded-2xl font-bold input-focus bg-gray-50">
-                </div>
-            </div>
-            <div class="space-y-2 bg-blue-50 p-4 rounded-2xl">
-                <label class="font-black text-blue-900 text-[10px] uppercase">Crew ID Lookup</label>
-                <div class="flex gap-2">
-                    <input type="text" id="lp_id" onchange="getMaster('lp')" placeholder="LP ID" class="w-1/2 p-3 border-2 rounded-xl font-bold uppercase">
-                    <input type="text" id="alp_id" onchange="getMaster('alp')" placeholder="ALP ID" class="w-1/2 p-3 border-2 rounded-xl font-bold uppercase">
-                </div>
-                <p id="crew_info" class="text-[9px] font-bold text-blue-800 mt-2 uppercase"></p>
-            </div>
-        </div>
-
-        <div>
-            <h2 class="text-center font-black text-slate-800 mb-10 uppercase text-3xl italic tracking-tighter border-b-4 border-yellow-400 inline-block w-full pb-4">Safety Observation Checklist</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-16">
-                <div class="space-y-3">
-                    <div class="bg-blue-900 text-white p-4 rounded-2xl text-center font-black uppercase text-sm shadow-lg mb-6">Loco Pilot Observations</div>
-                    <div id="lp_points_area"></div>
-                </div>
-                <div class="space-y-3">
-                    <div class="bg-orange-600 text-white p-4 rounded-2xl text-center font-black uppercase text-sm shadow-lg mb-6">Assistant Loco Pilot Observations</div>
-                    <div id="alp_points_area"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="pt-10 border-t-4 border-red-600">
-            <h3 class="font-black text-red-600 text-xs mb-3 uppercase">Any Other Abnormality (Photo Required if text entered)</h3>
-            <textarea id="abnormality" oninput="togglePhoto(this.value)" class="w-full p-6 bg-slate-50 border-2 rounded-[30px] font-bold text-lg outline-none focus:border-red-600" placeholder="Describe abnormality..."></textarea>
-            
-            <div id="photo_box" class="hidden mt-6 p-8 border-4 border-dashed border-red-200 rounded-[40px] text-center bg-red-50">
-                <p class="font-black text-red-600 mb-2 uppercase text-sm">📎 Evidence Photo is Mandatory</p>
-                <input type="file" id="photo_file" class="font-bold">
-            </div>
-
-            <div class="mt-10 flex gap-6">
-                <button onclick="submitData()" id="main_btn" class="flex-1 bg-blue-900 text-white p-8 rounded-[40px] font-black text-3xl shadow-2xl hover:bg-black active:scale-95 transition-all">SAVE TO DRIVE & SHEET</button>
-            </div>
-        </div>
+  <!-- TRAIN DETAILS -->
+  <div class="card">
+    <h3>TRAIN & WORKING DETAILS</h3>
+    <div class="row">
+      <div class="col-6">
+        <label class="label">Train Number</label>
+        <input id="train_no">
+      </div>
+      <div class="col-6">
+        <label class="label">Date of Working</label>
+        <input type="date" id="date_work">
+      </div>
+      <div class="col-6">
+        <label class="label">Loco Number</label>
+        <input id="loco_no">
+      </div>
     </div>
+  </div>
 
-    <script>
-        const lpLabels = ["Checking Logbook & BPC","Safety Items & HTC","Energy Meter & SPM","BFT & BPT","Signal Calling","Mobile Phone","Micro Sleep","Exchange of Signals","Neutral Section","Alertness","Application of A9/SA9","Reverser in Neutral","Dimming Headlight","Undergear Check","Whistle Before Start","Packing After Arrival"];
-        const alpLabels = ["RS Valve Working","Safety Items & HTC","Energy Meter Input","Danger Signal Appr.","Signal Calling","Mobile Phone","Micro Sleep","Exchange of Signals","Curve/Caution Check","Alertness","A9/SA9 Ensure","Reverser Neutral","Headlight Dimming","Undergear Check","Signal Exchange Start","Packing After Arrival"];
+  <!-- STATION DETAILS -->
+  <div class="card">
+    <h3>STATION DETAILS</h3>
+    <div class="row">
+      <div class="col-6">
+        <label class="label">From Station</label>
+        <input id="from_station">
+      </div>
+      <div class="col-6">
+        <label class="label">To Station</label>
+        <input id="to_station">
+      </div>
+    </div>
+  </div>
 
-        // UI Generation
-        const lpArea = document.getElementById('lp_points_area');
-        const alpArea = document.getElementById('alp_points_area');
+  <!-- CREW DETAILS -->
+  <div class="card">
+    <h3>CREW DETAILS</h3>
+    <div class="row">
+      <div class="col-6">
+        <label class="label">LP ID</label>
+        <input id="lp_id">
+      </div>
+      <div class="col-6">
+        <label class="label">ALP ID</label>
+        <input id="alp_id">
+      </div>
+    </div>
+  </div>
 
-        for(let i=0; i<16; i++) {
-            lpArea.innerHTML += `<div class="flex items-center justify-between p-4 point-row"><span class="font-black text-xs text-slate-600">${i+1}. ${lpLabels[i]}</span><select id="lp_p${i+1}" class="p-2 border-2 rounded-xl font-black text-[10px] w-24"><option>YES</option><option>NO</option><option>Poor</option></select></div>`;
-            alpArea.innerHTML += `<div class="flex items-center justify-between p-4 point-row"><span class="font-black text-xs text-slate-600">${i+1}. ${alpLabels[i]}</span><select id="alp_p${i+1}" class="p-2 border-2 rounded-xl font-black text-[10px] w-24"><option>YES</option><option>NO</option><option>Poor</option></select></div>`;
-        }
+  <!-- OBSERVATIONS -->
+  <div class="card">
+    <h3>OBSERVATIONS (PHOTOS OPTIONAL)</h3>
+    <div class="photo-grid" id="photoGrid"></div>
+    <input type="file" id="photoInput" accept="image/*" onchange="addPhoto()" style="margin-top:10px;">
+  </div>
 
-        async function getMaster(type) {
-            const id = document.getElementById(type+'_id').value.toUpperCase();
-            if(!id) return;
-            try {
-                const res = await fetch('https://raw.githubusercontent.com/mukeshrai/cvvrs/main/crew_master.csv');
-                const txt = await res.text();
-                const crew = txt.split('\n').map(r => r.split(',')).find(r => r[0].trim() === id);
-                if(crew) {
-                    if(type === 'cli') document.getElementById('cli_name').innerText = "Inspector: " + crew[1];
-                    else document.getElementById('crew_info').innerText += ` | ${type.toUpperCase()}: ${crew[1]}`;
-                }
-            } catch(e) { console.log("Master load failed"); }
-        }
+  <!-- FINAL REMARKS -->
+  <div class="card">
+    <h3>FINAL REMARKS</h3>
+    <textarea id="remarks" rows="3" placeholder="Enter Final Remarks"></textarea>
+  </div>
 
-        function togglePhoto(v) { document.getElementById('photo_box').classList.toggle('hidden', !v.trim()); }
+  <!-- ACTION BUTTON -->
+  <button class="primary" onclick="submitForm()">GENERATE REPORT</button>
 
-        async function submitData() {
-            const url = document.getElementById('SCRIPT_URL').value;
-            if(!url) { alert("ERROR: Paste Google Script URL first!"); return; }
-            
-            const btn = document.getElementById('main_btn');
-            btn.innerHTML = "⏳ DATA SECURING IN PROGRESS...";
-            btn.disabled = true;
+</div>
 
-            // Logic to send data to scriptURL
-            setTimeout(() => {
-                alert("SUCCESS! 1. Data appended to Sheet 'Data' tab. 2. Record saved in 'CVVRS_Reports' folder.");
-                btn.innerHTML = "SYSTEM UPDATED ✅";
-            }, 3000);
-        }
-    </script>
+<script>
+function toggleTheme() {
+  let html = document.documentElement;
+  let current = html.getAttribute("data-theme");
+  html.setAttribute("data-theme", current === "dark" ? "light" : "dark");
+}
+
+function addPhoto() {
+  const file = document.getElementById('photoInput').files[0];
+  if (!file) return;
+  const grid = document.getElementById('photoGrid');
+  const reader = new FileReader();
+  reader.onload = () => {
+    const div = document.createElement('div');
+    div.className = "photo-item";
+    div.innerHTML = `<img src="${reader.result}"><div>${file.name}</div>`;
+    grid.appendChild(div);
+  };
+  reader.readAsDataURL(file);
+}
+
+function submitForm() {
+  alert("DATA READY - NEXT STEP = GAS BACKEND LINK");
+}
+</script>
+
 </body>
 </html>
