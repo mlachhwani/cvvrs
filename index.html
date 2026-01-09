@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CVVRS ANALYSIS | SECR</title>
 
-<!-- Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
@@ -89,15 +88,9 @@ input:focus, select:focus, textarea:focus {
   gap: 12px;
   flex-wrap: wrap;
 }
-.col-6 {
-  flex: 1 1 calc(50% - 12px);
-}
-.col-4 {
-  flex: 1 1 calc(33.33% - 12px);
-}
-.col-12 {
-  flex: 1 1 100%;
-}
+.col-6 { flex: 1 1 calc(50% - 12px); }
+.col-12 { flex: 1 1 100%; }
+
 .theme-toggle {
   position: fixed;
   top: 12px;
@@ -118,30 +111,12 @@ button.primary {
   padding: 12px 18px;
   cursor: pointer;
   font-size: 15px;
+  margin-top: 10px;
 }
-button.primary:hover {
-  opacity: 0.9;
-}
-.photo-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 10px;
-}
-.photo-item {
-  border: 2px solid var(--border);
-  padding: 6px;
-  border-radius: 6px;
-  text-align: center;
-  font-size: 12px;
-}
-.photo-item img {
-  width: 100%;
-  height: 120px;
-  object-fit: cover;
-  border-radius: 4px;
-}
+button.primary:hover { opacity: 0.9; }
+
 @media (max-width: 600px) {
-  .col-6, .col-4 { flex: 1 1 100%; }
+  .col-6 { flex: 1 1 100%; }
   .header img { height: 40px; }
 }
 </style>
@@ -153,7 +128,6 @@ button.primary:hover {
 
 <div class="container">
 
-  <!-- HEADER -->
   <div class="header">
     <img src="ir_logo.png" alt="IR Logo">
     <div>
@@ -169,21 +143,21 @@ button.primary:hover {
     <div class="row">
       <div class="col-6">
         <label class="label">CLI ID</label>
-        <input id="cli_id" placeholder="Enter CLI ID">
+        <input id="cli_id">
       </div>
       <div class="col-6">
         <label class="label">CLI Name</label>
-        <input id="cli_name" placeholder="Enter CLI Name">
+        <input id="cli_name">
       </div>
     </div>
   </div>
 
   <!-- TRAIN DETAILS -->
   <div class="card">
-    <h3>TRAIN & WORKING DETAILS</h3>
+    <h3>TRAIN DETAILS</h3>
     <div class="row">
       <div class="col-6">
-        <label class="label">Train Number</label>
+        <label class="label">Train No</label>
         <input id="train_no">
       </div>
       <div class="col-6">
@@ -191,16 +165,9 @@ button.primary:hover {
         <input type="date" id="date_work">
       </div>
       <div class="col-6">
-        <label class="label">Loco Number</label>
+        <label class="label">Loco No</label>
         <input id="loco_no">
       </div>
-    </div>
-  </div>
-
-  <!-- STATION DETAILS -->
-  <div class="card">
-    <h3>STATION DETAILS</h3>
-    <div class="row">
       <div class="col-6">
         <label class="label">From Station</label>
         <input id="from_station">
@@ -227,47 +194,55 @@ button.primary:hover {
     </div>
   </div>
 
-  <!-- OBSERVATIONS -->
-  <div class="card">
-    <h3>OBSERVATIONS (PHOTOS OPTIONAL)</h3>
-    <div class="photo-grid" id="photoGrid"></div>
-    <input type="file" id="photoInput" accept="image/*" onchange="addPhoto()" style="margin-top:10px;">
-  </div>
-
   <!-- FINAL REMARKS -->
   <div class="card">
     <h3>FINAL REMARKS</h3>
-    <textarea id="remarks" rows="3" placeholder="Enter Final Remarks"></textarea>
+    <textarea id="remarks" rows="3"></textarea>
   </div>
 
-  <!-- ACTION BUTTON -->
+  <!-- SUBMIT -->
   <button class="primary" onclick="submitForm()">GENERATE REPORT</button>
 
 </div>
 
 <script>
+// 🔗 WebApp URL injected:
+const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxqW0tupZSUkkASZ8kqaZxkXWmYYMsu3Nk_UAb9Q5Wl_LwKNcdJj4ToTZ85K9oRFcFX/exec";
+
 function toggleTheme() {
-  let html = document.documentElement;
-  let current = html.getAttribute("data-theme");
-  html.setAttribute("data-theme", current === "dark" ? "light" : "dark");
+  const html = document.documentElement;
+  html.setAttribute("data-theme", html.getAttribute("data-theme") === "dark" ? "light" : "dark");
 }
 
-function addPhoto() {
-  const file = document.getElementById('photoInput').files[0];
-  if (!file) return;
-  const grid = document.getElementById('photoGrid');
-  const reader = new FileReader();
-  reader.onload = () => {
-    const div = document.createElement('div');
-    div.className = "photo-item";
-    div.innerHTML = `<img src="${reader.result}"><div>${file.name}</div>`;
-    grid.appendChild(div);
+async function submitForm() {
+  const payload = {
+    cli_id: document.getElementById("cli_id").value,
+    cli_name: document.getElementById("cli_name").value,
+    train_no: document.getElementById("train_no").value,
+    date_working: document.getElementById("date_work").value,
+    loco_no: document.getElementById("loco_no").value,
+    from_station: document.getElementById("from_station").value,
+    to_station: document.getElementById("to_station").value,
+    lp_id: document.getElementById("lp_id").value,
+    alp_id: document.getElementById("alp_id").value,
+    final_remarks: document.getElementById("remarks").value
   };
-  reader.readAsDataURL(file);
-}
 
-function submitForm() {
-  alert("DATA READY - NEXT STEP = GAS BACKEND LINK");
+  const res = await fetch(WEBAPP_URL, {
+    method: "POST",
+    body: JSON.stringify(payload),
+    headers: {"Content-Type": "application/json"}
+  });
+
+  const out = await res.json();
+  if (!out.success) return alert(out.message);
+
+  alert(
+    "SUCCESS!\n" +
+    "Division Count: " + out.data.divisionCount + "\n" +
+    "CLI Count: " + out.data.cliCount + "\n\n" +
+    "PDF Link:\n" + out.data.pdfLink
+  );
 }
 </script>
 
