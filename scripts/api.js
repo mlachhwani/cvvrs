@@ -1,79 +1,116 @@
-/* ============================================================
-   api.js - GOOGLE SHEET & DRIVE COMMUNICATION LAYER
-   ============================================================ */
+/* ===========================================================================
+   API.js — MATCHING BACKEND HANDLER (validate + upload + history)
+   Backend URL required (Web App deployed as "Anyone with link")
+   =========================================================================== */
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwk2WMWDpRFiDVV9b2VZG2FAR_vY2msvRiXN2WrBEM7IlLny1PHgTHCzePkaHFT5oE5/exec"; // example: https://script.google.com/macros/s/.../exec
+const API = {};
 
-/* ============================================================
-   1) DUPLICATE + COUNT VALIDATION
-   ============================================================ */
-async function validateDuplicate(data) {
-  const payload = {
-    action: "validate",
-    cli_id: data.cli_id,
-    train_no: data.train_no,
-    date_working: data.date_working,
-    loco_no: data.loco_no,
-    from_station: data.from_station,
-    to_station: data.to_station,
-    lp_id: data.lp_id,
-    alp_id: data.alp_id
-  };
+API.WEBAPP_URL = "https://script.google.com/macros/s/AKfycbw-vvjXMzkOpOvdPpjaAfTbJU3mlUV4YeDoDQMr_zCv5nQekYeGj0OmPyPiTk0wod4R/exec"; // <-- REQUIRED
 
-  const res = await fetch(GAS_URL, {
+/* ===========================================================================
+   COMMON POST WRAPPER
+   =========================================================================== */
+API._post = async function(action, payload) {
+  const res = await fetch(API.WEBAPP_URL, {
     method: "POST",
-    body: JSON.stringify(payload),
+    body: JSON.stringify({ action, payload }),
     headers: { "Content-Type": "application/json" }
   });
 
-  const out = await res.json();
-  return out; // { duplicate: false, divCount:51, cliCount:03 }
-}
+  return await res.json();
+};
 
-/* ============================================================
-   2) PDF UPLOAD TO DRIVE (BASE64)
-   ============================================================ */
-async function uploadPDF(fileBase64, filename) {
+/* ===========================================================================
+   1) VALIDATION + COUNTS + DUPLICATE CHECK
+   FRONTEND CALLS BEFORE PDF CREATION
+   =========================================================================== */
+API.validateDuplicate = async function(formData) {
+
   const payload = {
-    action: "upload",
-    filename: filename,
-    file: fileBase64
+    cli_id: formData.cli_id,
+    train_no: formData.train_no,
+    date_working: formData.date_working,
+    loco_no: formData.loco_no,
+    from_station: formData.from_station,
+    to_station: formData.to_station,
+    lp_id: formData.lp_id,
+    alp_id: formData.alp_id,
+    analysis_date: formData.analysis_date  // must be YYYY-MM-DD
   };
 
-  const res = await fetch(GAS_URL, {
-    method: "POST",
-    body: JSON.stringify(payload),
-    headers: { "Content-Type": "application/json" }
-  });
+  const out = await API._post("validate", payload);
 
-  const out = await res.json();
-  return out; // { success:true, pdfLink:"..." }
-}
+  if (!out.success) {
+    alert("❌ VALIDATION ERROR: " + out.error);
+    return { duplicate:false, cliCount:0, divCount:0 };
+  }
 
-/* ============================================================
-   3) APPEND HISTORY TO SHEET
-   ============================================================ */
-async function appendHistory(data) {
+  return {
+    duplicate: out.duplicate,
+    cliCount: out.cliCount,
+    divCount: out.divCount
+  };
+};
+
+/* ===========================================================================
+   2) PDF UPLOAD (BASE64 -> DRIVE)
+   =========================================================================== */
+API.uploadPDF = async function(base64, filename, analysis_date) {
+
   const payload = {
-    action: "history",
-    row: data
+    filename,
+    base64,
+    analysis_date // required for folder YYYY/MM
   };
 
-  const res = await fetch(GAS_URL, {
-    method: "POST",
-    body: JSON.stringify(payload),
-    headers: { "Content-Type": "application/json" }
-  });
+  const out = await API._post("upload", payload);
 
-  const out = await res.json();
-  return out;
-}
+  if (!out.success) {
+    alert("❌ PDF UPLOAD ERROR: " + out.error);
+    return { success:false };
+  }
 
-/* ============================================================
-   EXPORT (if needed)
-   ============================================================ */
-window.API = {
-  validateDuplicate,
-  uploadPDF,
-  appendHistory
+  return {
+    success:true,
+    pdfLink: out.pdfLink
+  };
+};
+
+/* ===========================================================================
+   3) APPEND HISTORY TO SHEET (INCLUDING PERFORMANCE)
+   =========================================================================== */
+API.appendHistory = async function(h) {
+
+  const payload = {
+    analysis_date: h.analysis_date,
+    month: h.analysis_date.substring(0,7),
+
+    cli_id: h.cli_id,
+    cli_name: h.cli_name,
+
+    train_no: h.train_no,
+    date_working: h.date_working,
+    loco_no: h.loco_no,
+    from_station: h.from_station,
+    to_station: h.to_station,
+
+    lp_id: h.lp_id,
+    lp_name: h.lp_name,
+
+    alp_id: h.alp_id,
+    alp_name: h.alp_name,
+
+    observations: h.observations, // REQUIRED FOR LP/ALP PERFORMANCE
+
+    pdfLink: h.pdfLink
+  };
+
+  const out = await API._post("history", payload);
+
+  if (!out.success) {
+    alert("❌ HISTORY SAVE ERROR: " + out.error);
+    return { success:false };
+  }
+
+  return { success:true };
 };
