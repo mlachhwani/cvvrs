@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CVVRS ANALYSIS | SECR</title>
+
+<!-- CSS -->
 <link href="styles/style.css" rel="stylesheet">
 
 <!-- PDF ENGINE -->
@@ -25,7 +27,7 @@
 
   <!-- HEADER -->
   <div class="header">
-    <img src="assets/ir_logo.png" alt="IR Logo" class="logo">
+    <img src="assets/ir_logo.png" class="logo">
     <div class="header-text">
       <h1>SOUTH EAST CENTRAL RAILWAY</h1>
       <h2>ELECTRICAL (OP) DEPARTMENT, RAIPUR DIVISION</h2>
@@ -33,70 +35,72 @@
     </div>
   </div>
 
-  <!-- CLI DETAILS -->
-  <section class="card">
-    <h3>CLI DETAILS</h3>
-
-    <label>CLI ID</label>
-    <input id="cli_id" placeholder="Enter CLI ID">
-
-    <label>CLI NAME</label>
-    <input id="cli_name" readonly placeholder="Auto Filled">
-  </section>
-
   <!-- TRAIN DETAILS -->
   <section class="card">
     <h3>TRAIN DETAILS</h3>
 
-    <label>Train No</label>
-    <input id="train_no">
+    <div class="row-3">
+      <div class="col">
+        <label>Train No</label>
+        <input id="train_no">
+      </div>
 
-    <label>Date of Working</label>
-    <input type="date" id="date_work">
+      <div class="col">
+        <label>Date of Working</label>
+        <input type="date" id="date_work">
+      </div>
 
-    <label>Loco No</label>
-    <input id="loco_no">
+      <div class="col">
+        <label>Loco No</label>
+        <input id="loco_no">
+      </div>
+    </div>
 
-    <label>From Station (CODE)</label>
-    <input id="from_station">
+    <div class="row-2">
+      <div class="col">
+        <label>From Station (CODE)</label>
+        <input id="from_station">
+        <label class="sub">Station Name</label>
+        <input id="from_station_name" readonly>
+      </div>
 
-    <label>From Station Name</label>
-    <input id="from_station_name" readonly>
+      <div class="col">
+        <label>To Station (CODE)</label>
+        <input id="to_station">
+        <label class="sub">Station Name</label>
+        <input id="to_station_name" readonly>
+      </div>
+    </div>
 
-    <label>To Station (CODE)</label>
-    <input id="to_station">
-
-    <label>To Station Name</label>
-    <input id="to_station_name" readonly>
   </section>
 
   <!-- CREW DETAILS -->
   <section class="card">
     <h3>CREW DETAILS</h3>
 
-    <label>LP ID</label>
-    <input id="lp_id" placeholder="Enter LP ID">
+    <div class="row-2">
+      <div class="col">
+        <label>LP ID</label>
+        <input id="lp_id">
+        <label class="sub">LP NAME</label>
+        <input id="lp_name" readonly>
+        <label class="sub">LP DESIGNATION</label>
+        <input id="lp_desig" readonly>
+        <label class="sub">LP G/CLI</label>
+        <input id="lp_gcli" readonly>
+      </div>
 
-    <label>LP NAME</label>
-    <input id="lp_name" readonly>
-
-    <label>LP DESIGNATION</label>
-    <input id="lp_desig" readonly>
-
-    <label>LP G/CLI</label>
-    <input id="lp_gcli" readonly>
-
-    <label>ALP ID</label>
-    <input id="alp_id" placeholder="Enter ALP ID">
-
-    <label>ALP NAME</label>
-    <input id="alp_name" readonly>
-
-    <label>ALP DESIGNATION</label>
-    <input id="alp_desig" readonly>
-
-    <label>ALP G/CLI</label>
-    <input id="alp_gcli" readonly>
+      <div class="col">
+        <label>ALP ID</label>
+        <input id="alp_id">
+        <label class="sub">ALP NAME</label>
+        <input id="alp_name" readonly>
+        <label class="sub">ALP DESIGNATION</label>
+        <input id="alp_desig" readonly>
+        <label class="sub">ALP G/CLI</label>
+        <input id="alp_gcli" readonly>
+      </div>
+    </div>
   </section>
 
   <!-- OBSERVATIONS -->
@@ -110,6 +114,9 @@
     <h3>FINAL REMARKS</h3>
     <textarea id="remarks" rows="3">NO ABNORMALITIES OBSERVED</textarea>
   </section>
+
+  <!-- SUBMIT BUTTON -->
+  <button id="submit_btn" class="primary glossy">SAVE & GENERATE PDF</button>
 
 </div>
 
