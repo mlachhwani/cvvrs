@@ -1,8 +1,8 @@
 /* ============================================================
-   MODERN CORPORATE THEME
+   MODERN CORPORATE THEME (BG FIXED)
    ============================================================ */
 :root {
-  --bg: #f2f4f7;
+  --bg: #e9edf3;
   --text: #212529;
   --card-bg: #ffffff;
   --border: #d0d7de;
@@ -12,7 +12,7 @@
 }
 
 /* ============================================================
-   GLOBAL RESET & BASE
+   GLOBAL RESET
    ============================================================ */
 * {
   box-sizing: border-box;
@@ -35,7 +35,7 @@ body {
 }
 
 /* ============================================================
-   HEADER (LOGO + TEXT)
+   HEADER SECTION
    ============================================================ */
 .header {
   display: flex;
@@ -43,7 +43,7 @@ body {
   gap: 18px;
   padding: 18px;
   margin-bottom: 20px;
-  background: var(--card-bg);
+  background: linear-gradient(145deg, #f0f4fa 0%, #ffffff 95%);
   border-radius: 10px;
   border: 1px solid var(--border);
   box-shadow: 0px 2px 6px rgba(0,0,0,0.08);
@@ -69,11 +69,11 @@ body {
 .header-text h3 {
   margin: 4px 0 0 0;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 /* ============================================================
-   CARDS (CONTAINER SECTIONS)
+   CARD BLOCKS (WHITE WITH DROP SHADOW)
    ============================================================ */
 .card {
   background: var(--card-bg);
@@ -81,7 +81,7 @@ body {
   border-radius: 10px;
   padding: 18px;
   margin-bottom: 18px;
-  box-shadow: 0px 2px 6px rgba(0,0,0,0.06);
+  box-shadow: 0px 2px 6px rgba(0,0,0,0.05);
 }
 
 .card h3 {
@@ -92,7 +92,7 @@ body {
 }
 
 /* ============================================================
-   FORM LAYOUT (COMPACT ROWS)
+   ROW LAYOUT (TRAIN + CREW)
    ============================================================ */
 .row-2, .row-3 {
   display: flex;
@@ -102,11 +102,16 @@ body {
 .row-3 .col { width: 33.33%; }
 .row-2 .col { width: 50%; }
 
+/* ============================================================
+   LABEL + INPUT UI FIX
+   ============================================================ */
 label {
   display: block;
   margin-bottom: 4px;
   font-weight: 600;
+  color: #222;
 }
+
 label.sub {
   margin-top: 5px;
   font-size: 12px;
@@ -119,38 +124,38 @@ input, select, textarea {
   padding: 7px 9px;
   border: 1px solid var(--border);
   border-radius: 6px;
-  background: #fff;
-  transition: 0.2s;
+  background: #fdfdfd;
+  transition: 0.15s ease;
 }
+
 input:focus, select:focus, textarea:focus {
   border-color: var(--primary);
   outline: none;
-  box-shadow: 0 0 0 3px rgba(3,102,214,0.15);
+  box-shadow: 0 0 0 3px rgba(3,102,214,0.17);
 }
 
 /* ============================================================
-   OBSERVATION SECTION WRAPPER
+   OBSERVATION SECTIONS
    ============================================================ */
 .obs-section {
   margin-bottom: 20px;
   padding: 12px;
   border-radius: 10px;
   border: 1px solid var(--border);
-  background: var(--card-bg);
+  background: #ffffff;
 }
+
 .obs-section h4 {
   margin: 0 0 12px 0;
   padding-bottom: 4px;
   font-size: 16px;
-  border-bottom: 1px solid var(--border);
-  text-transform: uppercase;
   font-weight: 700;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
   color: var(--primary);
 }
 
-/* ============================================================
-   OBSERVATION COLUMNS (LP LEFT | ALP RIGHT)
-   ============================================================ */
+/* 2 column LP-left & ALP-right */
 .obs-row {
   display: flex;
   gap: 12px;
@@ -161,6 +166,7 @@ input:focus, select:focus, textarea:focus {
   flex-direction: column;
   gap: 10px;
 }
+
 .col-head {
   text-align: center;
   padding: 6px;
@@ -171,7 +177,7 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* ============================================================
-   OBSERVATION ITEM (ROW)
+   OBSERVATION ITEM (Improved UI)
    ============================================================ */
 .obs-item {
   display: flex;
@@ -181,10 +187,9 @@ input:focus, select:focus, textarea:focus {
   padding: 10px 12px;
   border-radius: 8px;
   border: 1px solid var(--border);
-  background: #fff;
+  background: #ffffff;
 }
 
-/* TITLE — LEFT SIDE */
 .obs-title {
   flex: 1;
   font-size: 15px;
@@ -193,7 +198,7 @@ input:focus, select:focus, textarea:focus {
   text-transform: uppercase;
 }
 
-/* SELECT — SMALL, CENTERED, BLUE */
+/* Compact YES/NO selector */
 .obs-select {
   width: 90px;
   padding: 6px;
@@ -206,7 +211,7 @@ input:focus, select:focus, textarea:focus {
   cursor: pointer;
 }
 
-/* PHOTO BUTTON — GLOSSY */
+/* Upload button glossy */
 .photo-input {
   width: 120px;
   padding: 6px;
@@ -218,19 +223,21 @@ input:focus, select:focus, textarea:focus {
   font-weight: 700;
   text-align: center;
   cursor: pointer;
-  transition: 0.2s;
+  transition: 0.15s ease;
 }
+
 .photo-input:hover {
-  opacity: 0.85;
+  opacity: 0.88;
 }
 
 /* ============================================================
-   PHOTO MANDATORY MODE A (RED BORDER + 📷 REQUIRED)
+   PHOTO MANDATORY MODE (A)
    ============================================================ */
 .need-photo {
   border: 2px solid red !important;
   position: relative;
 }
+
 .need-photo::after {
   content: "📷 REQUIRED";
   position: absolute;
@@ -242,7 +249,7 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* ============================================================
-   GLOSSY SUBMIT BUTTON
+   SUBMIT BUTTON (Glossy)
    ============================================================ */
 button.primary.glossy {
   width: 100%;
@@ -254,8 +261,9 @@ button.primary.glossy {
   border-radius: 8px;
   background: var(--gradient);
   cursor: pointer;
-  transition: 0.2s;
+  transition: 0.15s ease;
 }
+
 button.primary.glossy:hover {
   background: var(--primary-hover);
   transform: translateY(-1px);
