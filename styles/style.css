@@ -1,200 +1,213 @@
 /* ============================================================
-   GLOBAL BASE
-============================================================ */
-* {
-  box-sizing: border-box;
+   BASE THEME COLORS
+   ============================================================ */
+:root {
+  --bg: #f5f5f5;
+  --text: #222;
+  --card-bg: #ffffff;
+  --border: #dcdcdc;
+  --primary: #004aad;
+  --primary-text: white;
 }
 
+[data-theme="dark"] {
+  --bg: #1e1e1e;
+  --text: #e0e0e0;
+  --card-bg: #2a2a2a;
+  --border: #3a3a3a;
+  --primary: #007fff;
+  --primary-text: white;
+}
+
+/* ============================================================
+   GLOBAL
+   ============================================================ */
 body {
-  font-family: Arial, Helvetica, sans-serif;
-  background: #eef2f5;
   margin: 0;
   padding: 0;
-  color: #222;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
 }
 
 .container {
-  max-width: 980px;
+  width: 90%;
+  max-width: 1100px;
   margin: auto;
-  padding: 20px;
+  padding: 20px 0;
 }
 
 /* ============================================================
-   HEADER - RAILWAY LOGO + TEXT
-============================================================ */
+   HEADER SECTION
+   ============================================================ */
 .header {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 16px;
   margin-bottom: 20px;
-  padding-bottom: 10px;
-  border-bottom: 2px solid #bbb;
+  padding: 16px;
+  border-radius: 8px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
 }
 
-.logo {
-  width: 75px;
-  height: auto;
-}
-
-.header-text h1,
-.header-text h2,
-.header-text h3 {
-  margin: 0;
-  text-align: center;
-  font-weight: 700;
+.header .logo {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
 }
 
 .header-text h1 {
-  font-size: 20px;
+  font-size: 22px;
+  margin: 0;
+  letter-spacing: 0.5px;
 }
 
 .header-text h2 {
-  font-size: 14px;
+  margin: 4px 0 0 0;
+  font-size: 16px;
+  font-weight: 500;
 }
 
 .header-text h3 {
-  font-size: 16px;
-  margin-top: 4px;
+  margin: 4px 0 0 0;
+  font-size: 15px;
+  font-weight: 600;
 }
 
 /* ============================================================
-   CARD BOX (WHITE SECTIONS)
-============================================================ */
+   FORM CARDS
+   ============================================================ */
 .card {
-  background: #ffffff;
-  border: 1px solid #cfd4da;
-  border-radius: 6px;
-  padding: 15px;
-  margin-bottom: 15px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 18px;
 }
 
 .card h3 {
-  margin: 0;
-  margin-bottom: 10px;
-  font-size: 15px;
-  font-weight: bold;
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 18px;
 }
 
-/* ============================================================
-   FORMS (INPUT/SELECT/TEXTAREA)
-============================================================ */
 label {
   display: block;
-  margin-top: 10px;
-  margin-bottom: 3px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #222;
+  margin-top: 8px;
+  margin-bottom: 4px;
+  font-size: 14px;
 }
 
-input,
-select,
-textarea {
+input, select, textarea {
   width: 100%;
-  padding: 7px;
-  border: 1px solid #999;
-  border-radius: 4px;
-  font-size: 13px;
-  color: #222;
-}
-
-textarea {
-  resize: vertical;
-  min-height: 60px;
+  padding: 6px 8px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--text);
 }
 
 /* ============================================================
    BUTTONS
-============================================================ */
+   ============================================================ */
 button.primary {
-  width: 100%;
-  padding: 13px;
-  margin-top: 10px;
-  background: #0d6efd;
+  padding: 12px 20px;
+  background: var(--primary);
+  color: var(--primary-text);
   border: none;
-  border-radius: 4px;
-  font-size: 15px;
-  font-weight: 600;
-  color: #fff;
+  border-radius: 6px;
   cursor: pointer;
+  width: 100%;
+  font-size: 16px;
+  margin-top: 10px;
 }
 
 button.primary:hover {
-  background: #0951b5;
+  opacity: 0.9;
 }
 
 /* ============================================================
-   OBSERVATION UI (AUTO GENERATED)
-============================================================ */
-#obs_container {
-  border-top: 1px solid #ddd;
-  margin-top: 10px;
-  padding-top: 5px;
+   OBSERVATION GRID (LP LEFT | ALP RIGHT)
+   ============================================================ */
+.obs-section {
+  margin-bottom: 20px;
+  padding: 10px;
+  background: var(--card-bg);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.obs-section h4 {
+  margin: 0 0 10px 0;
+  font-size: 16px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 4px;
+  text-transform: uppercase;
 }
 
 .obs-row {
   display: flex;
-  align-items: center;
   gap: 10px;
-  padding: 7px 0;
-  border-bottom: 1px solid #e3e3e3;
+  width: 100%;
+}
+
+.obs-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-radius: 6px;
+}
+
+.col-head {
+  font-weight: bold;
+  margin-bottom: 6px;
+  text-align: center;
+  padding: 4px;
+  background: #eaeaea;
+  border-radius: 4px;
+  color: #000;
+}
+
+.obs-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--card-bg);
 }
 
 .obs-title {
-  font-weight: 600;
-  min-width: 260px;
+  flex: 1;
   font-size: 13px;
+  font-weight: 500;
 }
 
-.obs-role {
-  font-size: 10.5px;
-  color: white;
-  padding: 2px 5px;
-  border-radius: 3px;
-  margin-left: 5px;
-}
-
-/* LP role → blue, ALP → green */
-.obs-role[style*="blue"] { background: #0077ff !important; }
-.obs-role[style*="green"] { background: #15a741 !important; }
-
-/* observation dropdown */
 .obs-select {
+  min-width: 100px;
   padding: 4px;
-  font-size: 13px;
 }
 
-/* PHOTO UPLOAD */
-.obs-photo {
+.photo-input {
+  width: 90px;
   font-size: 12px;
-}
-
-.obs-photo.mandatory {
-  outline: 2px solid red;
-}
-
-/* ABNORMALITIES FIELD */
-.obs-abn {
-  padding: 6px;
-  border: 1px solid #999;
-  border-radius: 3px;
-  font-size: 12px;
-  min-width: 200px;
-  display: none;
 }
 
 /* ============================================================
-   RESPONSIVE ADJUSTMENT
-============================================================ */
-@media(max-width: 768px) {
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 768px) {
   .obs-row {
     flex-direction: column;
-    align-items: flex-start;
   }
-  .obs-title {
-    min-width: auto;
-  }
-  .obs-abn {
-    width: 100%;
+  
+  .header {
+    flex-direction: column;
+    text-align: center;
   }
 }
