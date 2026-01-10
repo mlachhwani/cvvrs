@@ -1,9 +1,9 @@
 /* ============================================================
    MASTER LOADING (CREW / STATION / CLI)
-   Source: GitHub Repo (assets/masters/*.csv)
+   Source: GitHub Pages Repo (/cvvrs/assets/masters/*.csv)
    ============================================================ */
 
-const MASTER_PATH = "./assets/masters/";
+const MASTER_PATH = "/cvvrs/assets/masters/";
 
 let stationMaster = [];
 let crewMaster = [];
@@ -85,6 +85,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const crew = findCrewById(id);
 
     if (!crew) return alert("❌ Invalid LP ID");
+
     console.log("LP:", crew.CREW_NAME, crew.DESIGNATION, crew.G_CLI);
   });
 
@@ -94,16 +95,17 @@ window.addEventListener("DOMContentLoaded", () => {
     const crew = findCrewById(id);
 
     if (!crew) return alert("❌ Invalid ALP ID");
+
     console.log("ALP:", crew.CREW_NAME, crew.DESIGNATION, crew.G_CLI);
   });
 
-  // FROM station
+  // FROM station validation
   document.getElementById("from_station").addEventListener("change", () => {
     const code = document.getElementById("from_station").value;
     if (!findStationByCode(code)) alert("❌ Invalid FROM Station Code");
   });
 
-  // TO station
+  // TO station validation
   document.getElementById("to_station").addEventListener("change", () => {
     const code = document.getElementById("to_station").value;
     if (!findStationByCode(code)) alert("❌ Invalid TO Station Code");
