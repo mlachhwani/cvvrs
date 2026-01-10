@@ -3,7 +3,7 @@
    Source: GitHub Repo (assets/masters/*.csv)
    ============================================================ */
 
-const MASTER_PATH = "assets/masters/";
+const MASTER_PATH = "./assets/masters/";
 
 let stationMaster = [];
 let crewMaster = [];
@@ -46,7 +46,6 @@ loadAllMasters();
 /* ============================================================
    LOOKUP FUNCTIONS
    ============================================================ */
-
 function findStationByCode(code) {
   code = code.trim().toUpperCase();
   return stationMaster.find(x => x.STATION_CODE === code) || null;
@@ -63,76 +62,60 @@ function findCLIById(id) {
 }
 
 /* ============================================================
-   UI AUTOFILL HANDLERS
+   UI AUTOFILL HANDLERS (RUN AFTER DOM READY)
    ============================================================ */
+window.addEventListener("DOMContentLoaded", () => {
 
-// CLI autofill
-document.getElementById("cli_id").addEventListener("change", () => {
-  const id = document.getElementById("cli_id").value;
-  const cli = findCLIById(id);
+  // CLI autofill
+  document.getElementById("cli_id").addEventListener("change", () => {
+    const id = document.getElementById("cli_id").value;
+    const cli = findCLIById(id);
 
-  if (!cli) {
-    alert("❌ Invalid CLI ID");
-    document.getElementById("cli_name").value = "";
-    return;
-  }
+    if (!cli) {
+      alert("❌ Invalid CLI ID");
+      document.getElementById("cli_name").value = "";
+      return;
+    }
+    document.getElementById("cli_name").value = cli.CLI_NAME;
+  });
 
-  document.getElementById("cli_name").value = cli.CLI_NAME;
-});
+  // LP autofill
+  document.getElementById("lp_id").addEventListener("change", () => {
+    const id = document.getElementById("lp_id").value;
+    const crew = findCrewById(id);
 
-// LP autofill
-document.getElementById("lp_id").addEventListener("change", () => {
-  const id = document.getElementById("lp_id").value;
-  const crew = findCrewById(id);
+    if (!crew) return alert("❌ Invalid LP ID");
+    console.log("LP:", crew.CREW_NAME, crew.DESIGNATION, crew.G_CLI);
+  });
 
-  if (!crew) {
-    alert("❌ Invalid LP ID");
-    return;
-  }
+  // ALP autofill
+  document.getElementById("alp_id").addEventListener("change", () => {
+    const id = document.getElementById("alp_id").value;
+    const crew = findCrewById(id);
 
-  console.log("LP:", crew.CREW_NAME, crew.DESIGNATION, crew.G_CLI);
-});
+    if (!crew) return alert("❌ Invalid ALP ID");
+    console.log("ALP:", crew.CREW_NAME, crew.DESIGNATION, crew.G_CLI);
+  });
 
-// ALP autofill
-document.getElementById("alp_id").addEventListener("change", () => {
-  const id = document.getElementById("alp_id").value;
-  const crew = findCrewById(id);
+  // FROM station
+  document.getElementById("from_station").addEventListener("change", () => {
+    const code = document.getElementById("from_station").value;
+    if (!findStationByCode(code)) alert("❌ Invalid FROM Station Code");
+  });
 
-  if (!crew) {
-    alert("❌ Invalid ALP ID");
-    return;
-  }
+  // TO station
+  document.getElementById("to_station").addEventListener("change", () => {
+    const code = document.getElementById("to_station").value;
+    if (!findStationByCode(code)) alert("❌ Invalid TO Station Code");
+  });
 
-  console.log("ALP:", crew.CREW_NAME, crew.DESIGNATION, crew.G_CLI);
-});
-
-// FROM station autofill
-document.getElementById("from_station").addEventListener("change", () => {
-  const code = document.getElementById("from_station").value;
-  const st = findStationByCode(code);
-
-  if (!st) {
-    alert("❌ Invalid FROM Station Code");
-  }
-});
-
-// TO station autofill
-document.getElementById("to_station").addEventListener("change", () => {
-  const code = document.getElementById("to_station").value;
-  const st = findStationByCode(code);
-
-  if (!st) {
-    alert("❌ Invalid TO Station Code");
-  }
 });
 
 /* ============================================================
-   EXPORT (if needed)
+   EXPORT
    ============================================================ */
-
 window.MASTERS = {
   findCLIById,
   findCrewById,
   findStationByCode
 };
-
