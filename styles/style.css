@@ -1,285 +1,98 @@
-/* ============================================================
-   MODERN CORPORATE THEME (BG FIXED)
-   ============================================================ */
-:root {
-  --bg: #e9edf3;
-  --text: #212529;
-  --card-bg: #ffffff;
-  --border: #d0d7de;
-  --primary: #0366d6;
-  --primary-hover: #025cbf;
-  --gradient: linear-gradient(135deg, #0366d6 0%, #2188ff 100%);
-}
-
-/* ============================================================
-   GLOBAL RESET
-   ============================================================ */
-* {
-  box-sizing: border-box;
-  font-family: "Segoe UI", Roboto, Arial, sans-serif;
-}
-
 body {
-  margin: 0;
-  padding: 0;
-  background: var(--bg);
-  color: var(--text);
-  font-size: 14px;
+  background:#eef1f4;
+  font-family:Segoe UI, sans-serif;
+  margin:0;
+  padding:20px;
 }
-
 .container {
-  width: 92%;
-  max-width: 1150px;
-  margin: auto;
-  padding: 20px 0;
+  max-width:1100px;
+  margin:auto;
 }
-
-/* ============================================================
-   HEADER SECTION
-   ============================================================ */
 .header {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  padding: 18px;
-  margin-bottom: 20px;
-  background: linear-gradient(145deg, #f0f4fa 0%, #ffffff 95%);
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  box-shadow: 0px 2px 6px rgba(0,0,0,0.08);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:15px;
+  margin-bottom:20px;
 }
-
 .logo {
-  width: 80px;
-  height: 80px;
-  object-fit: contain;
+  width:70px;
 }
-
 .header-text h1 {
-  margin: 0;
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--primary);
+  font-size:20px;
+  margin:0;
 }
 .header-text h2 {
-  margin: 4px 0 0 0;
-  font-size: 16px;
-  font-weight: 500;
+  font-size:15px;
+  margin:0;
 }
 .header-text h3 {
-  margin: 4px 0 0 0;
-  font-size: 15px;
-  font-weight: 700;
+  font-size:17px;
+  margin:2px 0 0 0;
 }
-
-/* ============================================================
-   CARD BLOCKS (WHITE WITH DROP SHADOW)
-   ============================================================ */
 .card {
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 18px;
-  margin-bottom: 18px;
-  box-shadow: 0px 2px 6px rgba(0,0,0,0.05);
+  background:white;
+  padding:15px;
+  margin-bottom:15px;
+  border-radius:6px;
+  box-shadow:0 2px 4px rgba(0,0,0,0.1);
 }
-
-.card h3 {
-  margin: 0 0 12px 0;
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--primary);
+.row-3, .row-2 {
+  display:flex;
+  gap:10px;
 }
-
-/* ============================================================
-   ROW LAYOUT (TRAIN + CREW)
-   ============================================================ */
-.row-2, .row-3 {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 10px;
+.col {
+  flex:1;
+  display:flex;
+  flex-direction:column;
 }
-.row-3 .col { width: 33.33%; }
-.row-2 .col { width: 50%; }
-
-/* ============================================================
-   LABEL + INPUT UI FIX
-   ============================================================ */
 label {
-  display: block;
-  margin-bottom: 4px;
-  font-weight: 600;
-  color: #222;
+  font-size:12px;
+  font-weight:bold;
+  margin-top:5px;
 }
-
-label.sub {
-  margin-top: 5px;
-  font-size: 12px;
-  color: #6c757d;
-  text-transform: uppercase;
+.sub {
+  font-size:10px;
+  color:#666;
+  margin-top:3px;
 }
-
-input, select, textarea {
-  width: 100%;
-  padding: 7px 9px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: #fdfdfd;
-  transition: 0.15s ease;
+input, textarea, select {
+  padding:6px;
+  border:1px solid #ccc;
+  border-radius:4px;
 }
-
-input:focus, select:focus, textarea:focus {
-  border-color: var(--primary);
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(3,102,214,0.17);
+.primary.glossy {
+  width:100%;
+  padding:12px;
+  background:linear-gradient(90deg,#0078d4,#005fa3);
+  border:none;
+  font-size:15px;
+  color:white;
+  cursor:pointer;
+  border-radius:6px;
+  margin-top:10px;
 }
-
-/* ============================================================
-   OBSERVATION SECTIONS
-   ============================================================ */
-.obs-section {
-  margin-bottom: 20px;
-  padding: 12px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: #ffffff;
+.obs-box {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:#fff;
+  padding:8px;
+  border:1px solid #ddd;
+  margin-bottom:6px;
+  border-radius:4px;
+  font-size:13px;
 }
-
-.obs-section h4 {
-  margin: 0 0 12px 0;
-  padding-bottom: 4px;
-  font-size: 16px;
-  font-weight: 700;
-  text-transform: uppercase;
-  border-bottom: 1px solid var(--border);
-  color: var(--primary);
-}
-
-/* 2 column LP-left & ALP-right */
-.obs-row {
-  display: flex;
-  gap: 12px;
-}
-.obs-col {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.col-head {
-  text-align: center;
-  padding: 6px;
-  font-size: 13px;
-  font-weight: 700;
-  border-radius: 6px;
-  background: #e9ecef;
-}
-
-/* ============================================================
-   OBSERVATION ITEM (Improved UI)
-   ============================================================ */
-.obs-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: #ffffff;
-}
-
 .obs-title {
-  flex: 1;
-  font-size: 15px;
-  font-weight: 700;
-  color: #222;
-  text-transform: uppercase;
+  font-weight:bold;
 }
-
-/* Compact YES/NO selector */
-.obs-select {
-  width: 90px;
-  padding: 6px;
-  font-weight: 700;
-  background: #eef6ff;
-  color: var(--primary);
-  border: 1px solid #bcd7ff;
-  border-radius: 6px;
-  text-align: center;
-  cursor: pointer;
+.obs-right {
+  display:flex;
+  gap:6px;
 }
-
-/* Upload button glossy */
-.photo-input {
-  width: 120px;
-  padding: 6px;
-  font-size: 12px;
-  background: var(--gradient);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-weight: 700;
-  text-align: center;
-  cursor: pointer;
-  transition: 0.15s ease;
+.obs-abn {
+  width:130px;
 }
-
-.photo-input:hover {
-  opacity: 0.88;
-}
-
-/* ============================================================
-   PHOTO MANDATORY MODE (A)
-   ============================================================ */
-.need-photo {
-  border: 2px solid red !important;
-  position: relative;
-}
-
-.need-photo::after {
-  content: "📷 REQUIRED";
-  position: absolute;
-  right: 8px;
-  bottom: -2px;
-  color: red;
-  font-size: 11px;
-  font-weight: 800;
-}
-
-/* ============================================================
-   SUBMIT BUTTON (Glossy)
-   ============================================================ */
-button.primary.glossy {
-  width: 100%;
-  padding: 14px;
-  font-size: 16px;
-  font-weight: 700;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  background: var(--gradient);
-  cursor: pointer;
-  transition: 0.15s ease;
-}
-
-button.primary.glossy:hover {
-  background: var(--primary-hover);
-  transform: translateY(-1px);
-}
-
-/* ============================================================
-   RESPONSIVE SUPPORT
-   ============================================================ */
-@media (max-width: 768px) {
-  .row-2, .row-3 {
-    flex-direction: column;
-  }
-  .row-2 .col, .row-3 .col {
-    width: 100%;
-  }
-  .obs-row {
-    flex-direction: column;
-  }
+.obs-photo {
+  width:135px;
 }
