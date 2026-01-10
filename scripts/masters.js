@@ -1,6 +1,5 @@
 /* ============================================================
    MASTER LOADING (CREW / STATION / CLI)
-   Source: GitHub Pages Repo (/cvvrs/masters/*.csv)
    ============================================================ */
 
 const MASTER_PATH = "/cvvrs/masters/";
@@ -9,26 +8,21 @@ let stationMaster = [];
 let crewMaster = [];
 let cliMaster = [];
 
-/* ============================================================
-   CSV LOADER
-   ============================================================ */
+/* CSV loader */
 async function loadMasterCSV(filename) {
   const url = MASTER_PATH + filename;
-  const response = await fetch(url);
+  const res = await fetch(url);
 
-  if (!response.ok) {
-    console.error("Master load error: ", filename);
+  if (!res.ok) {
+    console.error("Master load error:", filename);
     return [];
   }
 
-  const text = await response.text();
-  const rows = Papa.parse(text.trim(), { header: true }).data;
-  return rows;
+  const text = await res.text();
+  return Papa.parse(text.trim(), { header: true }).data;
 }
 
-/* ============================================================
-   LOAD ALL MASTERS
-   ============================================================ */
+/* Load all masters */
 async function loadAllMasters() {
   console.log("Loading master CSVs from GitHub...");
 
@@ -40,74 +34,60 @@ async function loadAllMasters() {
   console.log("Crew Master:", crewMaster.length);
   console.log("CLI Master:", cliMaster.length);
 }
-
 loadAllMasters();
 
-/* ============================================================
-   LOOKUP FUNCTIONS
-   ============================================================ */
+
+/* LOOKUPS */
 function findStationByCode(code) {
-  code = code.trim().toUpperCase();
-  return stationMaster.find(x => x.STATION_CODE === code) || null;
+  return stationMaster.find(x => x.STATION_CODE === code.toUpperCase()) || null;
 }
-
 function findCrewById(id) {
-  id = id.trim().toUpperCase();
-  return crewMaster.find(x => x.CREW_ID === id) || null;
+  return crewMaster.find(x => x.CREW_ID === id.toUpperCase()) || null;
 }
-
 function findCLIById(id) {
-  id = id.trim().toUpperCase();
-  return cliMaster.find(x => x.CLI_ID === id) || null;
+  return cliMaster.find(x => x.CLI_ID === id.toUpperCase()) || null;
 }
 
-/* ============================================================
-   UI AUTOFILL HANDLERS (RUN AFTER DOM READY)
-   ============================================================ */
+
+/* DOM BINDINGS */
 window.addEventListener("DOMContentLoaded", () => {
 
+  // CLI
   document.getElementById("cli_id").addEventListener("change", () => {
-    const id = document.getElementById("cli_id").value;
-    const cli = findCLIById(id);
-    if (!cli) {
-      alert("❌ Invalid CLI ID");
-      document.getElementById("cli_name").value = "";
-      return;
-    }
-    document.getElementById("cli_name").value = cli.CLI_NAME;
+    const c = findCLIById(cli_id.value);
+    cli_name.value = c ? c.CLI_NAME : "";
+    if (!c) alert("❌ Invalid CLI ID");
   });
 
+  // LP
   document.getElementById("lp_id").addEventListener("change", () => {
-    const id = document.getElementById("lp_id").value;
-    const crew = findCrewById(id);
-    if (!crew) return alert("❌ Invalid LP ID");
-    console.log("LP:", crew.CREW_NAME, crew.DESIGNATION, crew.G_CLI);
+    const c = findCrewById(lp_id.value);
+    if (!c) { alert("❌ Invalid LP ID"); lp_name.value = lp_desig.value = lp_gcli.value = ""; return; }
+    lp_name.value = c.CREW_NAME;
+    lp_desig.value = c.DESIGNATION;
+    lp_gcli.value = c.G_CLI;
   });
 
+  // ALP
   document.getElementById("alp_id").addEventListener("change", () => {
-    const id = document.getElementById("alp_id").value;
-    const crew = findCrewById(id);
-    if (!crew) return alert("❌ Invalid ALP ID");
-    console.log("ALP:", crew.CREW_NAME, crew.DESIGNATION, crew.G_CLI);
+    const c = findCrewById(alp_id.value);
+    if (!c) { alert("❌ Invalid ALP ID"); alp_name.value = alp_desig.value = alp_gcli.value = ""; return; }
+    alp_name.value = c.CREW_NAME;
+    alp_desig.value = c.DESIGNATION;
+    alp_gcli.value = c.G_CLI;
   });
 
+  // FROM station
   document.getElementById("from_station").addEventListener("change", () => {
-    const code = document.getElementById("from_station").value;
-    if (!findStationByCode(code)) alert("❌ Invalid FROM Station Code");
+    const s = findStationByCode(from_station.value);
+    from_station_name.value = s ? s.STATION_NAME : "";
+    if (!s) alert("❌ Invalid FROM Station Code");
   });
 
+  // TO station
   document.getElementById("to_station").addEventListener("change", () => {
-    const code = document.getElementById("to_station").value;
-    if (!findStationByCode(code)) alert("❌ Invalid TO Station Code");
+    const s = findStationByCode(to_station.value);
+    to_station_name.value = s ? s.STATION_NAME : "";
+    if (!s) alert("❌ Invalid TO Station Code");
   });
-
 });
-
-/* ============================================================
-   EXPORT
-   ============================================================ */
-window.MASTERS = {
-  findCLIById,
-  findCrewById,
-  findStationByCode
-};
