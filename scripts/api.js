@@ -2,7 +2,7 @@
    api.js - GOOGLE SHEET & DRIVE COMMUNICATION LAYER
    ============================================================ */
 
-const GAS_URL = "PASTE_YOUR_WebApp_URL_HERE"; // example: https://script.google.com/macros/s/.../exec
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwk2WMWDpRFiDVV9b2VZG2FAR_vY2msvRiXN2WrBEM7IlLny1PHgTHCzePkaHFT5oE5/exec"; // example: https://script.google.com/macros/s/.../exec
 
 /* ============================================================
    1) DUPLICATE + COUNT VALIDATION
