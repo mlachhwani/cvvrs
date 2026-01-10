@@ -6,12 +6,19 @@
 <title>CVVRS ANALYSIS | SECR</title>
 <link href="styles/style.css" rel="stylesheet">
 
-<!-- pdfMake -->
+<!-- PDF ENGINE -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 
-<!-- For CSV Parsing -->
+<!-- CSV PARSER -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+
+<!-- APP SCRIPTS (IN ORDER) -->
+<script src="scripts/masters.js"></script>
+<script src="scripts/pdf_engine.js"></script>
+<script src="scripts/obs_master.js"></script>
+<script src="scripts/obs_ui.js"></script>
+<script src="scripts/api.js"></script>
 
 </head>
 <body>
@@ -31,46 +38,48 @@
   <!-- CLI DETAILS -->
   <section class="card">
     <h3>CLI DETAILS</h3>
-    <label class="label">CLI ID</label>
-    <input id="cli_id" />
-    <label class="label">CLI NAME</label>
-    <input id="cli_name" readonly />
+    <label>CLI ID</label>
+    <input id="cli_id" placeholder="Enter CLI ID">
+    <label>CLI NAME</label>
+    <input id="cli_name" readonly placeholder="Auto Filled">
   </section>
 
   <!-- TRAIN DETAILS -->
   <section class="card">
     <h3>TRAIN DETAILS</h3>
-    <label class="label">Train No</label>
-    <input id="train_no" />
 
-    <label class="label">Date of Working</label>
-    <input type="date" id="date_work" />
+    <label>Train No</label>
+    <input id="train_no">
 
-    <label class="label">Loco No</label>
-    <input id="loco_no" />
+    <label>Date of Working</label>
+    <input type="date" id="date_work">
 
-    <label class="label">From Station (CODE)</label>
-    <input id="from_station" />
+    <label>Loco No</label>
+    <input id="loco_no">
 
-    <label class="label">To Station (CODE)</label>
-    <input id="to_station" />
+    <label>From Station (CODE)</label>
+    <input id="from_station">
+
+    <label>To Station (CODE)</label>
+    <input id="to_station">
   </section>
 
   <!-- CREW DETAILS -->
   <section class="card">
     <h3>CREW DETAILS</h3>
-    <label class="label">LP ID</label>
-    <input id="lp_id" />
 
-    <label class="label">ALP ID</label>
-    <input id="alp_id" />
+    <label>LP ID</label>
+    <input id="lp_id">
+
+    <label>ALP ID</label>
+    <input id="alp_id">
   </section>
-  
-<!-- OBSERVATIONS WILL RENDER HERE -->
-<section class="card">
-  <h3>OBSERVATIONS</h3>
-  <div id="obs_container"></div>
-</section>
+
+  <!-- OBSERVATIONS -->
+  <section class="card">
+    <h3>OBSERVATIONS</h3>
+    <div id="obs_container"></div>
+  </section>
 
   <!-- FINAL REMARKS -->
   <section class="card">
@@ -82,8 +91,5 @@
 
 </div>
 
-<script src="scripts/masters.js"></script>
-<script src="scripts/pdf_engine.js"></script>
-<script src="scripts/api.js"></script>
 </body>
 </html>
