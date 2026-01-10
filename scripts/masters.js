@@ -1,9 +1,9 @@
 /* ============================================================
    MASTER LOADING (CREW / STATION / CLI)
-   Source: GitHub Pages Repo (/cvvrs/assets/masters/*.csv)
+   Source: GitHub Pages Repo (/cvvrs/masters/*.csv)
    ============================================================ */
 
-const MASTER_PATH = "/cvvrs/assets/masters/";
+const MASTER_PATH = "/cvvrs/masters/";
 
 let stationMaster = [];
 let crewMaster = [];
@@ -66,11 +66,9 @@ function findCLIById(id) {
    ============================================================ */
 window.addEventListener("DOMContentLoaded", () => {
 
-  // CLI autofill
   document.getElementById("cli_id").addEventListener("change", () => {
     const id = document.getElementById("cli_id").value;
     const cli = findCLIById(id);
-
     if (!cli) {
       alert("❌ Invalid CLI ID");
       document.getElementById("cli_name").value = "";
@@ -79,33 +77,25 @@ window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("cli_name").value = cli.CLI_NAME;
   });
 
-  // LP autofill
   document.getElementById("lp_id").addEventListener("change", () => {
     const id = document.getElementById("lp_id").value;
     const crew = findCrewById(id);
-
     if (!crew) return alert("❌ Invalid LP ID");
-
     console.log("LP:", crew.CREW_NAME, crew.DESIGNATION, crew.G_CLI);
   });
 
-  // ALP autofill
   document.getElementById("alp_id").addEventListener("change", () => {
     const id = document.getElementById("alp_id").value;
     const crew = findCrewById(id);
-
     if (!crew) return alert("❌ Invalid ALP ID");
-
     console.log("ALP:", crew.CREW_NAME, crew.DESIGNATION, crew.G_CLI);
   });
 
-  // FROM station validation
   document.getElementById("from_station").addEventListener("change", () => {
     const code = document.getElementById("from_station").value;
     if (!findStationByCode(code)) alert("❌ Invalid FROM Station Code");
   });
 
-  // TO station validation
   document.getElementById("to_station").addEventListener("change", () => {
     const code = document.getElementById("to_station").value;
     if (!findStationByCode(code)) alert("❌ Invalid TO Station Code");
