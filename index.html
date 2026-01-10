@@ -13,13 +13,6 @@
 <!-- CSV PARSER -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
-<!-- APP SCRIPTS (CORRECT ORDER) -->
-<script src="scripts/masters.js"></script>
-<script src="scripts/obs_master.js"></script>
-<script src="scripts/obs_ui.js"></script>
-<script src="scripts/pdf_engine.js"></script>
-<script src="scripts/api.js"></script>
-
 </head>
 <body>
 
@@ -90,6 +83,13 @@
   <button class="primary" onclick="generateReport()">GENERATE REPORT</button>
 
 </div>
+
+<!-- LOAD SCRIPTS AFTER DOM -->
+<script src="scripts/masters.js"></script>
+<script src="scripts/obs_master.js"></script>
+<script src="scripts/obs_ui.js"></script>
+<script src="scripts/pdf_engine.js"></script>
+<script src="scripts/api.js"></script>
 
 </body>
 </html>
