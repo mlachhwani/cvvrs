@@ -1,36 +1,200 @@
-.obs-row {
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:6px 0;
-  border-bottom:1px solid #ddd;
+/* ============================================================
+   GLOBAL BASE
+============================================================ */
+* {
+  box-sizing: border-box;
 }
 
-.obs-title { font-weight:600; }
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background: #eef2f5;
+  margin: 0;
+  padding: 0;
+  color: #222;
+}
+
+.container {
+  max-width: 980px;
+  margin: auto;
+  padding: 20px;
+}
+
+/* ============================================================
+   HEADER - RAILWAY LOGO + TEXT
+============================================================ */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #bbb;
+}
+
+.logo {
+  width: 75px;
+  height: auto;
+}
+
+.header-text h1,
+.header-text h2,
+.header-text h3 {
+  margin: 0;
+  text-align: center;
+  font-weight: 700;
+}
+
+.header-text h1 {
+  font-size: 20px;
+}
+
+.header-text h2 {
+  font-size: 14px;
+}
+
+.header-text h3 {
+  font-size: 16px;
+  margin-top: 4px;
+}
+
+/* ============================================================
+   CARD BOX (WHITE SECTIONS)
+============================================================ */
+.card {
+  background: #ffffff;
+  border: 1px solid #cfd4da;
+  border-radius: 6px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.card h3 {
+  margin: 0;
+  margin-bottom: 10px;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+/* ============================================================
+   FORMS (INPUT/SELECT/TEXTAREA)
+============================================================ */
+label {
+  display: block;
+  margin-top: 10px;
+  margin-bottom: 3px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #222;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 7px;
+  border: 1px solid #999;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #222;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+/* ============================================================
+   BUTTONS
+============================================================ */
+button.primary {
+  width: 100%;
+  padding: 13px;
+  margin-top: 10px;
+  background: #0d6efd;
+  border: none;
+  border-radius: 4px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+}
+
+button.primary:hover {
+  background: #0951b5;
+}
+
+/* ============================================================
+   OBSERVATION UI (AUTO GENERATED)
+============================================================ */
+#obs_container {
+  border-top: 1px solid #ddd;
+  margin-top: 10px;
+  padding-top: 5px;
+}
+
+.obs-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  border-bottom: 1px solid #e3e3e3;
+}
+
+.obs-title {
+  font-weight: 600;
+  min-width: 260px;
+  font-size: 13px;
+}
 
 .obs-role {
-  font-size:11px;
-  color:white;
-  padding:2px 5px;
-  border-radius:3px;
-  margin-left:5px;
+  font-size: 10.5px;
+  color: white;
+  padding: 2px 5px;
+  border-radius: 3px;
+  margin-left: 5px;
 }
 
+/* LP role → blue, ALP → green */
+.obs-role[style*="blue"] { background: #0077ff !important; }
+.obs-role[style*="green"] { background: #15a741 !important; }
+
+/* observation dropdown */
 .obs-select {
-  padding:4px;
-  font-size:13px;
+  padding: 4px;
+  font-size: 13px;
 }
 
+/* PHOTO UPLOAD */
 .obs-photo {
-  font-size:12px;
+  font-size: 12px;
 }
 
 .obs-photo.mandatory {
-  outline:1px solid red;
+  outline: 2px solid red;
 }
 
+/* ABNORMALITIES FIELD */
 .obs-abn {
-  padding:3px;
-  border:1px solid #aaa;
-  font-size:12px;
+  padding: 6px;
+  border: 1px solid #999;
+  border-radius: 3px;
+  font-size: 12px;
+  min-width: 200px;
+  display: none;
+}
+
+/* ============================================================
+   RESPONSIVE ADJUSTMENT
+============================================================ */
+@media(max-width: 768px) {
+  .obs-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .obs-title {
+    min-width: auto;
+  }
+  .obs-abn {
+    width: 100%;
+  }
 }
