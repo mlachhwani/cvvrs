@@ -1,151 +1,154 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CVVRS ANALYSIS | SECR</title>
-  <link rel="stylesheet" href="styles/style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CVVRS ANALYSIS | SECR</title>
+
+<link rel="stylesheet" href="styles/style.css">
+
+<!-- PDF ENGINE -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+<!-- CSV PARSER -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+
+<!-- APP SCRIPTS (ORDER MATTERS) -->
+<script src="scripts/masters.js"></script>
+<script src="scripts/obs_master.js"></script>
+<script src="scripts/obs_ui.js"></script>
+<script src="scripts/api.js"></script>
+<script src="scripts/pdf_engine.js"></script>
+
 </head>
-
 <body>
-  <div class="app-container">
 
-    <!-- HEADER -->
-    <header class="app-header">
-      <img src="assets/ir_logo.png" class="ir-logo" alt="IR Logo">
-      <div class="header-text">
-        <h1>SOUTH EAST CENTRAL RAILWAY</h1>
-        <h2>ELECTRICAL (OP) DEPARTMENT, RAIPUR DIVISION</h2>
-        <h3>CVVRS ANALYSIS REPORT</h3>
-      </div>
-    </header>
+<div class="container">
 
-    <!-- CLI SECTION -->
-    <section class="card">
-      <h3 class="section-title">CLI DETAILS</h3>
-      <div class="form-row">
-        <div class="form-group">
-          <label>CLI ID</label>
-          <input type="text" id="cli_id" placeholder="Enter CLI ID">
-        </div>
-        <div class="form-group">
-          <label>CLI NAME</label>
-          <input type="text" id="cli_name" readonly placeholder="Auto Filled">
-        </div>
-        <div class="form-group">
-          <label>DATE OF ANALYSIS</label>
-          <input type="text" id="analysis_date" readonly>
-        </div>
-      </div>
-    </section>
-
-    <!-- TRAIN SECTION -->
-    <section class="card">
-      <h3 class="section-title">TRAIN DETAILS</h3>
-      <div class="form-row">
-        <div class="form-group">
-          <label>TRAIN NO</label>
-          <input type="text" id="train_no">
-        </div>
-        <div class="form-group">
-          <label>DATE OF WORKING</label>
-          <input type="date" id="date_work">
-        </div>
-        <div class="form-group">
-          <label>LOCO NO</label>
-          <input type="text" id="loco_no">
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label>FROM STATION (CODE)</label>
-          <input type="text" id="from_station">
-          <input type="text" id="from_station_name" readonly placeholder="Auto Station Name">
-        </div>
-        <div class="form-group">
-          <label>TO STATION (CODE)</label>
-          <input type="text" id="to_station">
-          <input type="text" id="to_station_name" readonly placeholder="Auto Station Name">
-        </div>
-      </div>
-    </section>
-
-    <!-- CREW SECTION -->
-    <section class="card">
-      <h3 class="section-title">CREW DETAILS</h3>
-
-      <div class="crew-container">
-        <!-- LP COLUMN -->
-        <div class="crew-col">
-          <h4 class="crew-title">LOCO PILOT (LP)</h4>
-          <div class="form-group">
-            <label>LP ID</label>
-            <input type="text" id="lp_id">
-          </div>
-          <div class="form-group">
-            <label>LP NAME</label>
-            <input type="text" id="lp_name" readonly>
-          </div>
-          <div class="form-group">
-            <label>DESIGNATION</label>
-            <input type="text" id="lp_desig" readonly>
-          </div>
-          <div class="form-group">
-            <label>G/CLI</label>
-            <input type="text" id="lp_gcli" readonly>
-          </div>
-        </div>
-
-        <!-- ALP COLUMN -->
-        <div class="crew-col">
-          <h4 class="crew-title">ASST. LOCO PILOT (ALP)</h4>
-          <div class="form-group">
-            <label>ALP ID</label>
-            <input type="text" id="alp_id">
-          </div>
-          <div class="form-group">
-            <label>ALP NAME</label>
-            <input type="text" id="alp_name" readonly>
-          </div>
-          <div class="form-group">
-            <label>DESIGNATION</label>
-            <input type="text" id="alp_desig" readonly>
-          </div>
-          <div class="form-group">
-            <label>G/CLI</label>
-            <input type="text" id="alp_gcli" readonly>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- OBSERVATIONS SECTION -->
-    <section class="card">
-      <h3 class="section-title">OBSERVATIONS</h3>
-      <div id="obs_container" class="obs-grid">
-        <!-- Will be rendered by obs_ui.js -->
-      </div>
-    </section>
-
-    <!-- FINAL REMARKS -->
-    <section class="card">
-      <h3 class="section-title">FINAL REMARKS</h3>
-      <textarea id="remarks" rows="3">NO ABNORMALITIES OBSERVED</textarea>
-    </section>
-
-    <!-- SUBMIT -->
-    <button id="submit_btn" class="primary-btn">SAVE & GENERATE PDF</button>
-
+  <!-- HEADER -->
+  <div class="header">
+    <img src="assets/ir_logo.png" class="logo">
+    <div class="header-text">
+      <h1>SOUTH EAST CENTRAL RAILWAY</h1>
+      <h2>ELECTRICAL (OP) DEPARTMENT, RAIPUR DIVISION</h2>
+      <h3>CVVRS ANALYSIS REPORT</h3>
+    </div>
   </div>
 
-  <!-- JS LOADING -->
-  <script src="scripts/masters.js"></script>
-  <script src="scripts/obs_master.js"></script>
-  <script src="scripts/obs_ui.js"></script>
-  <script src="scripts/date_validation.js"></script>
-  <script src="scripts/pdf_engine.js"></script>
-  <script src="scripts/submit.js"></script>
+  <!-- CLI DETAILS -->
+  <section class="card">
+    <h3>CLI DETAILS</h3>
+    <div class="row">
+      <div class="col-50">
+        <label>CLI ID</label>
+        <input id="cli_id" placeholder="Enter CLI ID">
+      </div>
+      <div class="col-50">
+        <label>CLI NAME</label>
+        <input id="cli_name" readonly placeholder="Auto Filled">
+      </div>
+    </div>
+  </section>
+
+  <!-- TRAIN DETAILS -->
+  <section class="card">
+    <h3>TRAIN DETAILS</h3>
+
+    <div class="row">
+      <div class="col-33">
+        <label>Train No</label>
+        <input id="train_no" placeholder="">
+      </div>
+
+      <div class="col-33">
+        <label>Date of Working</label>
+        <input type="date" id="date_work">
+      </div>
+
+      <div class="col-33">
+        <label>Loco No</label>
+        <input id="loco_no" placeholder="">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-50">
+        <label>From Station (CODE)</label>
+        <input id="from_station">
+      </div>
+      <div class="col-50">
+        <label>From Station (NAME)</label>
+        <input id="from_station_name" readonly placeholder="Auto Filled">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-50">
+        <label>To Station (CODE)</label>
+        <input id="to_station">
+      </div>
+      <div class="col-50">
+        <label>To Station (NAME)</label>
+        <input id="to_station_name" readonly placeholder="Auto Filled">
+      </div>
+    </div>
+
+  </section>
+
+  <!-- CREW DETAILS -->
+  <section class="card">
+    <h3>CREW DETAILS</h3>
+
+    <div class="row">
+      <!-- LP BLOCK -->
+      <div class="col-50 crew-box">
+        <label>LP ID</label>
+        <input id="lp_id" placeholder="Enter LP ID">
+
+        <label>LP NAME</label>
+        <input id="lp_name" readonly>
+
+        <label>LP DESIGNATION</label>
+        <input id="lp_desig" readonly>
+
+        <label>LP G/CLI</label>
+        <input id="lp_gcli" readonly>
+      </div>
+
+      <!-- ALP BLOCK -->
+      <div class="col-50 crew-box">
+        <label>ALP ID</label>
+        <input id="alp_id" placeholder="Enter ALP ID">
+
+        <label>ALP NAME</label>
+        <input id="alp_name" readonly>
+
+        <label>ALP DESIGNATION</label>
+        <input id="alp_desig" readonly>
+
+        <label>ALP G/CLI</label>
+        <input id="alp_gcli" readonly>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- OBSERVATIONS -->
+  <section class="card">
+    <h3>OBSERVATIONS</h3>
+    <div id="obs_container"></div>
+  </section>
+
+  <!-- FINAL REMARKS -->
+  <section class="card">
+    <h3>FINAL REMARKS</h3>
+    <textarea id="remarks" rows="3">NO ABNORMALITIES OBSERVED</textarea>
+  </section>
+
+  <button class="primary" onclick="generateReport()">SAVE & GENERATE PDF</button>
+
+</div>
 
 </body>
 </html>
