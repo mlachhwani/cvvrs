@@ -1,226 +1,226 @@
-/* ============================================================================
-   masters.js — MASTER CSV LOADER + AUTO FILL + VALIDATION
-   MODE: ML/01 — FULL FILE DELIVERY
-   FORMAT: CSV (Comma-separated), Header=true
-   DELIMITER: ','
-   ============================================================================ */
+/* =============================================================================
+   MASTERS ENGINE — FULL FILE (ML/01 MODE)
+   Locked for MLACHHWANI / CVVRS
+============================================================================= */
 
-/* -------------------------------
-   MASTER FILE PATH (GITHUB PAGES)
-   ------------------------------- */
-const MASTER_PATH = "masters/";
+console.log("masters.js loaded");
 
-/* -------------------------------
-   MASTER DATA CONTAINERS
-   ------------------------------- */
+/* =============================================================================
+   FILE PATH CONFIG (GitHub Pages)
+============================================================================= */
+const MASTER_PATH = "/cvvrs/masters/";
+
+/* =============================================================================
+   MASTER DATA STORES
+============================================================================= */
 let stationMaster = [];
 let crewMaster = [];
 let cliMaster = [];
 
-/* -------------------------------
-   HELPER: FETCH + PARSE CSV
-   ------------------------------- */
-async function loadCSV(name) {
-  const url = MASTER_PATH + name;
-  try {
-    const resp = await fetch(url);
-    if (!resp.ok) {
-      console.error("CSV LOAD FAILED:", name);
-      return [];
-    }
-    const text = await resp.text();
-    const parsed = Papa.parse(text.trim(), {
-      header: true,
-      delimiter: ","
-    });
-    return parsed.data;
-  } catch (err) {
-    console.error("CSV ERROR:", name, err);
+/* =============================================================================
+   CSV LOAD HELPER (PapaParse)
+============================================================================= */
+async function loadCSV(filename) {
+  const url = MASTER_PATH + filename;
+  const res = await fetch(url);
+
+  if (!res.ok) {
+    console.error("❌ MASTER LOAD FAILED →", filename);
     return [];
   }
+
+  const text = await res.text();
+  return Papa.parse(text.trim(), { header: true }).data;
 }
 
-/* -------------------------------
-   LOAD ALL MASTERS (ASYNC)
-   ------------------------------- */
-async function loadMasters() {
-  stationMaster = await loadCSV("station_master.csv");
-  crewMaster    = await loadCSV("crew_master.csv");
-  cliMaster     = await loadCSV("cli_master.csv");
-
-  console.log("Masters Loaded =>",
-    "Stations:", stationMaster.length,
-    "Crew:", crewMaster.length,
-    "CLI:", cliMaster.length
-  );
-
-  applyAnalysisDate(); // Set IST date after load
-}
-
-/* -------------------------------
-   ANALYSIS DATE (DA1 LOCKED)
-   IST TIME, READONLY, AUTO-FILL
-   ------------------------------- */
-function applyAnalysisDate() {
-  const d = new Date();
-  const utc = d.getTime() + (d.getTimezoneOffset() * 60000);
-  const ist = new Date(utc + (5.5 * 60 * 60 * 1000));
-
-  const yyyy = ist.getFullYear();
-  const mm = String(ist.getMonth() + 1).padStart(2, "0");
-  const dd = String(ist.getDate()).padStart(2, "0");
-
-  const field = document.getElementById("analysis_date");
-  if (field) {
-    field.value = `${yyyy}-${mm}-${dd}`;
+/* =============================================================================
+   UI BORDER HELPERS
+============================================================================= */
+function markValid(id) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.classList.remove("invalid-input");
+    el.classList.add("valid-input");
   }
 }
 
-/* -------------------------------
+function markInvalid(id) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.classList.remove("valid-input");
+    el.classList.add("invalid-input");
+  }
+}
+
+/* =============================================================================
    LOOKUP FUNCTIONS
-   ------------------------------- */
+============================================================================= */
+
 function findStation(code) {
   if (!code) return null;
   code = code.trim().toUpperCase();
-  return stationMaster.find(x => (x.STATION_CODE || "").toUpperCase() === code) || null;
+  return stationMaster.find(r => r.STATION_CODE === code) || null;
 }
 
 function findCrew(id) {
   if (!id) return null;
   id = id.trim().toUpperCase();
-  return crewMaster.find(x => (x.CREW_ID || "").toUpperCase() === id) || null;
+  return crewMaster.find(r => r.CREW_ID === id) || null;
 }
 
 function findCLI(id) {
   if (!id) return null;
   id = id.trim().toUpperCase();
-  return cliMaster.find(x => (x.CLI_ID || "").toUpperCase() === id) || null;
+  return cliMaster.find(r => r.CLI_ID === id) || null;
 }
 
-/* -------------------------------
-   UI FIELD ACCESS HELPERS
-   ------------------------------- */
-function setValid(field) {
-  field.style.borderColor = "#2E7D32"; // green
+/* =============================================================================
+   BIND AUTOFILL EVENTS (AFTER MASTERS LOADED)
+============================================================================= */
+
+function bindAutofills() {
+
+  /* --- CLI ID → NAME only --- */
+  const cli_id = document.getElementById("cli_id");
+  const cli_name = document.getElementById("cli_name");
+
+  if (cli_id && cli_name) {
+    cli_id.addEventListener("change", () => {
+      const id = cli_id.value.trim().toUpperCase();
+      cli_id.value = id;
+
+      const rec = findCLI(id);
+      if (!rec) {
+        alert("❌ INVALID CLI ID");
+        cli_name.value = "";
+        markInvalid("cli_id");
+      } else {
+        cli_name.value = rec.CLI_NAME || "";
+        markValid("cli_id");
+      }
+    });
+  }
+
+  /* --- LP AUTO --- */
+  const lp_id = document.getElementById("lp_id");
+  const lp_name = document.getElementById("lp_name");
+  const lp_desig = document.getElementById("lp_desig");
+  const lp_gcli = document.getElementById("lp_gcli");
+
+  if (lp_id && lp_name && lp_desig && lp_gcli) {
+    lp_id.addEventListener("change", () => {
+      const id = lp_id.value.trim().toUpperCase();
+      lp_id.value = id;
+
+      const rec = findCrew(id);
+      if (!rec) {
+        alert("❌ INVALID LP ID");
+        lp_name.value = "";
+        lp_desig.value = "";
+        lp_gcli.value = "";
+        markInvalid("lp_id");
+      } else {
+        lp_name.value = rec.CREW_NAME || "";
+        lp_desig.value = rec.DESIGNATION || "";
+        lp_gcli.value = rec.G_CLI || "";
+        markValid("lp_id");
+      }
+    });
+  }
+
+  /* --- ALP AUTO --- */
+  const alp_id = document.getElementById("alp_id");
+  const alp_name = document.getElementById("alp_name");
+  const alp_desig = document.getElementById("alp_desig");
+  const alp_gcli = document.getElementById("alp_gcli");
+
+  if (alp_id && alp_name && alp_desig && alp_gcli) {
+    alp_id.addEventListener("change", () => {
+      const id = alp_id.value.trim().toUpperCase();
+      alp_id.value = id;
+
+      const rec = findCrew(id);
+      if (!rec) {
+        alert("❌ INVALID ALP ID");
+        alp_name.value = "";
+        alp_desig.value = "";
+        alp_gcli.value = "";
+        markInvalid("alp_id");
+      } else {
+        alp_name.value = rec.CREW_NAME || "";
+        alp_desig.value = rec.DESIGNATION || "";
+        alp_gcli.value = rec.G_CLI || "";
+        markValid("alp_id");
+      }
+    });
+  }
+
+  /* --- STATIONS (ST3 MODE) --- */
+  const from_code = document.getElementById("from_station");
+  const from_name = document.getElementById("from_station_name");
+  const to_code = document.getElementById("to_station");
+  const to_name = document.getElementById("to_station_name");
+
+  if (from_code && from_name) {
+    from_code.addEventListener("change", () => {
+      const code = from_code.value.trim().toUpperCase();
+      from_code.value = code;
+      const rec = findStation(code);
+
+      if (!rec) {
+        from_name.value = "";
+        markInvalid("from_station");
+      } else {
+        from_name.value = rec.STATION_NAME || "";
+        markValid("from_station");
+      }
+    });
+  }
+
+  if (to_code && to_name) {
+    to_code.addEventListener("change", () => {
+      const code = to_code.value.trim().toUpperCase();
+      to_code.value = code;
+      const rec = findStation(code);
+
+      if (!rec) {
+        to_name.value = "";
+        markInvalid("to_station");
+      } else {
+        to_name.value = rec.STATION_NAME || "";
+        markValid("to_station");
+      }
+    });
+  }
 }
 
-function setInvalid(field) {
-  field.style.borderColor = "#D32F2F"; // red
+/* =============================================================================
+   LOAD ALL MASTERS (ASYNC)
+============================================================================= */
+async function loadMasters() {
+  console.log("📥 Loading master data from GitHub Pages...");
+
+  stationMaster = await loadCSV("station_master.csv");
+  crewMaster    = await loadCSV("crew_master.csv");
+  cliMaster     = await loadCSV("cli_master.csv");
+
+  console.log(`📊 Station Master: ${stationMaster.length}`);
+  console.log(`📊 Crew Master:    ${crewMaster.length}`);
+  console.log(`📊 CLI Master:     ${cliMaster.length}`);
+
+  bindAutofills();
 }
 
-function clearStyle(field) {
-  field.style.borderColor = "";
-}
-
-/* ============================================================================
-   AUTO-FILL BINDINGS
-   ============================================================================ */
-
-/* -------- CLI AUTO-FILL -------- */
-document.getElementById("cli_id").addEventListener("change", () => {
-  const fld = document.getElementById("cli_id");
-  const nameFld = document.getElementById("cli_name");
-
-  const cli = findCLI(fld.value);
-  if (!cli) {
-    setInvalid(fld);
-    nameFld.value = "";
-    alert("❌ Invalid CLI ID!");
-    return;
-  }
-
-  setValid(fld);
-  nameFld.value = cli.CLI_NAME || "";
-});
-
-/* -------- CREW (LP) AUTO-FILL -------- */
-document.getElementById("lp_id").addEventListener("change", () => {
-  const fld = document.getElementById("lp_id");
-  const nameFld = document.getElementById("lp_name");
-  const desigFld = document.getElementById("lp_desig");
-  const gcliFld  = document.getElementById("lp_gcli");
-
-  const crew = findCrew(fld.value);
-  if (!crew) {
-    setInvalid(fld);
-    nameFld.value = "";
-    desigFld.value = "";
-    gcliFld.value = "";
-    alert("❌ Invalid LP ID!");
-    return;
-  }
-
-  setValid(fld);
-  nameFld.value = crew.CREW_NAME || "";
-  desigFld.value = crew.DESIGNATION || "";
-  gcliFld.value  = crew.G_CLI || "";
-});
-
-/* -------- CREW (ALP) AUTO-FILL -------- */
-document.getElementById("alp_id").addEventListener("change", () => {
-  const fld = document.getElementById("alp_id");
-  const nameFld = document.getElementById("alp_name");
-  const desigFld = document.getElementById("alp_desig");
-  const gcliFld  = document.getElementById("alp_gcli");
-
-  const crew = findCrew(fld.value);
-  if (!crew) {
-    setInvalid(fld);
-    nameFld.value = "";
-    desigFld.value = "";
-    gcliFld.value = "";
-    alert("❌ Invalid ALP ID!");
-    return;
-  }
-
-  setValid(fld);
-  nameFld.value = crew.CREW_NAME || "";
-  desigFld.value = crew.DESIGNATION || "";
-  gcliFld.value  = crew.G_CLI || "";
-});
-
-/* -------- STATION (FROM) -------- */
-document.getElementById("from_station").addEventListener("input", () => {
-  const fld = document.getElementById("from_station");
-  const nameFld = document.getElementById("from_station_name");
-
-  const st = findStation(fld.value);
-  if (!st) {
-    setInvalid(fld);
-    nameFld.value = "";
-    return; // ST3 = no alert
-  }
-
-  setValid(fld);
-  nameFld.value = st.STATION_NAME || "";
-});
-
-/* -------- STATION (TO) -------- */
-document.getElementById("to_station").addEventListener("input", () => {
-  const fld = document.getElementById("to_station");
-  const nameFld = document.getElementById("to_station_name");
-
-  const st = findStation(fld.value);
-  if (!st) {
-    setInvalid(fld);
-    nameFld.value = "";
-    return; // ST3 = no alert
-  }
-
-  setValid(fld);
-  nameFld.value = st.STATION_NAME || "";
-});
-
-/* ============================================================================
-   INIT
-   ============================================================================ */
-window.addEventListener("DOMContentLoaded", loadMasters);
-
-/* ============================================================================
-   EXPORTS (OPTIONAL)
-   ============================================================================ */
+/* =============================================================================
+   EXPORT GLOBAL HELPERS
+============================================================================= */
 window.MASTERS = {
+  findStation,
   findCrew,
-  findCLI,
-  findStation
+  findCLI
 };
+
+/* =============================================================================
+   AUTO START AFTER DOM
+============================================================================= */
+document.addEventListener("DOMContentLoaded", loadMasters);
