@@ -1,229 +1,156 @@
-/* ============================================================
-   CVVRS UI — FINAL CSS (ML/01 FULL FILE)
-   Locked for mlachhwani / cvvrs
-   ============================================================ */
+/* ============================================================================
+   style.css — ML/01 FULL FILE
+   Modern dark-light mix with glossy UI cards
+============================================================================ */
 
-/* ------------- GLOBAL RESET ------------- */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Segoe UI", Arial, sans-serif;
+:root {
+  --bg: #f3f5f7;
+  --card-bg: #ffffff;
+  --text: #222;
+  --border: #c7ccd1;
+  --primary: #004fbf;
+  --primary-text: #fff;
 }
 
 body {
-  background: #e9ecf1;
-  padding: 20px;
-  color: #111;
+  margin:0;
+  padding:0;
+  font-family: 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
 }
 
-.page {
-  max-width: 1150px;
-  margin: auto;
+.main-wrapper {
+  width: 1200px;
+  margin: 0 auto;
+  padding: 15px;
 }
 
-/* ------------- HEADER ------------- */
-.header-full {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 18px;
-  text-align: center;
+.header {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: var(--card-bg);
+  padding: 15px;
+  border-radius:8px;
+  box-shadow:0 2px 4px rgba(0,0,0,0.08);
+  margin-bottom:15px;
 }
 
-.logo-lg {
-  width: 80px;
-  margin-right: 15px;
+.logo {
+  width:70px;
+  margin-right:20px;
 }
 
-.header-title .h1 {
-  font-size: 20px;
-  font-weight: 700;
+.header-text h1 {
+  font-size:20px;
+  margin:0;
+}
+.header-text h2 {
+  font-size:14px;
+  margin:2px 0;
+}
+.header-text h3 {
+  font-size:16px;
+  margin:4px 0 0 0;
+  font-weight:600;
 }
 
-.header-title .h2 {
-  font-size: 15px;
-  margin-top: 2px;
-}
-
-.header-title .h3 {
-  font-size: 14px;
-  font-weight: 600;
-  margin-top: 4px;
-}
-
-/* ------------- SECTION CARD ------------- */
 .card {
-  background: #fff;
-  border-radius: 8px;
-  padding: 18px;
-  margin-bottom: 18px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.10);
+  background: var(--card-bg);
+  padding: 15px;
+  border-radius:8px;
+  margin-bottom:15px;
+  border:1px solid var(--border);
+  box-shadow:0 2px 4px rgba(0,0,0,0.07);
 }
 
-.section-title {
-  font-size: 16px;
-  font-weight: 700;
-  margin-bottom: 12px;
-  border-left: 4px solid #1976d2;
-  padding-left: 8px;
+.card h3 {
+  margin-top:0;
+  margin-bottom:10px;
+  border-bottom:1px solid var(--border);
+  padding-bottom:4px;
+  font-weight:600;
 }
 
-/* ------------- INPUT FIELDS ------------- */
+.row {
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+.field {
+  display:flex;
+  flex-direction:column;
+  flex:1;
+  min-width:220px;
+}
+
 label {
-  display: block;
-  margin-bottom: 4px;
-  font-size: 13px;
-  font-weight: 600;
+  font-size:13px;
+  margin-bottom:3px;
+  font-weight:500;
 }
 
-input,
-textarea,
-select {
-  width: 100%;
-  border: 1px solid #cdd2d8;
-  background: #fdfdfd;
-  padding: 7px 9px;
-  border-radius: 6px;
-  margin-bottom: 12px;
-  font-size: 14px;
+input, select, textarea {
+  padding:6px 8px;
+  border:1px solid var(--border);
+  border-radius:6px;
+  font-size:13px;
+  background:white;
 }
 
-input:read-only {
-  background: #eef2f7;
-  border-color: #bfc7d1;
-  font-weight: 500;
+textarea {
+  resize:none;
 }
 
-/* ------------- BUTTONS ------------- */
-button {
-  padding: 10px 22px;
-  border-radius: 6px;
-  border: none;
-  font-weight: 600;
-  cursor: pointer;
-  background: #1976d2;
-  color: white;
-  transition: 0.2s;
-}
-
-button:hover:not(:disabled) {
-  background: #0c62ba;
-}
-
-button:disabled {
-  background: #9bb8d1;
-  cursor: not-allowed;
-}
-
-.footer-action {
-  text-align: center;
-  margin-bottom: 40px;
-}
-
-/* ------------- GRID LAYOUTS ------------- */
-.row-2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-}
-
-.row-3 {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 14px;
-}
-
-.row-4 {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
-}
-
-@media(max-width: 900px) {
-  .row-4 { grid-template-columns: 1fr 1fr; }
-}
-
-@media(max-width: 650px) {
-  .row-3 { grid-template-columns: 1fr; }
-  .row-2 { grid-template-columns: 1fr; }
-  .row-4 { grid-template-columns: 1fr; }
-}
-
-/* ------------- SMALL AUTO LABEL ------------- */
-.auto-label {
-  font-size: 11px;
-  opacity: 0.7;
-  margin-bottom: 2px;
-}
-
-/* ============================================================
-   OBSERVATION UI (Left/Right Layout + PIC2 + Compact)
-   ============================================================ */
-
-.obs-block {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 18px;
-}
-
-.obs-section-title {
-  font-size: 15px;
-  font-weight: 700;
-  background: #dfe7f1;
-  padding: 6px 10px;
-  border-radius: 6px;
-  margin-bottom: 10px;
-}
-
+/* OBS LAYOUT */
 .obs-row {
-  display: flex;
-  align-items: center;
-  padding: 6px 0;
-  border-bottom: 1px dashed #d0d5db;
-  gap: 10px;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  padding:6px 0;
+  border-bottom:1px dashed #d0d0d0;
 }
 
-.obs-text {
-  flex: 1.6;
-  font-size: 14px;
-  font-weight: 600;
+.obs-label {
+  flex:2;
+  font-weight:600;
+  font-size:13px;
 }
 
 .obs-select {
-  width: 110px;
-  max-width: 110px;
-  font-size: 13px;
-  padding: 5px;
+  flex:1;
+  max-width:100px;
+  padding:5px;
 }
 
 .obs-photo {
-  width: 32px;
-  height: 32px;
-  background: #fff;
-  border: 2px dashed #c22;
-  border-radius: 5px;
-  cursor: pointer;
-  flex-shrink: 0;
+  flex:1;
+  max-width:140px;
 }
 
-.obs-photo::file-selector-button {
-  display: none;
+.obs-abn {
+  flex:2;
+  min-width:200px;
 }
 
-.obs-photo.uploaded {
-  border-color: #1b8d1b;
+/* BUTTON */
+.primary-btn {
+  width:100%;
+  padding:12px;
+  background:var(--primary);
+  color:var(--primary-text);
+  border:none;
+  border-radius:6px;
+  font-size:15px;
+  cursor:pointer;
+  font-weight:600;
+  margin-bottom:30px;
 }
 
-/* ------------- OBS TWO COLUMN WRAPPER ------------- */
-.obs-side-wrapper {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-@media(max-width: 850px) {
-  .obs-side-wrapper {
-    grid-template-columns: 1fr;
-  }
+.primary-btn:disabled {
+  opacity:0.6;
+  cursor:not-allowed;
 }
