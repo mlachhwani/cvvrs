@@ -1,36 +1,56 @@
+/* ============================================================================
+   OBS_MASTER.js — FINAL LOCKED OBSERVATION MASTER (LP + ALP)
+   ML/PHASE2/STEP10 — DO NOT MODIFY WITHOUT VERSION BUMP
+   ============================================================================ */
+
 window.OBS_MASTER = [
-  {id:1, title:"Checking Logbook & BPC", role:"LP", default:"YES", type:"YESNO"},
-  {id:2, title:"Checking Safety Items & HTC", role:"LP", default:"YES", type:"YESNO"},
-  {id:3, title:"Energy Meter & SPM check", role:"LP", default:"YES", type:"YESNO"},
-  {id:4, title:"Checking RS Valve working", role:"ALP", default:"YES", type:"YESNO"},
-  {id:5, title:"Checking Safety Items & HTC", role:"ALP", default:"YES", type:"YESNO"},
-  {id:6, title:"Energy Meter & SPM check & Input", role:"ALP", default:"YES", type:"YESNO"},
-  {id:7, title:"Conducting BFT & BPT", role:"LP", default:"YES", type:"YESNO"},
-  {id:8, title:"Calling Out Signals", role:"LP", default:"YES", type:"YESNO"},
-  {id:9, title:"Use of Mobile Phone", role:"LP", default:"NO", type:"YESNO"},
-  {id:10, title:"Micro Sleep", role:"LP", default:"NO", type:"YESNO"},
-  {id:11, title:"Exchange of Signals", role:"LP", default:"YES", type:"YESNO"},
-  {id:12, title:"Neutral Section Action", role:"LP", default:"YES", type:"YESNO"},
-  {id:13, title:"Alertness", role:"LP", default:"VERY GOOD", type:"RATING"},
-  {id:14, title:"Standing RS at Danger Signal", role:"ALP", default:"YES", type:"YESNO"},
-  {id:15, title:"Calling Out Signals", role:"ALP", default:"YES", type:"YESNO"},
-  {id:16, title:"Use of Mobile Phone", role:"ALP", default:"NO", type:"YESNO"},
-  {id:17, title:"Micro Sleep", role:"ALP", default:"NO", type:"YESNO"},
-  {id:18, title:"Exchange of Signals", role:"ALP", default:"YES", type:"YESNO"},
-  {id:19, title:"Formation Check", role:"ALP", default:"YES", type:"YESNO"},
-  {id:20, title:"Alertness", role:"ALP", default:"VERY GOOD", type:"RATING"},
-  {id:21, title:"Application A9-SA9", role:"LP", default:"YES", type:"YESNO"},
-  {id:22, title:"Reverser Neutral", role:"LP", default:"YES", type:"YESNO"},
-  {id:23, title:"Headlight Dimming", role:"LP", default:"YES", type:"YESNO_DAY"},
-  {id:24, title:"Undergear Check", role:"LP", default:"YES", type:"YESNO"},
-  {id:25, title:"Whistle before start", role:"LP", default:"YES", type:"YESNO"},
-  {id:26, title:"Ensure A9-SA9", role:"ALP", default:"YES", type:"YESNO"},
-  {id:27, title:"Ensure Reverser Neutral", role:"ALP", default:"YES", type:"YESNO"},
-  {id:28, title:"Ensure Headlight Dimming", role:"ALP", default:"YES", type:"YESNO_DAY"},
-  {id:29, title:"Undergear Check", role:"ALP", default:"YES", type:"YESNO"},
-  {id:30, title:"Signal Exchange Before Start", role:"ALP", default:"YES", type:"YESNO"},
-  {id:31, title:"Packing After Arrival", role:"LP", default:"YES", type:"YESNO"},
-  {id:32, title:"Overall Performance", role:"LP", default:"VERY GOOD", type:"RATING"},
-  {id:33, title:"Packing After Arrival", role:"ALP", default:"YES", type:"YESNO"},
-  {id:34, title:"Overall Performance", role:"ALP", default:"VERY GOOD", type:"RATING"},
+
+  /* ================= SECTION: DURING CTO ================= */
+  { id:1,  section:"CTO",   role:"LP",  title:"Checking Logbook & BPC",                           type:"YESNO",     default:"YES" },
+  { id:2,  section:"CTO",   role:"LP",  title:"Checking Safety Items & HTC",                      type:"YESNO",     default:"YES" },
+  { id:3,  section:"CTO",   role:"LP",  title:"Energy Meter & SPM Check",                         type:"YESNO",     default:"YES" },
+
+  { id:4,  section:"CTO",   role:"ALP", title:"Checking RS Valve working",                        type:"YESNO",     default:"YES" },
+  { id:5,  section:"CTO",   role:"ALP", title:"Checking Safety Items & HTC",                      type:"YESNO",     default:"YES" },
+  { id:6,  section:"CTO",   role:"ALP", title:"Energy Meter & SPM check & Input",                 type:"YESNO",     default:"YES" },
+
+  /* ================= SECTION: ON RUN ===================== */
+  { id:7,  section:"ONRUN", role:"LP",  title:"Conducting BFT & BPT",                              type:"YESNO",     default:"YES" },
+  { id:8,  section:"ONRUN", role:"LP",  title:"Calling Out Signals with Hand Gesture",             type:"YESNO",     default:"YES" },
+  { id:9,  section:"ONRUN", role:"LP",  title:"Use of Mobile Phone",                               type:"YESNO",     default:"NO"  },
+  { id:10, section:"ONRUN", role:"LP",  title:"Micro Sleep",                                       type:"YESNO",     default:"NO"  },
+  { id:11, section:"ONRUN", role:"LP",  title:"Exchange of Signals",                               type:"YESNO",     default:"YES" },
+  { id:12, section:"ONRUN", role:"LP",  title:"Proper action during Neutral Section",              type:"YESNO",     default:"YES" },
+  { id:13, section:"ONRUN", role:"LP",  title:"Alertness",                                         type:"RATING",    default:"VERY GOOD" },
+
+  { id:14, section:"ONRUN", role:"ALP", title:"Standing & Holding RS while approaching Danger Signal",  type:"YESNO",  default:"YES" },
+  { id:15, section:"ONRUN", role:"ALP", title:"Calling Out Signals with Hand Gesture",             type:"YESNO",     default:"YES" },
+  { id:16, section:"ONRUN", role:"ALP", title:"Use of Mobile Phone",                               type:"YESNO",     default:"NO"  },
+  { id:17, section:"ONRUN", role:"ALP", title:"Micro Sleep",                                       type:"YESNO",     default:"NO"  },
+  { id:18, section:"ONRUN", role:"ALP", title:"Exchange of Signals",                               type:"YESNO",     default:"YES" },
+  { id:19, section:"ONRUN", role:"ALP", title:"Checking Formation in curve & Caution Spot",        type:"YESNO",     default:"YES" },
+  { id:20, section:"ONRUN", role:"ALP", title:"Alertness",                                         type:"RATING",    default:"VERY GOOD" },
+
+  /* ================= SECTION: AT HALTS =================== */
+  { id:21, section:"HALTS", role:"LP",  title:"Application of A9 & SA9",                           type:"YESNO",     default:"YES" },
+  { id:22, section:"HALTS", role:"LP",  title:"Reverser in Neutral",                               type:"YESNO",     default:"YES" },
+  { id:23, section:"HALTS", role:"LP",  title:"Dimming of Headlight",                              type:"YESNO_DAY", default:"YES" },
+  { id:24, section:"HALTS", role:"LP",  title:"Checking of Undergear & Machine Room",              type:"YESNO",     default:"YES" },
+  { id:25, section:"HALTS", role:"LP",  title:"Proper whistle before start",                       type:"YESNO",     default:"YES" },
+
+  { id:26, section:"HALTS", role:"ALP", title:"Ensure Application of A9 & SA9",                    type:"YESNO",     default:"YES" },
+  { id:27, section:"HALTS", role:"ALP", title:"Ensure Reverser in Neutral",                        type:"YESNO",     default:"YES" },
+  { id:28, section:"HALTS", role:"ALP", title:"Ensure Dimming of Headlight",                       type:"YESNO_DAY", default:"YES" },
+  { id:29, section:"HALTS", role:"ALP", title:"Checking of Undergear & Machine Room",              type:"YESNO",     default:"YES" },
+  { id:30, section:"HALTS", role:"ALP", title:"Proper Signal Exchange Before start",               type:"YESNO",     default:"YES" },
+
+  /* ================= SECTION: AT CHO ===================== */
+  { id:31, section:"CHO",   role:"LP",  title:"Packing of Personal belongings after arrival",      type:"YESNO",     default:"YES" },
+  { id:32, section:"CHO",   role:"LP",  title:"Over-all Performance",                              type:"RATING",    default:"VERY GOOD" },
+
+  { id:33, section:"CHO",   role:"ALP", title:"Packing of Personal belongings after arrival",      type:"YESNO",     default:"YES" },
+  { id:34, section:"CHO",   role:"ALP", title:"Over-all Performance",                              type:"RATING",    default:"VERY GOOD" }
+
 ];
+
+/* ================= END OF FILE ========================== */
