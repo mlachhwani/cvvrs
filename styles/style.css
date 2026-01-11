@@ -1,216 +1,285 @@
-/* ==========================================================
-   GLOBAL
-   ========================================================== */
+/* ============================================================
+   MODERN CORPORATE THEME (BG FIXED)
+   ============================================================ */
+:root {
+  --bg: #e9edf3;
+  --text: #212529;
+  --card-bg: #ffffff;
+  --border: #d0d7de;
+  --primary: #0366d6;
+  --primary-hover: #025cbf;
+  --gradient: linear-gradient(135deg, #0366d6 0%, #2188ff 100%);
+}
+
+/* ============================================================
+   GLOBAL RESET
+   ============================================================ */
 * {
   box-sizing: border-box;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
 }
 
 body {
   margin: 0;
   padding: 0;
-  background: #f1f3f7;
-  color: #222;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
 }
 
-/* ==========================================================
-   TOP BANNER
-   ========================================================== */
-.top-banner {
+.container {
+  width: 92%;
+  max-width: 1150px;
+  margin: auto;
+  padding: 20px 0;
+}
+
+/* ============================================================
+   HEADER SECTION
+   ============================================================ */
+.header {
   display: flex;
   align-items: center;
-  background: #1e355b;
-  color: #fff;
-  padding: 10px 15px;
-  border-bottom: 4px solid #d4a017;
+  gap: 18px;
+  padding: 18px;
+  margin-bottom: 20px;
+  background: linear-gradient(145deg, #f0f4fa 0%, #ffffff 95%);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  box-shadow: 0px 2px 6px rgba(0,0,0,0.08);
 }
 
-.banner-logo {
-  width: 60px;
-  margin-right: 15px;
+.logo {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
 }
 
-.banner-text h1 {
+.header-text h1 {
   margin: 0;
-  font-size: 20px;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--primary);
 }
-
-.banner-text h2 {
-  margin: 2px 0 0 0;
+.header-text h2 {
+  margin: 4px 0 0 0;
   font-size: 16px;
-  font-weight: normal;
+  font-weight: 500;
+}
+.header-text h3 {
+  margin: 4px 0 0 0;
+  font-size: 15px;
+  font-weight: 700;
 }
 
-.banner-text h3 {
-  margin: 3px 0 0 0;
-  font-size: 18px;
-  font-weight: bold;
-}
-
-/* ==========================================================
-   LAYOUT
-   ========================================================== */
-.container {
-  width: 95%;
-  max-width: 1400px;
-  margin: 15px auto;
-}
-
-/* ==========================================================
-   CARDS
-   ========================================================== */
+/* ============================================================
+   CARD BLOCKS (WHITE WITH DROP SHADOW)
+   ============================================================ */
 .card {
-  background: #fff;
-  border-radius: 6px;
-  padding: 15px;
-  margin-bottom: 15px;
-  border-left: 4px solid #1e355b;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+  margin-bottom: 18px;
+  box-shadow: 0px 2px 6px rgba(0,0,0,0.05);
 }
 
 .card h3 {
-  margin-top: 0;
-  margin-bottom: 10px;
-  color: #1e355b;
+  margin: 0 0 12px 0;
   font-size: 18px;
+  font-weight: 700;
+  color: var(--primary);
 }
 
-/* ==========================================================
-   INPUT FIELDS
-   ========================================================== */
+/* ============================================================
+   ROW LAYOUT (TRAIN + CREW)
+   ============================================================ */
+.row-2, .row-3 {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.row-3 .col { width: 33.33%; }
+.row-2 .col { width: 50%; }
+
+/* ============================================================
+   LABEL + INPUT UI FIX
+   ============================================================ */
 label {
-  font-size: 13px;
-  font-weight: bold;
-  color: #333;
   display: block;
-  margin-bottom: 3px;
+  margin-bottom: 4px;
+  font-weight: 600;
+  color: #222;
+}
+
+label.sub {
+  margin-top: 5px;
+  font-size: 12px;
+  color: #6c757d;
+  text-transform: uppercase;
 }
 
 input, select, textarea {
   width: 100%;
-  padding: 6px 8px;
-  border-radius: 4px;
-  border: 1px solid #bbb;
-  margin-bottom: 10px;
-  background: #fafafa;
-  transition: 0.2s;
+  padding: 7px 9px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fdfdfd;
+  transition: 0.15s ease;
 }
 
 input:focus, select:focus, textarea:focus {
-  border-color: #1e355b;
-  background: #fff;
+  border-color: var(--primary);
   outline: none;
-  box-shadow: 0 0 3px rgba(30,53,91,0.4);
+  box-shadow: 0 0 0 3px rgba(3,102,214,0.17);
 }
 
-textarea {
-  resize: vertical;
-}
-
-/* ==========================================================
-   ROWS
-   ========================================================== */
-.row-2, .row-3 {
-  width: 100%;
-  display: grid;
-  grid-gap: 10px;
-}
-
-.row-2 {
-  grid-template-columns: 1fr 1fr;
-}
-
-.row-3 {
-  grid-template-columns: 1fr 1fr 1fr;
-}
-
-/* ==========================================================
-   BUTTONS
-   ========================================================== */
-button.primary {
-  padding: 10px 16px;
-  background: #1e355b;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  font-size: 15px;
-  cursor: pointer;
-  transition: 0.2s;
-  font-weight: bold;
-  width: 100%;
-  max-width: 300px;
-  display: block;
-  margin: 20px auto;
-}
-
-button.primary:hover {
-  background: #284a7e;
-}
-
-button.primary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* ==========================================================
-   OBSERVATION UI (LP/ALP SIDE BY SIDE)
-   ========================================================== */
+/* ============================================================
+   OBSERVATION SECTIONS
+   ============================================================ */
 .obs-section {
   margin-bottom: 20px;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 10px;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #ffffff;
 }
 
-.obs-section-title {
+.obs-section h4 {
+  margin: 0 0 12px 0;
+  padding-bottom: 4px;
   font-size: 16px;
-  font-weight: bold;
-  margin-bottom: 8px;
-  color: #1e355b;
+  font-weight: 700;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  color: var(--primary);
 }
 
-.obs-flex {
+/* 2 column LP-left & ALP-right */
+.obs-row {
   display: flex;
+  gap: 12px;
+}
+.obs-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   gap: 10px;
-  flex-wrap: wrap;
 }
 
-.obs-item {
-  flex: 1 1 calc(50% - 10px);
-  background: #fafafa;
-  border: 1px solid #ddd;
+.col-head {
+  text-align: center;
+  padding: 6px;
+  font-size: 13px;
+  font-weight: 700;
   border-radius: 6px;
-  padding: 8px;
+  background: #e9ecef;
+}
+
+/* ============================================================
+   OBSERVATION ITEM (Improved UI)
+   ============================================================ */
+.obs-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #ffffff;
 }
 
 .obs-title {
-  font-weight: bold;
-  font-size: 13px;
-  margin-bottom: 4px;
-  color: #333;
+  flex: 1;
+  font-size: 15px;
+  font-weight: 700;
+  color: #222;
+  text-transform: uppercase;
 }
 
-.obs-row {
-  display: flex;
-  gap: 6px;
-}
-
+/* Compact YES/NO selector */
 .obs-select {
-  flex: 1;
+  width: 90px;
+  padding: 6px;
+  font-weight: 700;
+  background: #eef6ff;
+  color: var(--primary);
+  border: 1px solid #bcd7ff;
+  border-radius: 6px;
+  text-align: center;
+  cursor: pointer;
 }
 
-.obs-photo {
-  flex: 1;
-  border: 1px dashed #aaa;
-  padding: 4px;
-  border-radius: 4px;
-  background: #fff;
+/* Upload button glossy */
+.photo-input {
+  width: 120px;
+  padding: 6px;
+  font-size: 12px;
+  background: var(--gradient);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.15s ease;
 }
 
-/* ==========================================================
-   MOBILE
-   ========================================================== */
-@media(max-width: 800px) {
-  .row-3 { grid-template-columns: 1fr; }
-  .row-2 { grid-template-columns: 1fr; }
-  .obs-item { flex: 1 1 100%; }
+.photo-input:hover {
+  opacity: 0.88;
+}
+
+/* ============================================================
+   PHOTO MANDATORY MODE (A)
+   ============================================================ */
+.need-photo {
+  border: 2px solid red !important;
+  position: relative;
+}
+
+.need-photo::after {
+  content: "📷 REQUIRED";
+  position: absolute;
+  right: 8px;
+  bottom: -2px;
+  color: red;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+/* ============================================================
+   SUBMIT BUTTON (Glossy)
+   ============================================================ */
+button.primary.glossy {
+  width: 100%;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  background: var(--gradient);
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+button.primary.glossy:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+/* ============================================================
+   RESPONSIVE SUPPORT
+   ============================================================ */
+@media (max-width: 768px) {
+  .row-2, .row-3 {
+    flex-direction: column;
+  }
+  .row-2 .col, .row-3 .col {
+    width: 100%;
+  }
+  .obs-row {
+    flex-direction: column;
+  }
 }
