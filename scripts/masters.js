@@ -1,58 +1,46 @@
-/* ============================================================
-   MASTERS.JS  —  LOAD & AUTOFILL (CLI / LP / ALP / STATION)
-   SOURCE: GitHub Pages /cvvrs/masters/*.csv
-   Locked by ML/01
-============================================================ */
+/* ===================================================================
+   masters.js
+   MASTER LOADING + AUTOFILL ENGINE (CLI / CREW / STATION)
+   ML/PHASE1 LOCKED — FULL FILE — ML/01 COMPLIANT
+   =================================================================== */
 
 console.log("masters.js loaded");
 
-/* ------------------------------------------------------------
-   CSV PATH (GitHub Pages)
------------------------------------------------------------- */
+/* ---------------- PATH (GitHub Pages) ---------------- */
 const MASTER_PATH = "/cvvrs/masters/";
 
-/* ------------------------------------------------------------
-   MASTER ARRAYS
------------------------------------------------------------- */
+/* ---------------- MASTER ARRAYS ---------------- */
 let stationMaster = [];
 let crewMaster = [];
 let cliMaster = [];
 
-/* ------------------------------------------------------------
-   CSV PARSER USING PapaParse
------------------------------------------------------------- */
+/* ---------------- CSV LOADER ---------------- */
 async function loadCSV(file) {
   const url = MASTER_PATH + file;
   const res = await fetch(url);
 
   if (!res.ok) {
-    console.error("❌ CSV Load Failed:", file);
+    console.error("❌ Failed loading:", file);
     return [];
   }
-
   const text = await res.text();
-  const parsed = Papa.parse(text.trim(), { header: true }).data;
-  return parsed;
+  return Papa.parse(text.trim(), { header: true }).data;
 }
 
-/* ------------------------------------------------------------
-   LOAD ALL 3 MASTERS
------------------------------------------------------------- */
+/* ---------------- MASTER LOADER ---------------- */
 async function loadMasters() {
-  console.log("📁 Loading Masters...");
+  console.log("📁 Loading master CSVs…");
 
   stationMaster = await loadCSV("station_master.csv");
   crewMaster    = await loadCSV("crew_master.csv");
   cliMaster     = await loadCSV("cli_master.csv");
 
-  console.log("📌 Station Master:", stationMaster.length);
-  console.log("📌 Crew Master:", crewMaster.length);
-  console.log("📌 CLI Master:", cliMaster.length);
+  console.log("✔ Station Master:", stationMaster.length);
+  console.log("✔ Crew Master:", crewMaster.length);
+  console.log("✔ CLI Master:", cliMaster.length);
 }
 
-/* ------------------------------------------------------------
-   LOOKUP FUNCTIONS
------------------------------------------------------------- */
+/* ---------------- LOOKUP UTILS ---------------- */
 function findStation(code) {
   if (!code) return null;
   code = code.trim().toUpperCase();
@@ -71,70 +59,46 @@ function findCLI(id) {
   return cliMaster.find(x => x.CLI_ID === id) || null;
 }
 
-/* ------------------------------------------------------------
-   AUTOFILL BINDINGS (AFTER DOM READY)
------------------------------------------------------------- */
+/* ---------------- AUTOFILL HANDLERS ---------------- */
 document.addEventListener("DOMContentLoaded", () => {
 
-  /* ---------- CLI Autofill ---------- */
-  const cliId = document.getElementById("cli_id");
-  if (cliId) {
-    cliId.addEventListener("change", () => {
-      const cli = findCLI(cliId.value);
-      document.getElementById("cli_name").value = cli ? cli.CLI_NAME : "";
-    });
-  }
+  const cli = document.getElementById("cli_id");
+  if (cli) cli.addEventListener("change", () => {
+    const match = findCLI(cli.value);
+    document.getElementById("cli_name").value = match ? match.CLI_NAME : "";
+  });
 
-  /* ---------- STATION Autofill ---------- */
   const fs = document.getElementById("from_station");
-  if (fs) {
-    fs.addEventListener("change", () => {
-      const st = findStation(fs.value);
-      document.getElementById("from_station_name").value = st ? st.STATION_NAME : "";
-    });
-  }
+  if (fs) fs.addEventListener("change", () => {
+    const st = findStation(fs.value);
+    document.getElementById("from_station_name").value = st ? st.STATION_NAME : "";
+  });
 
   const ts = document.getElementById("to_station");
-  if (ts) {
-    ts.addEventListener("change", () => {
-      const st = findStation(ts.value);
-      document.getElementById("to_station_name").value = st ? st.STATION_NAME : "";
-    });
-  }
+  if (ts) ts.addEventListener("change", () => {
+    const st = findStation(ts.value);
+    document.getElementById("to_station_name").value = st ? st.STATION_NAME : "";
+  });
 
-  /* ---------- LP Autofill ---------- */
   const lp = document.getElementById("lp_id");
-  if (lp) {
-    lp.addEventListener("change", () => {
-      const c = findCrew(lp.value);
-      document.getElementById("lp_name").value = c ? c.CREW_NAME : "";
-      document.getElementById("lp_desig").value = c ? c.DESIGNATION : "";
-      document.getElementById("lp_gcli").value = c ? c.G_CLI : "";
-    });
-  }
+  if (lp) lp.addEventListener("change", () => {
+    const c = findCrew(lp.value);
+    document.getElementById("lp_name").value  = c ? c.CREW_NAME     : "";
+    document.getElementById("lp_desig").value = c ? c.DESIGNATION   : "";
+    document.getElementById("lp_gcli").value  = c ? c.G_CLI         : "";
+  });
 
-  /* ---------- ALP Autofill ---------- */
   const alp = document.getElementById("alp_id");
-  if (alp) {
-    alp.addEventListener("change", () => {
-      const c = findCrew(alp.value);
-      document.getElementById("alp_name").value = c ? c.CREW_NAME : "";
-      document.getElementById("alp_desig").value = c ? c.DESIGNATION : "";
-      document.getElementById("alp_gcli").value = c ? c.G_CLI : "";
-    });
-  }
+  if (alp) alp.addEventListener("change", () => {
+    const c = findCrew(alp.value);
+    document.getElementById("alp_name").value  = c ? c.CREW_NAME    : "";
+    document.getElementById("alp_desig").value = c ? c.DESIGNATION  : "";
+    document.getElementById("alp_gcli").value  = c ? c.G_CLI        : "";
+  });
 });
 
-/* ------------------------------------------------------------
-   TRIGGER MASTER LOAD
------------------------------------------------------------- */
+/* ---------------- INIT ---------------- */
 loadMasters();
 
-/* ------------------------------------------------------------
-   EXPORT (if needed)
------------------------------------------------------------- */
-window.MASTERS = {
-  findCLI,
-  findCrew,
-  findStation
-};
+/* ---------------- EXPORT (IF NEEDED) ---------------- */
+window.MASTERS = { findStation, findCrew, findCLI };
