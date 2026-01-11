@@ -1,75 +1,75 @@
-/* =============================================================================
-   PDF ENGINE — FULL FILE (ML/01 MODE)
-   Locked for MLACHHWANI / CVVRS
-============================================================================= */
+/************************************************************************************
+ * pdf_engine.js — FULL FILE (ML/01 MODE)
+ * Locked for MLACHHWANI CVVRS
+ * Generates PDF Base64 → Sends to backend → Backend uploads + logs
+ ************************************************************************************/
 
 console.log("pdf_engine.js loaded");
 
-/* =============================================================================
+/* ======================================================
    HELPERS
-============================================================================= */
-
-function getIST() {
-  const d = new Date();
-  const utc = d.getTime() + d.getTimezoneOffset() * 60000;
-  return new Date(utc + 19800000); // +5:30
-}
-
+====================================================== */
 function fileToBase64(file) {
-  return new Promise((resolve,reject) => {
+  return new Promise((resolve, reject) => {
     const r = new FileReader();
-    r.onload = () => {
-      const base64 = r.result.split(",")[1];
-      resolve(base64);
-    };
-    r.onerror = reject;
+    r.onload = () => resolve(r.result.split(",")[1]);
+    r.onerror = e => reject(e);
     r.readAsDataURL(file);
   });
 }
 
-/* load IR logo */
 async function loadLogoBase64() {
   const res = await fetch("assets/ir_logo.png");
   const blob = await res.blob();
-  return await fileToBase64(blob);
+  const base64 = await fileToBase64(blob);
+  return `data:image/png;base64,${base64}`;
 }
 
-/* Build standard filename */
-function buildFilename(divCount, cliId, cliCount, d) {
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth()+1).padStart(2,"0");
-  const dd = String(d.getDate()).padStart(2,"0");
-  return `CVVRS_R(${divCount})_${cliId}(${cliCount})_${yyyy}-${mm}-${dd}.pdf`;
+/* ======================================================
+   COLLECT OBSERVATION ROWS
+====================================================== */
+function collectObservations() {
+  const rows = [];
+  OBS_MASTER.forEach(o => {
+    const sel = document.querySelector(`.obs-select[data-id="${o.id}"]`);
+    const abn = document.querySelector(`.obs-abn[data-id="${o.id}"]`);
+    const file = document.querySelector(`.obs-photo[data-id="${o.id}"]`);
+
+    rows.push({
+      id: o.id,
+      title: o.title,
+      role: o.role,
+      type: o.type,
+      default: o.default,
+      value: sel.value,
+      abnormalities: abn ? abn.value.trim() : "",
+      photoFile: (file && file.files.length > 0) ? file.files[0] : null
+    });
+  });
+  return rows;
 }
 
-/* =============================================================================
-   VALIDATION LOGIC (OBSERVATION RULES)
-============================================================================= */
+/* ======================================================
+   VALIDATION RULES
+====================================================== */
+async function validateObsRules(rows) {
+  for (const r of rows) {
+    const changed = (r.value !== r.default);
 
-function validateObsRules(obsRows) {
-  for (const o of obsRows) {
-    const changed = (o.value !== o.default);
-    const needsAbn = (o.type === "RATING" && o.value !== "VERY GOOD");
-
-    /* PHOTO rule */
-    if (o.type === "YESNO" || o.type === "YESNO_DAY") {
-      if (changed && !o.photoFile) {
-        alert(`❌ PHOTO REQUIRED for OBS ${o.id}: ${o.title}`);
-        return false;
-      }
-      if (o.type === "YESNO_DAY" && o.value === "NO" && !o.photoFile) {
-        alert(`❌ PHOTO REQUIRED (value=NO) for OBS ${o.id}: ${o.title}`);
-        return false;
-      }
+    // PHOTO required when changed
+    if (changed && !r.photoFile) {
+      alert(`PHOTO REQUIRED for Obs#${r.id} — ${r.title}`);
+      return false;
     }
 
-    if (o.type === "RATING") {
-      if (needsAbn && !o.abnormalities) {
-        alert(`❌ ABNORMALITIES REQUIRED for OBS ${o.id}: ${o.title}`);
+    // RATING needs abnormalities + photo if not VERY GOOD
+    if (r.type === "RATING" && r.value !== "VERY GOOD") {
+      if (!r.abnormalities) {
+        alert(`ABNORMALITIES REQUIRED for Obs#${r.id} — ${r.title}`);
         return false;
       }
-      if (needsAbn && !o.photoFile) {
-        alert(`❌ PHOTO REQUIRED (RATING change) for OBS ${o.id}: ${o.title}`);
+      if (!r.photoFile) {
+        alert(`PHOTO REQUIRED for RATING change Obs#${r.id} — ${r.title}`);
         return false;
       }
     }
@@ -77,276 +77,199 @@ function validateObsRules(obsRows) {
   return true;
 }
 
-/* =============================================================================
-   BUILD OBSERVATION TABLE FOR PDF
-============================================================================= */
+/* ======================================================
+   BUILD PDF CONTENT
+====================================================== */
+function buildObservationTables(rows) {
+  const sections = {
+    CTO: rows.filter(r => r.id>=1 && r.id<=6),
+    ONRUN: rows.filter(r => r.id>=7 && r.id<=20),
+    HALTS: rows.filter(r => r.id>=21 && r.id<=30),
+    CHO: rows.filter(r => r.id>=31 && r.id<=34),
+  };
 
-function buildObsTable(obsRows, title) {
-  const body = [
-    [
-      {text:"Obs#", bold:true},
-      {text:"Observation", bold:true},
-      {text:"Role", bold:true},
-      {text:"Status", bold:true},
-      {text:"Abn", bold:true}
-    ]
-  ];
+  const mk = (title, arr) => {
+    const body = [[ "Obs#", "Observation", "Role", "Value", "Abn" ]];
+    arr.forEach(r => {
+      body.push([
+        String(r.id),
+        r.title,
+        r.role,
+        r.value,
+        r.abnormalities || "-"
+      ]);
+    });
+    return [
+      {text:title, bold:true, margin:[0,5,0,5]},
+      {table:{body}, layout:"lightHorizontalLines"}
+    ];
+  };
 
-  obsRows.forEach(r => {
-    const same = (r.value === r.default);
-    const color = same ? "#006600" : "#cc0000";
+  const out = [];
+  out.push(...mk("SECTION-1: DURING CTO", sections.CTO));
+  out.push({text:"", pageBreak:'before'});
+  out.push(...mk("SECTION-2: ON RUN", sections.ONRUN));
+  out.push({text:"", pageBreak:'before'});
+  out.push(...mk("SECTION-3: AT HALTS", sections.HALTS));
+  out.push({text:"", pageBreak:'before'});
+  out.push(...mk("SECTION-4: AT CHO", sections.CHO));
 
-    body.push([
-      {text:String(r.id), color},
-      {text:r.title, color},
-      {text:r.role, color},
-      {text:r.value, color},
-      {text:r.abnormalities || "-", color}
-    ]);
-  });
-
-  return [
-    {text:title, bold:true, margin:[0,5,0,3]},
-    {
-      table:{
-        widths:["auto","*","auto","auto","auto"],
-        body
-      },
-      layout:"lightHorizontalLines",
-      margin:[0,0,0,8]
-    }
-  ];
+  return out;
 }
 
-/* =============================================================================
-   BUILD PHOTO PAGES (3 PER ROW, 6 PER PAGE)
-============================================================================= */
+async function buildPhotoPages(rows) {
+  const photos = rows.filter(r=>r.photoFile);
+  if (photos.length===0) return [];
 
-async function buildPhotoPages(obsRows) {
-  const rows = obsRows.filter(o => o.photoFile);
-  if (rows.length === 0) return [];
+  const PH_W = 160;
+  const blocks = [{text:"PHOTO EVIDENCE", bold:true, margin:[0,0,0,10], pageBreak:'before'}];
 
-  const pages = [{ text:"PHOTO EVIDENCE", bold:true, fontSize:13, margin:[0,0,0,10], pageBreak:'before'}];
+  let row=[];
+  let cnt=0;
 
-  let row = [];
-  let count = 0;
-
-  for (const r of rows) {
-    const base64 = await fileToBase64(r.photoFile);
-    const same = (r.value === r.default);
-    const borderColor = same ? "#006600" : "#cc0000";
-
+  for (const p of photos) {
+    const b64 = await fileToBase64(p.photoFile);
     row.push({
       stack:[
-        {
-          image:`data:image/jpeg;base64,${base64}`,
-          width:160,
-          border:[true,true,true,true],
-          borderColor:borderColor,
-          margin:[0,0,0,5]
-        },
-        {
-          text:`${r.id}. ${r.title}`,
-          fontSize:9,
-          margin:[0,2,0,0]
-        }
+        { image:`data:image/jpeg;base64,${b64}`, width:PH_W },
+        { text:`${p.id}. ${p.title}`, fontSize:9 }
       ],
       margin:[0,5,0,5]
     });
-
-    count++;
-    if (count % 3 === 0) {
-      pages.push({columns:row, columnGap:5});
-      row = [];
+    cnt++;
+    if (cnt%3===0) {
+      blocks.push({columns:row});
+      row=[];
     }
-    if (count % 6 === 0) {
-      pages.push({text:"", pageBreak:'before'});
-    }
+    if (cnt%6===0) blocks.push({text:"", pageBreak:'before'});
   }
 
-  if (row.length > 0) {
-    pages.push({columns:row, columnGap:5});
-  }
-
-  return pages;
+  if (row.length>0) blocks.push({columns:row});
+  return blocks;
 }
 
-/* =============================================================================
-   MAIN GENERATOR
-============================================================================= */
-async function generatePDF_and_Upload() {
+/* ======================================================
+   MAIN GENERATE + SEND
+====================================================== */
+async function generateReport() {
 
-  /* --- COLLECT FORM DATA --- */
+  // BASIC DATA
   const data = {
     cli_id: document.getElementById("cli_id").value.trim(),
     cli_name: document.getElementById("cli_name").value.trim(),
     train_no: document.getElementById("train_no").value.trim(),
     date_working: document.getElementById("date_work").value.trim(),
     loco_no: document.getElementById("loco_no").value.trim(),
-    from_station: document.getElementById("from_station").value.trim(),
-    from_station_name: document.getElementById("from_station_name").value.trim(),
-    to_station: document.getElementById("to_station").value.trim(),
-    to_station_name: document.getElementById("to_station_name").value.trim(),
+    from: document.getElementById("from_station").value.trim(),
+    to: document.getElementById("to_station").value.trim(),
     lp_id: document.getElementById("lp_id").value.trim(),
-    lp_name: document.getElementById("lp_name").value.trim(),
+    lp_name: document.getElementById("lp_name")?.value.trim() || "",
     alp_id: document.getElementById("alp_id").value.trim(),
-    alp_name: document.getElementById("alp_name").value.trim(),
-    final_remarks: document.getElementById("remarks").value.trim()
+    alp_name: document.getElementById("alp_name")?.value.trim() || "",
+    lp_performance: "",
+    alp_performance: "",
   };
 
-  /* Required checks */
+  // MANDATORY CHECK
   for (const k in data) {
     if (!data[k]) {
-      alert(`❌ REQUIRED FIELD MISSING: ${k}`);
+      alert(`FIELD MISSING: ${k}`);
       return;
     }
   }
 
-  /* --- DUPLICATE CHECK --- */
-  const dup = await API.validateDuplicate(data);
-  if (dup.duplicate) {
-    alert("❌ DUPLICATE ENTRY BLOCKED FOR THIS MONTH!");
-    return;
-  }
+  // OBS
+  const rows = collectObservations();
+  const ok = await validateObsRules(rows);
+  if (!ok) return;
 
-  /* --- GET COUNTS --- */
-  const counts = await API.getMonthlyCounts(data.cli_id);
-  const divCount = counts.divCount || 0;
-  const cliCount = counts.cliCount || 0;
+  // PERFORMANCE EXTRACTION
+  const lpPerf = rows.find(r=>r.role==="LP" && r.title.includes("Over"));
+  const alpPerf = rows.find(r=>r.role==="ALP" && r.title.includes("Over"));
+  data.lp_performance = lpPerf?.value || "";
+  data.alp_performance = alpPerf?.value || "";
 
-  /* --- OBSERVE DATA --- */
-  const obsRows = OBS_UI.getData();
-
-  /* --- RULE CHECK --- */
-  if (!validateObsRules(obsRows)) return;
-
-  /* --- BUILD PDF --- */
+  // PDF BUILD
   const logo = await loadLogoBase64();
-  const now = getIST();
-  const filename = buildFilename(divCount, data.cli_id, cliCount, now);
+  const content = [];
 
-  /* Section splits */
-  const CTO = obsRows.filter(o => o.id>=1 && o.id<=6);
-  const ONRUN = obsRows.filter(o => o.id>=7 && o.id<=20);
-  const HALTS = obsRows.filter(o => o.id>=21 && o.id<=30);
-  const CHO = obsRows.filter(o => o.id>=31 && o.id<=34);
-
-  const CONTENT = [];
-
-  /* HEADER */
-  CONTENT.push({
+  content.push({
     columns:[
-      { image:`data:image/png;base64,${logo}`, width:60 },
+      { image:logo, width:60 },
       {
-        width:"*",
-        alignment:"center",
+        width:"*", alignment:"center",
         stack:[
-          {text:"SOUTH EAST CENTRAL RAILWAY", bold:true, fontSize:14},
-          {text:"ELECTRICAL (OP) DEPARTMENT, RAIPUR DIVISION", fontSize:11},
-          {text:"CVVRS ANALYSIS REPORT", bold:true, fontSize:13, margin:[0,3,0,0]}
+          {text:"SOUTH EAST CENTRAL RAILWAY", bold:true},
+          {text:"ELECTRICAL (OP) DEPARTMENT, RAIPUR DIVISION"},
+          {text:"CVVRS ANALYSIS REPORT", bold:true, margin:[0,5,0,0]}
         ]
-      },
-      {
-        width:120,
-        alignment:"right",
-        text:`CLI:\n${data.cli_id}`,
-        fontSize:10
       }
     ],
-    margin:[0,0,0,8]
+    margin:[0,0,0,10]
   });
 
-  /* INFO TABLE */
-  CONTENT.push({
+  content.push({
     table:{
       widths:["auto","*","auto","*"],
       body:[
-        ["Train No:", data.train_no, "Working Date:", data.date_working],
-        ["Loco No:", data.loco_no, "LP:", data.lp_id],
-        ["From:", data.from_station+" ("+data.from_station_name+")", "ALP:", data.alp_id],
-        ["To:", data.to_station+" ("+data.to_station_name+")", "", ""]
+        ["Train No", data.train_no, "Working Date", data.date_working],
+        ["Loco No", data.loco_no, "CLI", data.cli_id],
+        ["From", data.from, "To", data.to],
+        ["LP", data.lp_id, "ALP", data.alp_id]
       ]
     },
     layout:"lightHorizontalLines",
     margin:[0,0,0,10]
   });
 
-  /* OBS TABLES */
-  CONTENT.push(...buildObsTable(CTO, "SECTION-1: DURING CTO"));
-  CONTENT.push({text:"", pageBreak:'before'});
-  CONTENT.push(...buildObsTable(ONRUN, "SECTION-2: ON RUN"));
-  CONTENT.push({text:"", pageBreak:'before'});
-  CONTENT.push(...buildObsTable(HALTS, "SECTION-3: AT HALTS"));
-  CONTENT.push({text:"", pageBreak:'before'});
-  CONTENT.push(...buildObsTable(CHO, "SECTION-4: AT CHO"));
+  content.push(...buildObservationTables(rows));
 
-  /* FINAL REMARKS */
-  CONTENT.push({
-    table:{ widths:["auto","*"], body:[[ {text:"FINAL REMARKS:", bold:true}, data.final_remarks ]] },
-    layout:"noBorders",
-    margin:[0,10,0,10]
+  content.push({
+    text:"FINAL REMARKS:",
+    margin:[0,10,0,0],
+    bold:true
   });
 
-  /* PHOTOS */
-  const photoPages = await buildPhotoPages(obsRows);
-  CONTENT.push(...photoPages);
+  content.push({
+    text:document.getElementById("remarks").value.trim() || "-",
+    margin:[0,3,0,10]
+  });
 
-  const docDef = {
+  const photoPages = await buildPhotoPages(rows);
+  content.push(...photoPages);
+
+  const doc = {
     pageSize:"A4",
     pageMargins:[25,30,25,30],
-    footer:(current,total)=>({
-      text:`Page ${current} of ${total}`,
-      alignment:"center",
-      fontSize:8
-    }),
-    content: CONTENT
+    content
   };
 
-  /* --- EXPORT PDF BASE64 --- */
-  const pdfObj = await new Promise(resolve => {
-    const pdf = pdfMake.createPdf(docDef);
-    pdf.getBase64(b64 => resolve({ base64:b64 }));
+  const pdfObj = await new Promise(resolve=>{
+    const pdf = pdfMake.createPdf(doc);
+    pdf.getBase64(b64=>resolve(b64));
   });
 
-  /* --- UPLOAD --- */
-  const up = await API.uploadPDF(pdfObj.base64, filename);
-  if (!up.success) {
-    alert("❌ PDF UPLOAD FAILED");
+  // FILENAME
+  const now = new Date();
+  const yyyy = now.getFullYear();
+  const mm = String(now.getMonth()+1).padStart(2,"0");
+  const dd = String(now.getDate()).padStart(2,"0");
+  const filename = `CVVRS_${data.cli_id}_${yyyy}-${mm}-${dd}.pdf`;
+
+  // SEND TO BACKEND
+  const out = await API.sendReport(data, filename, pdfObj);
+
+  if (!out.success) {
+    alert("BACKEND ERROR\n"+out.message);
     return;
   }
 
-  /* --- HISTORY APPEND --- */
-  await API.appendHistory({
-    timestamp: now.toISOString(),
-    cli_id: data.cli_id,
-    cli_name: data.cli_name,
-    train_no: data.train_no,
-    date_working: data.date_working,
-    loco_no: data.loco_no,
-    from: data.from_station,
-    to: data.to_station,
-    lp_id: data.lp_id,
-    lp_name: data.lp_name,
-    alp_id: data.alp_id,
-    alp_name: data.alp_name,
-    divCount,
-    cliCount,
-    pdfLink: up.pdfLink
-  });
-
   alert(
-    "✅ SUCCESS!\n\n" +
-    "Division Count: "+divCount+"\n" +
-    "CLI Count: "+cliCount+"\n\n" +
-    "PDF Uploaded!"
+    "SUCCESS!\n\n" +
+    "Division Count: "+out.divisionCount+"\n" +
+    "CLI Count: "+out.cliCount+"\n\n" +
+    "PDF stored successfully."
   );
 
-  window.open(up.pdfLink, "_blank");
+  window.open(out.pdfLink, "_blank");
 }
-
-/* =============================================================================
-   PUBLIC ENTRY
-============================================================================= */
-window.PDF_ENGINE = {
-  run: generatePDF_and_Upload
-};
