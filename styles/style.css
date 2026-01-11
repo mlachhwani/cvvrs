@@ -1,11 +1,10 @@
-/* ============================================================
-   CVVRS FRONTEND STYLESHEET
-   THEME: T2 (Dark-Light Mix)
-   PRIMARY: #2874F0 (B1)
-   ML/01 MODE-A (FULL FILE)
-   ============================================================ */
+/* =============================================================================
+   CVVRS UI THEME — FULL FILE (ML/01 MODE)
+   Locked for MLACHHWANI / CVVRS
+   Style: Corporate + Light Grey + Blue Accents
+============================================================================= */
 
-/* GLOBAL RESET */
+/* --- GLOBAL RESETS --- */
 * {
   margin: 0;
   padding: 0;
@@ -13,231 +12,206 @@
   font-family: "Segoe UI", Roboto, Arial, sans-serif;
 }
 
-html, body {
-  width: 100%;
-  height: 100%;
-  background: #E7EBF0;
+body {
+  background: #f2f4f7;
   color: #222;
+  padding: 20px;
 }
 
-/* APP CONTAINER */
-.app-container {
+/* --- MAIN CONTAINER --- */
+.container {
   max-width: 1200px;
-  margin: 30px auto;
-  padding: 0 20px;
+  margin: auto;
+  background: #ffffff;
+  padding: 20px 30px;
+  border-radius: 10px;
+  border: 1px solid #d6dbe2;
+  box-shadow: 0 0 10px rgba(0,0,0,0.07);
 }
 
-/* HEADER */
-.app-header {
+/* --- HEADER AREA --- */
+.header {
   display: flex;
   align-items: center;
-  justify-content: center;
-  background: #2874F0;
-  color: white;
-  padding: 15px 20px;
-  border-radius: 6px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-  margin-bottom: 25px;
-  position: relative;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #1d4ed8;
 }
 
-.ir-logo {
+.logo {
   width: 70px;
-  height: auto;
-  position: absolute;
-  left: 20px;
-}
-
-.header-text {
-  text-align: center;
+  margin-right: 15px;
 }
 
 .header-text h1 {
   font-size: 22px;
   font-weight: 700;
+  color: #1a1a1a;
 }
 
 .header-text h2 {
-  font-size: 15px;
-  font-weight: 500;
-  opacity: 0.95;
+  font-size: 16px;
+  color: #333;
 }
 
 .header-text h3 {
   font-size: 17px;
+  margin-top: 3px;
   font-weight: 600;
-  margin-top: 4px;
+  color: #1d4ed8;
 }
 
-/* CARD SECTIONS */
-.card {
-  background: white;
-  border-radius: 6px;
-  padding: 18px 20px;
+/* --- CARD SECTIONS --- */
+section.card {
+  padding: 14px;
+  background: #fafbfc;
+  border: 1px solid #d6dbe2;
+  border-radius: 8px;
   margin-bottom: 18px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.12);
 }
 
-.section-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #2874F0;
-  margin-bottom: 15px;
-}
-
-/* FORM ROWS & GROUPS */
-.form-row {
-  display: flex;
-  gap: 18px;
-  margin-bottom: 15px;
-  flex-wrap: wrap;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-width: 240px;
-}
-
-.form-group label {
-  font-size: 13px;
-  color: #444;
-  margin-bottom: 4px;
-  font-weight: 500;
-}
-
-.form-group input,
-.form-group select,
-textarea {
-  padding: 8px 10px;
-  border: 1px solid #CCD2DA;
-  border-radius: 4px;
-  outline: none;
-  background: #FAFBFF;
-  font-size: 13px;
-  transition: border-color .2s;
-}
-
-.form-group input:focus,
-.form-group select:focus,
-textarea:focus {
-  border-color: #2874F0;
-}
-
-/* CREW SECTION */
-.crew-container {
-  display: flex;
-  gap: 25px;
-  flex-wrap: wrap;
-}
-
-.crew-col {
-  flex: 1;
-  min-width: 270px;
-}
-
-.crew-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: #222;
+section.card h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1d4ed8;
   margin-bottom: 10px;
-  border-bottom: 2px solid #2874F0;
-  padding-bottom: 3px;
 }
 
-/* OBSERVATION GRID */
-.obs-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
+/* --- FORM FIELDS --- */
+label {
+  font-size: 13px;
+  display: block;
+  margin-bottom: 3px;
+  color: #333;
+  font-weight: 600;
 }
 
-.obs-box {
-  width: calc(50% - 10px);
-  background: #FAFBFF;
-  padding: 10px 12px;
-  border: 1px solid #CCD2DA;
+input, textarea, select {
+  width: 100%;
+  padding: 6px 8px;
+  font-size: 13px;
+  border: 1px solid #bfc5d1;
+  border-radius: 5px;
+  background: white;
+  margin-bottom: 8px;
+}
+
+input:disabled,
+textarea:disabled {
+  background: #eceef2;
+  color: #666;
+}
+
+/* --- SUBMIT BUTTONS --- */
+button.primary {
+  width: 100%;
+  padding: 12px;
+  font-size: 15px;
+  font-weight: bold;
+  border: none;
+  color: white;
   border-radius: 6px;
+  background: #1d4ed8;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+button.primary:hover {
+  background: #1741b0;
+}
+
+/* =============================================================================
+   OBSERVATION UI (LP LEFT + ALP RIGHT)
+   Matches obs_ui.js output (PIC2 mode)
+============================================================================= */
+
+.obs-wrap {
+  display: flex;
+  gap: 24px;
+  width: 100%;
+}
+
+.obs-col {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 6px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.08);
-}
-
-.obs-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: #222;
+  background: #fff;
+  border: 1px solid #d6dbe2;
+  padding: 8px;
+  border-radius: 6px;
 }
 
 .obs-row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  padding: 4px 0;
 }
 
-.obs-select {
-  flex: 1;
-  padding: 6px 8px;
+.obs-title {
+  font-weight: bold;
   font-size: 13px;
-  border: 1px solid #CCD2DA;
+  flex: 1;
+  color: #111;
+}
+
+/* dropdown */
+.obs-select {
+  font-size: 12px;
+  padding: 3px;
   border-radius: 4px;
   background: white;
+  width: 120px;
+  border: 1px solid #999;   /* grey default border */
 }
 
-.obs-select.changed {
-  border-color: #D32F2F !important;
-}
-
-.obs-photo-input {
-  width: 32px;
-  height: 32px;
-  border: 1px dashed #2874F0;
-  border-radius: 4px;
-  cursor: pointer;
-  background: url('../assets/camera.svg') center/18px no-repeat;
-}
-
-.obs-photo-input.mandatory {
-  border-color: #D32F2F;
-}
-
-/* FINAL REMARKS */
-textarea {
-  resize: vertical;
-}
-
-/* SUBMIT BUTTON */
-.primary-btn {
-  width: 100%;
-  background: #2874F0;
-  color: white;
-  font-size: 15px;
+/* photo button (PIC2 grey round) */
+.photo-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
   border: none;
-  padding: 12px;
-  border-radius: 6px;
+  background: #c4c4c4;
   cursor: pointer;
-  font-weight: 600;
-  margin-bottom: 30px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.18);
-  transition: background .2s, transform .1s;
+  font-size: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.photo-btn:hover {
+  background: #b0b0b0;
 }
 
-.primary-btn:hover {
-  background: #1A5ECD;
+/* photo filename + tick */
+.photo-status {
+  font-size: 10px;
+  margin-left: 4px;
+  color: #333;
 }
 
-.primary-btn:active {
-  transform: scale(0.98);
+/* abnormalities input */
+.obs-abn {
+  border: 1px solid #aaa;
+  border-radius: 4px;
+  font-size: 11px;
+  padding: 3px;
+  width: 120px;
+}
+.obs-abn:disabled {
+  background: #eceef2;
+  color: #666;
 }
 
-/* MOBILE SUPPORT */
-@media (max-width: 768px) {
-  .obs-box {
-    width: 100%;
-  }
-  .crew-container {
-    flex-direction: column;
-  }
+/* =============================================================================
+   VALIDATION COLORS
+============================================================================= */
+
+/* valid border (station, crew etc) */
+.valid-input {
+  border: 1px solid green !important;
+}
+
+/* invalid border */
+.invalid-input {
+  border: 1px solid red !important;
 }
