@@ -1,98 +1,233 @@
-/* ============================================================================
-   OBS_UI.js — LP LEFT + ALP RIGHT RENDERING
-   ML/PHASE2/STEP11 FINAL
-   ============================================================================ */
+/* =============================================================================
+   OBSERVATION UI RENDERING ENGINE (LP LEFT + ALP RIGHT)
+   CONFIG LOCKED FOR MLACHHWANI / CVVRS  | ML/01 FULL FILE MODE
+   =============================================================================
 
-console.log("OBS_UI LOADED");
+   UI RULES:
+   - Title: Bold + 13px
+   - Dropdown Width: 120px
+   - Default Border: Grey
+   - Changed Border: Red
+   - Abnormalities Field: Always visible (disabled if not needed)
+   - Photo Button: Round Grey (PIC2)
+   - Photo Status: filename + ✔ tick
+   - Layout: INLINE ROW → [TITLE] [DROPDOWN] [PHOTO BUTTON] [ABN FIELD]
+   - LP on Left, ALP on Right auto-column split
+   - YES/NO defaults: photo required only if dropdown != default
+   - YES/NO/DAY: photo required only if value == "NO"
+   - RATING: photo & abnormalities required if != VERY GOOD
 
-document.addEventListener("DOMContentLoaded", () => {
-  renderObservationUI();
-});
+============================================================================= */
 
-/* ==========================================================
-   BUILD UI
-========================================================== */
-function renderObservationUI() {
+/* DOM refs */
+const OBS_CONTAINER = document.getElementById("obs_container");
 
-  const root = document.getElementById("obs_container");
-  root.innerHTML = "";
+/* Rating options */
+const RATING_OPTS = ["VERY GOOD", "FAIR", "POOR"];
 
-  const lpCol = document.createElement("div");
-  lpCol.className = "obs-column";
+/* Yes/No options */
+const YESNO_OPTS = ["YES", "NO"];
 
-  const alpCol = document.createElement("div");
-  alpCol.className = "obs-column";
+/* Yes/No/Day options */
+const YESNO_DAY_OPTS = ["YES", "NO", "DAY TIME"];
 
-  const sections = ["CTO","ONRUN","HALTS","CHO"];
-
-  sections.forEach(sec => {
-
-    /* LP SECTION */
-    const lpSec = OBS_MASTER.filter(o => o.section === sec && o.role === "LP");
-    if (lpSec.length > 0) {
-      const head = document.createElement("h4");
-      head.textContent = `SECTION: ${sec} (LP)`;
-      lpCol.appendChild(head);
-
-      lpSec.forEach(o => lpCol.appendChild(buildObsBlock(o)));
-    }
-
-    /* ALP SECTION */
-    const alpSec = OBS_MASTER.filter(o => o.section === sec && o.role === "ALP");
-    if (alpSec.length > 0) {
-      const head = document.createElement("h4");
-      head.textContent = `SECTION: ${sec} (ALP)`;
-      alpCol.appendChild(head);
-
-      alpSec.forEach(o => alpCol.appendChild(buildObsBlock(o)));
-    }
-
-  });
-
-  root.appendChild(lpCol);
-  root.appendChild(alpCol);
-}
-
-/* ==========================================================
-   BLOCK BUILDER
-========================================================== */
-function buildObsBlock(o) {
-  const div = document.createElement("div");
-  div.className = "obs-block";
-
-  const t = document.createElement("div");
-  t.className = "obs-title";
-  t.textContent = `${o.id}. ${o.title}`;
-  div.appendChild(t);
-
+/* =============================================================================
+   CREATE ONE OBSERVATION ROW
+============================================================================= */
+function createObsRow(obs) {
   const row = document.createElement("div");
   row.className = "obs-row";
+  row.dataset.id = obs.id;
 
-  /* DROPDOWN */
+  /* ---- LEFT PART: TITLE ---- */
+  const title = document.createElement("div");
+  title.className = "obs-title";
+  title.textContent = `${obs.id}. ${obs.title}`;
+  row.appendChild(title);
+
+  /* ---- DROPDOWN ---- */
   const sel = document.createElement("select");
-  sel.dataset.id = o.id;
-  sel.dataset.default = o.default;
+  sel.className = "obs-select";
+  sel.dataset.id = obs.id;
+  sel.dataset.default = obs.default;
 
-  if (o.type === "YESNO") {
-    ["YES","NO"].forEach(v => sel.add(new Option(v,v)));
+  sel.style.width = "120px";
+  sel.style.border = "1px solid #aaa"; // default grey
+
+  /* Populate options */
+  if (obs.type === "RATING") {
+    RATING_OPTS.forEach(v => {
+      const opt = document.createElement("option");
+      opt.value = v;
+      opt.textContent = v;
+      sel.appendChild(opt);
+    });
+  } else if (obs.type === "YESNO") {
+    YESNO_OPTS.forEach(v => {
+      const opt = document.createElement("option");
+      opt.value = v;
+      opt.textContent = v;
+      sel.appendChild(opt);
+    });
+  } else if (obs.type === "YESNO_DAY") {
+    YESNO_DAY_OPTS.forEach(v => {
+      const opt = document.createElement("option");
+      opt.value = v;
+      opt.textContent = v;
+      sel.appendChild(opt);
+    });
   }
-  if (o.type === "YESNO_DAY") {
-    ["YES","NO","DAY TIME"].forEach(v => sel.add(new Option(v,v)));
-  }
-  if (o.type === "RATING") {
-    ["VERY GOOD","FAIR","POOR"].forEach(v => sel.add(new Option(v,v)));
-  }
-  sel.value = o.default;
+
+  sel.value = obs.default;
   row.appendChild(sel);
 
-  /* PHOTO */
-  const file = document.createElement("input");
-  file.type = "file";
-  file.dataset.id = o.id;
-  file.accept = "image/*";
-  row.appendChild(file);
+  /* ---- PHOTO BUTTON ---- */
+  const photoWrap = document.createElement("div");
+  photoWrap.className = "obs-photo-wrap";
 
-  div.appendChild(row);
+  const photoInput = document.createElement("input");
+  photoInput.type = "file";
+  photoInput.accept = "image/*";
+  photoInput.className = "obs-photo";
+  photoInput.dataset.id = obs.id;
+  photoInput.style.display = "none";
 
-  return div;
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "photo-btn";
+  btn.innerHTML = "📷";
+  btn.dataset.id = obs.id;
+
+  /* click → open file dialog */
+  btn.onclick = () => photoInput.click();
+
+  /* filename + tick container */
+  const status = document.createElement("span");
+  status.className = "photo-status";
+  status.dataset.id = obs.id;
+  status.style.fontSize = "10px";
+  status.style.marginLeft = "4px";
+
+  photoInput.onchange = () => {
+    if (photoInput.files.length > 0) {
+      status.innerHTML = `${photoInput.files[0].name} <span style="color:green;font-weight:bold;">✔</span>`;
+    } else {
+      status.innerHTML = "";
+    }
+  };
+
+  photoWrap.appendChild(btn);
+  photoWrap.appendChild(photoInput);
+  photoWrap.appendChild(status);
+  row.appendChild(photoWrap);
+
+  /* ---- ABNORMALITIES FIELD (always visible) ---- */
+  const abn = document.createElement("input");
+  abn.type = "text";
+  abn.placeholder = "Abn...";
+  abn.className = "obs-abn";
+  abn.dataset.id = obs.id;
+  abn.style.width = "120px";
+  abn.style.fontSize = "11px";
+  abn.style.padding = "3px";
+
+  row.appendChild(abn);
+
+  /* ---- DROPDOWN LOGIC ---- */
+  function applyUIRules() {
+    const val = sel.value;
+    const def = obs.default;
+
+    /* border color */
+    if (val === def) {
+      sel.style.border = "1px solid #aaa"; // grey
+    } else {
+      sel.style.border = "1px solid red";
+    }
+
+    /* abnormalities enable/disable */
+    if (obs.type === "RATING") {
+      if (val === "VERY GOOD") {
+        abn.value = "";
+        abn.disabled = true;
+      } else {
+        abn.disabled = false;
+      }
+    } else {
+      /* normal yes/no → abnormalities optional */
+      abn.disabled = false;
+    }
+  }
+
+  sel.onchange = applyUIRules;
+  applyUIRules();
+
+  return row;
 }
+
+/* =============================================================================
+   RENDER ALL OBSERVATIONS (LP LEFT + ALP RIGHT)
+============================================================================= */
+function renderObservationsUI() {
+  OBS_CONTAINER.innerHTML = "";
+
+  const lpCol = document.createElement("div");
+  lpCol.className = "obs-col";
+
+  const alpCol = document.createElement("div");
+  alpCol.className = "obs-col";
+
+  /* LP first then ALP */
+  OBS_MASTER.forEach(obs => {
+    const row = createObsRow(obs);
+    if (obs.role === "LP") {
+      lpCol.appendChild(row);
+    } else {
+      alpCol.appendChild(row);
+    }
+  });
+
+  const wrap = document.createElement("div");
+  wrap.className = "obs-wrap";
+  wrap.appendChild(lpCol);
+  wrap.appendChild(alpCol);
+
+  OBS_CONTAINER.appendChild(wrap);
+}
+
+/* =============================================================================
+   SUPPORT FUNCTIONS FOR OTHER MODULES
+============================================================================= */
+
+/* Collect observations w/ value, photo, abn */
+function getObservationData() {
+  const arr = [];
+
+  OBS_MASTER.forEach(obs => {
+    const sel = document.querySelector(`.obs-select[data-id="${obs.id}"]`);
+    const photo = document.querySelector(`.obs-photo[data-id="${obs.id}"]`);
+    const abn = document.querySelector(`.obs-abn[data-id="${obs.id}"]`);
+
+    arr.push({
+      id: obs.id,
+      title: obs.title,
+      role: obs.role,
+      type: obs.type,
+      default: obs.default,
+      value: sel?.value || "",
+      abnormalities: abn?.value.trim() || "",
+      photoFile: (photo && photo.files.length > 0) ? photo.files[0] : null
+    });
+  });
+
+  return arr;
+}
+
+/* To be used by validation engine */
+window.OBS_UI = {
+  render: renderObservationsUI,
+  getData: getObservationData
+};
+
+/* Auto render on load */
+document.addEventListener("DOMContentLoaded", renderObservationsUI);
