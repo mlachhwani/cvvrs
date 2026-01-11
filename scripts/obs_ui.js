@@ -1,102 +1,98 @@
-/* ============================================================
-   OBSERVATION UI (LP LEFT | ALP RIGHT)
-   PHOTO_MODE = A (RED BORDER + 📷 REQUIRED)
-   ============================================================ */
+/* ============================================================================
+   OBS_UI.js — LP LEFT + ALP RIGHT RENDERING
+   ML/PHASE2/STEP11 FINAL
+   ============================================================================ */
 
-window.addEventListener("DOMContentLoaded", () => {
-  renderObservationsUI();
+console.log("OBS_UI LOADED");
+
+document.addEventListener("DOMContentLoaded", () => {
+  renderObservationUI();
 });
 
-function renderObservationsUI() {
-  if (!window.OBS_MASTER) {
-    console.error("OBS_MASTER missing!");
-    return;
-  }
+/* ==========================================================
+   BUILD UI
+========================================================== */
+function renderObservationUI() {
 
-  const container = document.getElementById("obs_container");
-  container.innerHTML = "";
+  const root = document.getElementById("obs_container");
+  root.innerHTML = "";
 
-  /* SECTION GROUPS BY ID RANGE */
-  const sections = [
-    { title: "DURING CTO", ids:[1, 6] },
-    { title: "ON RUN",     ids:[7, 20] },
-    { title: "AT HALTS",   ids:[21, 30] },
-    { title: "AT CHO",     ids:[31, 34] }
-  ];
+  const lpCol = document.createElement("div");
+  lpCol.className = "obs-column";
+
+  const alpCol = document.createElement("div");
+  alpCol.className = "obs-column";
+
+  const sections = ["CTO","ONRUN","HALTS","CHO"];
 
   sections.forEach(sec => {
-    const secDiv = document.createElement("div");
-    secDiv.className = "obs-section";
 
-    const title = document.createElement("h4");
-    title.textContent = sec.title;
-    secDiv.appendChild(title);
+    /* LP SECTION */
+    const lpSec = OBS_MASTER.filter(o => o.section === sec && o.role === "LP");
+    if (lpSec.length > 0) {
+      const head = document.createElement("h4");
+      head.textContent = `SECTION: ${sec} (LP)`;
+      lpCol.appendChild(head);
 
-    const row = document.createElement("div");
-    row.className = "obs-row";
+      lpSec.forEach(o => lpCol.appendChild(buildObsBlock(o)));
+    }
 
-    const lpCol = document.createElement("div");
-    const alpCol = document.createElement("div");
-    lpCol.className = "obs-col";
-    alpCol.className = "obs-col";
+    /* ALP SECTION */
+    const alpSec = OBS_MASTER.filter(o => o.section === sec && o.role === "ALP");
+    if (alpSec.length > 0) {
+      const head = document.createElement("h4");
+      head.textContent = `SECTION: ${sec} (ALP)`;
+      alpCol.appendChild(head);
 
-    /* Column headers */
-    const lpHead = document.createElement("div");
-    lpHead.className = "col-head";
-    lpHead.textContent = "LP OBSERVATIONS";
-    lpCol.appendChild(lpHead);
+      alpSec.forEach(o => alpCol.appendChild(buildObsBlock(o)));
+    }
 
-    const alpHead = document.createElement("div");
-    alpHead.className = "col-head";
-    alpHead.textContent = "ALP OBSERVATIONS";
-    alpCol.appendChild(alpHead);
-
-    /* Filter section items */
-    OBS_MASTER.filter(o => o.id>=sec.ids[0] && o.id<=sec.ids[1]).forEach(obs => {
-      const block = document.createElement("div");
-      block.className = "obs-item";
-
-      /* Title */
-      const t = document.createElement("div");
-      t.className = "obs-title";
-      t.textContent = obs.title;
-      block.appendChild(t);
-
-      /* Dropdown */
-      const sel = document.createElement("select");
-      sel.className = "obs-select";
-
-      if (obs.type === "YESNO")       ["YES","NO"].forEach(v => sel.add(new Option(v,v)));
-      if (obs.type === "YESNO_DAY")   ["YES","NO","DAY TIME"].forEach(v => sel.add(new Option(v,v)));
-      if (obs.type === "RATING")      ["VERY GOOD","FAIR","POOR"].forEach(v => sel.add(new Option(v,v)));
-
-      sel.value = obs.default;
-      block.appendChild(sel);
-
-      /* Photo input */
-      const file = document.createElement("input");
-      file.type = "file";
-      file.accept = "image/*";
-      file.className = "photo-input";
-      block.appendChild(file);
-
-      /* PHOTO_MODE = A → Red border when changed */
-      sel.addEventListener("change", () => {
-        if (sel.value !== obs.default) {
-          block.classList.add("need-photo");
-        } else {
-          block.classList.remove("need-photo");
-        }
-      });
-
-      /* Append to correct column */
-      if (obs.role === "LP") lpCol.appendChild(block);
-      else alpCol.appendChild(block);
-    });
-
-    row.appendChild(lpCol);
-    row.appendChild(alpCol);
-    secDiv.appendChild(row);
-    container.appendChild(secDiv);
   });
+
+  root.appendChild(lpCol);
+  root.appendChild(alpCol);
+}
+
+/* ==========================================================
+   BLOCK BUILDER
+========================================================== */
+function buildObsBlock(o) {
+  const div = document.createElement("div");
+  div.className = "obs-block";
+
+  const t = document.createElement("div");
+  t.className = "obs-title";
+  t.textContent = `${o.id}. ${o.title}`;
+  div.appendChild(t);
+
+  const row = document.createElement("div");
+  row.className = "obs-row";
+
+  /* DROPDOWN */
+  const sel = document.createElement("select");
+  sel.dataset.id = o.id;
+  sel.dataset.default = o.default;
+
+  if (o.type === "YESNO") {
+    ["YES","NO"].forEach(v => sel.add(new Option(v,v)));
+  }
+  if (o.type === "YESNO_DAY") {
+    ["YES","NO","DAY TIME"].forEach(v => sel.add(new Option(v,v)));
+  }
+  if (o.type === "RATING") {
+    ["VERY GOOD","FAIR","POOR"].forEach(v => sel.add(new Option(v,v)));
+  }
+  sel.value = o.default;
+  row.appendChild(sel);
+
+  /* PHOTO */
+  const file = document.createElement("input");
+  file.type = "file";
+  file.dataset.id = o.id;
+  file.accept = "image/*";
+  row.appendChild(file);
+
+  div.appendChild(row);
+
+  return div;
 }
