@@ -1,217 +1,184 @@
-/* =============================================================================
-   CVVRS UI THEME — FULL FILE (ML/01 MODE)
-   Locked for MLACHHWANI / CVVRS
-   Style: Corporate + Light Grey + Blue Accents
-============================================================================= */
-
-/* --- GLOBAL RESETS --- */
+/* =========================================================
+   GLOBAL BASE
+========================================================= */
 * {
-  margin: 0;
-  padding: 0;
   box-sizing: border-box;
-  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  font-family: Arial, sans-serif;
 }
 
 body {
-  background: #f2f4f7;
-  color: #222;
-  padding: 20px;
+  margin: 0;
+  padding: 0;
+  background: #eef1f5;
 }
 
-/* --- MAIN CONTAINER --- */
+/* =========================================================
+   CONTAINER & CARD
+========================================================= */
 .container {
-  max-width: 1200px;
-  margin: auto;
-  background: #ffffff;
-  padding: 20px 30px;
-  border-radius: 10px;
-  border: 1px solid #d6dbe2;
-  box-shadow: 0 0 10px rgba(0,0,0,0.07);
+  width: 90%;
+  max-width: 1100px;
+  margin: 30px auto;
 }
 
-/* --- HEADER AREA --- */
-.header {
-  display: flex;
-  align-items: center;
+.card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
   margin-bottom: 20px;
-  padding-bottom: 10px;
-  border-bottom: 2px solid #1d4ed8;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.card h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #17376D;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+.header {
+  text-align: center;
+  margin-bottom: 25px;
 }
 
 .logo {
-  width: 70px;
-  margin-right: 15px;
-}
-
-.header-text h1 {
-  font-size: 22px;
-  font-weight: 700;
-  color: #1a1a1a;
-}
-
-.header-text h2 {
-  font-size: 16px;
-  color: #333;
-}
-
-.header-text h3 {
-  font-size: 17px;
-  margin-top: 3px;
-  font-weight: 600;
-  color: #1d4ed8;
-}
-
-/* --- CARD SECTIONS --- */
-section.card {
-  padding: 14px;
-  background: #fafbfc;
-  border: 1px solid #d6dbe2;
-  border-radius: 8px;
-  margin-bottom: 18px;
-}
-
-section.card h3 {
-  font-size: 15px;
-  font-weight: 700;
-  color: #1d4ed8;
+  width: 80px;
   margin-bottom: 10px;
 }
 
-/* --- FORM FIELDS --- */
+.header-text h1 {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 2px 0;
+}
+
+.header-text h2 {
+  font-size: 14px;
+  margin: 2px 0;
+}
+
+.header-text h3 {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 5px 0 0 0;
+}
+
+/* =========================================================
+   FORM INPUT STYLING
+========================================================= */
 label {
   font-size: 13px;
-  display: block;
-  margin-bottom: 3px;
-  color: #333;
   font-weight: 600;
+  display: block;
+  margin-bottom: 4px;
+  color: #1a1a1a;
 }
 
-input, textarea, select {
+input, select, textarea {
   width: 100%;
-  padding: 6px 8px;
-  font-size: 13px;
-  border: 1px solid #bfc5d1;
-  border-radius: 5px;
-  background: white;
-  margin-bottom: 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #b8c2d1;
+  margin-bottom: 12px;
+  font-size: 14px;
 }
 
-input:disabled,
-textarea:disabled {
-  background: #eceef2;
-  color: #666;
+textarea {
+  resize: vertical;
 }
 
-/* --- SUBMIT BUTTONS --- */
-button.primary {
+/* =========================================================
+   GRID SYSTEM (SIDE BY SIDE)
+========================================================= */
+.row {
   width: 100%;
-  padding: 12px;
-  font-size: 15px;
-  font-weight: bold;
-  border: none;
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.col-33 {
+  width: calc(33.33% - 10px);
+}
+
+.col-50 {
+  width: calc(50% - 10px);
+}
+
+.col-100 {
+  width: 100%;
+}
+
+/* Responsive Fix */
+@media (max-width: 750px) {
+  .col-33, .col-50 {
+    width: 100%;
+  }
+}
+
+/* =========================================================
+   OBSERVATIONS
+========================================================= */
+.obs-section-title {
+  background: #17376D;
   color: white;
-  border-radius: 6px;
-  background: #1d4ed8;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-button.primary:hover {
-  background: #1741b0;
-}
-
-/* =============================================================================
-   OBSERVATION UI (LP LEFT + ALP RIGHT)
-   Matches obs_ui.js output (PIC2 mode)
-============================================================================= */
-
-.obs-wrap {
-  display: flex;
-  gap: 24px;
-  width: 100%;
-}
-
-.obs-col {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  background: #fff;
-  border: 1px solid #d6dbe2;
-  padding: 8px;
-  border-radius: 6px;
+  padding: 6px 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-weight: bold;
 }
 
 .obs-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 4px 0;
+  padding: 6px 0;
+  border-bottom: 1px dashed #d3d3d3;
 }
 
 .obs-title {
-  font-weight: bold;
-  font-size: 13px;
   flex: 1;
-  color: #111;
+  font-size: 13px;
+  font-weight: 600;
 }
 
-/* dropdown */
 .obs-select {
-  font-size: 12px;
-  padding: 3px;
-  border-radius: 4px;
-  background: white;
   width: 120px;
-  border: 1px solid #999;   /* grey default border */
+  margin-left: 10px;
 }
 
-/* photo button (PIC2 grey round) */
-.photo-btn {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: none;
-  background: #c4c4c4;
-  cursor: pointer;
-  font-size: 14px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.photo-btn:hover {
-  background: #b0b0b0;
+.obs-photo {
+  width: 160px;
+  margin-left: 10px;
 }
 
-/* photo filename + tick */
-.photo-status {
-  font-size: 10px;
-  margin-left: 4px;
-  color: #333;
-}
-
-/* abnormalities input */
 .obs-abn {
-  border: 1px solid #aaa;
-  border-radius: 4px;
-  font-size: 11px;
-  padding: 3px;
-  width: 120px;
-}
-.obs-abn:disabled {
-  background: #eceef2;
-  color: #666;
+  width: 200px;
+  margin-left: 10px;
 }
 
-/* =============================================================================
-   VALIDATION COLORS
-============================================================================= */
-
-/* valid border (station, crew etc) */
-.valid-input {
-  border: 1px solid green !important;
+/* =========================================================
+   BUTTON
+========================================================= */
+button.primary {
+  width: 100%;
+  padding: 12px;
+  background: #17376D;
+  color: white;
+  font-size: 16px;
+  border: none;
+  margin-top: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  letter-spacing: .5px;
 }
 
-/* invalid border */
-.invalid-input {
-  border: 1px solid red !important;
+button.primary:hover {
+  opacity: 0.9;
 }
