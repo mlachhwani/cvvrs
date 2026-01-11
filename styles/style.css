@@ -1,184 +1,229 @@
-/* =========================================================
-   GLOBAL BASE
-========================================================= */
+/* ============================================================
+   CVVRS UI — FINAL CSS (ML/01 FULL FILE)
+   Locked for mlachhwani / cvvrs
+   ============================================================ */
+
+/* ------------- GLOBAL RESET ------------- */
 * {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
-  font-family: Arial, sans-serif;
+  font-family: "Segoe UI", Arial, sans-serif;
 }
 
 body {
-  margin: 0;
-  padding: 0;
-  background: #eef1f5;
-}
-
-/* =========================================================
-   CONTAINER & CARD
-========================================================= */
-.container {
-  width: 90%;
-  max-width: 1100px;
-  margin: 30px auto;
-}
-
-.card {
-  background: #fff;
+  background: #e9ecf1;
   padding: 20px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  color: #111;
 }
 
-.card h3 {
-  margin-top: 0;
-  margin-bottom: 15px;
-  color: #17376D;
-  font-size: 18px;
-  font-weight: 700;
+.page {
+  max-width: 1150px;
+  margin: auto;
 }
 
-/* =========================================================
-   HEADER
-========================================================= */
-.header {
+/* ------------- HEADER ------------- */
+.header-full {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
   text-align: center;
-  margin-bottom: 25px;
 }
 
-.logo {
+.logo-lg {
   width: 80px;
-  margin-bottom: 10px;
+  margin-right: 15px;
 }
 
-.header-text h1 {
+.header-title .h1 {
   font-size: 20px;
   font-weight: 700;
-  margin: 2px 0;
 }
 
-.header-text h2 {
+.header-title .h2 {
+  font-size: 15px;
+  margin-top: 2px;
+}
+
+.header-title .h3 {
   font-size: 14px;
-  margin: 2px 0;
-}
-
-.header-text h3 {
-  font-size: 16px;
-  font-weight: bold;
-  margin: 5px 0 0 0;
-}
-
-/* =========================================================
-   FORM INPUT STYLING
-========================================================= */
-label {
-  font-size: 13px;
   font-weight: 600;
+  margin-top: 4px;
+}
+
+/* ------------- SECTION CARD ------------- */
+.card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 18px;
+  margin-bottom: 18px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.10);
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  border-left: 4px solid #1976d2;
+  padding-left: 8px;
+}
+
+/* ------------- INPUT FIELDS ------------- */
+label {
   display: block;
   margin-bottom: 4px;
-  color: #1a1a1a;
+  font-size: 13px;
+  font-weight: 600;
 }
 
-input, select, textarea {
+input,
+textarea,
+select {
   width: 100%;
-  padding: 8px 10px;
+  border: 1px solid #cdd2d8;
+  background: #fdfdfd;
+  padding: 7px 9px;
   border-radius: 6px;
-  border: 1px solid #b8c2d1;
   margin-bottom: 12px;
   font-size: 14px;
 }
 
-textarea {
-  resize: vertical;
+input:read-only {
+  background: #eef2f7;
+  border-color: #bfc7d1;
+  font-weight: 500;
 }
 
-/* =========================================================
-   GRID SYSTEM (SIDE BY SIDE)
-========================================================= */
-.row {
-  width: 100%;
-  display: flex;
-  gap: 15px;
-  flex-wrap: wrap;
-}
-
-.col-33 {
-  width: calc(33.33% - 10px);
-}
-
-.col-50 {
-  width: calc(50% - 10px);
-}
-
-.col-100 {
-  width: 100%;
-}
-
-/* Responsive Fix */
-@media (max-width: 750px) {
-  .col-33, .col-50 {
-    width: 100%;
-  }
-}
-
-/* =========================================================
-   OBSERVATIONS
-========================================================= */
-.obs-section-title {
-  background: #17376D;
+/* ------------- BUTTONS ------------- */
+button {
+  padding: 10px 22px;
+  border-radius: 6px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  background: #1976d2;
   color: white;
+  transition: 0.2s;
+}
+
+button:hover:not(:disabled) {
+  background: #0c62ba;
+}
+
+button:disabled {
+  background: #9bb8d1;
+  cursor: not-allowed;
+}
+
+.footer-action {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+/* ------------- GRID LAYOUTS ------------- */
+.row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.row-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px;
+}
+
+.row-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+@media(max-width: 900px) {
+  .row-4 { grid-template-columns: 1fr 1fr; }
+}
+
+@media(max-width: 650px) {
+  .row-3 { grid-template-columns: 1fr; }
+  .row-2 { grid-template-columns: 1fr; }
+  .row-4 { grid-template-columns: 1fr; }
+}
+
+/* ------------- SMALL AUTO LABEL ------------- */
+.auto-label {
+  font-size: 11px;
+  opacity: 0.7;
+  margin-bottom: 2px;
+}
+
+/* ============================================================
+   OBSERVATION UI (Left/Right Layout + PIC2 + Compact)
+   ============================================================ */
+
+.obs-block {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18px;
+}
+
+.obs-section-title {
+  font-size: 15px;
+  font-weight: 700;
+  background: #dfe7f1;
   padding: 6px 10px;
-  border-radius: 5px;
-  font-size: 14px;
-  margin-top: 10px;
+  border-radius: 6px;
   margin-bottom: 10px;
-  font-weight: bold;
 }
 
 .obs-row {
   display: flex;
   align-items: center;
   padding: 6px 0;
-  border-bottom: 1px dashed #d3d3d3;
+  border-bottom: 1px dashed #d0d5db;
+  gap: 10px;
 }
 
-.obs-title {
-  flex: 1;
-  font-size: 13px;
+.obs-text {
+  flex: 1.6;
+  font-size: 14px;
   font-weight: 600;
 }
 
 .obs-select {
-  width: 120px;
-  margin-left: 10px;
+  width: 110px;
+  max-width: 110px;
+  font-size: 13px;
+  padding: 5px;
 }
 
 .obs-photo {
-  width: 160px;
-  margin-left: 10px;
-}
-
-.obs-abn {
-  width: 200px;
-  margin-left: 10px;
-}
-
-/* =========================================================
-   BUTTON
-========================================================= */
-button.primary {
-  width: 100%;
-  padding: 12px;
-  background: #17376D;
-  color: white;
-  font-size: 16px;
-  border: none;
-  margin-top: 10px;
-  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  background: #fff;
+  border: 2px dashed #c22;
+  border-radius: 5px;
   cursor: pointer;
-  font-weight: bold;
-  letter-spacing: .5px;
+  flex-shrink: 0;
 }
 
-button.primary:hover {
-  opacity: 0.9;
+.obs-photo::file-selector-button {
+  display: none;
+}
+
+.obs-photo.uploaded {
+  border-color: #1b8d1b;
+}
+
+/* ------------- OBS TWO COLUMN WRAPPER ------------- */
+.obs-side-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media(max-width: 850px) {
+  .obs-side-wrapper {
+    grid-template-columns: 1fr;
+  }
 }
