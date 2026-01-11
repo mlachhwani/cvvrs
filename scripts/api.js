@@ -1,50 +1,106 @@
-const API={};
-API.WEBAPP_URL="https://script.google.com/macros/s/AKfycbw-vvjXMzkOpOvdPpjaAfTbJU3mlUV4YeDoDQMr_zCv5nQekYeGj0OmPyPiTk0wod4R/exec";
+/* =============================================================================
+   API ENGINE — FULL FILE (ML/01 MODE)
+   Locked for MLACHHWANI / CVVRS
+============================================================================= */
 
-API._post=async function(action,payload){
-  const r=await fetch(API.WEBAPP_URL,{
-    method:"POST",
-    body:JSON.stringify({action,payload}),
-    headers:{"Content-Type":"application/json"}
-  });
-  return await r.json();
-};
+console.log("api.js loaded");
 
-API.validateDuplicate=async function(d){
-  const p={
-    cli_id:d.cli_id,
-    train_no:d.train_no,
-    date_working:d.date_work,
-    loco_no:d.loco_no,
-    from_station:d.from_station,
-    to_station:d.to_station,
-    lp_id:d.lp_id,
-    alp_id:d.alp_id,
-    analysis_date:d.analysis_date
+/* =============================================================================
+   CONFIG — BACKEND ENDPOINT (Apps Script WebApp)
+============================================================================= */
+const WEBAPP_URL = "<<<PASTE_WEBAPP_URL_HERE>>>";
+
+/* =============================================================================
+   GENERIC POST WRAPPER
+============================================================================= */
+async function postToBackend(action, payload = {}) {
+  try {
+    const res = await fetch(WEBAPP_URL, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ action, payload })
+    });
+
+    const out = await res.json();
+    return out;
+
+  } catch(err) {
+    console.error("❌ Backend communication error:", err);
+    return { success:false, message:"NETWORK_ERROR" };
+  }
+}
+
+/* =============================================================================
+   1️⃣ DUPLICATE CHECK
+   Checks LP+ALP+Train+Date+Loco+From+To duplicate for current month
+============================================================================= */
+async function checkDuplicate(data) {
+  const out = await postToBackend("CHECK_DUPLICATE", data);
+  return {
+    duplicate: out.duplicate || false
   };
-  return await API._post("validate",p);
-};
+}
 
-API.uploadPDF=async function(b64,fn,ad){
-  return await API._post("upload",{filename:fn,base64:b64,analysis_date:ad});
-};
+/* =============================================================================
+   2️⃣ GET MONTHLY COUNTS
+   Returns:
+   - divCount: division count for month
+   - cliCount: cli-specific count for month
+============================================================================= */
+async function getCounts(cli_id) {
+  const out = await postToBackend("GET_COUNTS", { cli_id });
 
-API.appendHistory=async function(h){
-  return await API._post("history",{
-    analysis_date:h.analysis_date,
-    month:h.analysis_date.substring(0,7),
-    cli_id:h.cli_id,
-    cli_name:h.cli_name,
-    train_no:h.train_no,
-    date_working:h.date_work,
-    loco_no:h.loco_no,
-    from_station:h.from_station,
-    to_station:h.to_station,
-    lp_id:h.lp_id,
-    lp_name:h.lp_name,
-    alp_id:h.alp_id,
-    alp_name:h.alp_name,
-    observations:h.observations,
-    pdfLink:h.pdfLink
-  });
+  if (!out.success) {
+    return { divCount: 0, cliCount: 0 };
+  }
+
+  return {
+    divCount: out.divCount || 0,
+    cliCount: out.cliCount || 0
+  };
+}
+
+/* =============================================================================
+   3️⃣ PDF UPLOAD
+   Takes base64 + filename → returns Drive link
+============================================================================= */
+async function uploadPDF(base64, filename) {
+  const out = await postToBackend("UPLOAD_PDF", { base64, filename });
+
+  if (!out.success) {
+    return { success:false, pdfLink:null };
+  }
+
+  return { success:true, pdfLink: out.pdfLink };
+}
+
+/* =============================================================================
+   4️⃣ APPEND HISTORY ROW
+   Will log in sheet for analytics
+============================================================================= */
+async function appendHistory(row) {
+  const out = await postToBackend("APPEND_HISTORY", row);
+  return { success: out.success || false };
+}
+
+/* =============================================================================
+   COMBINED HIGH-LEVEL WORKFLOW USED BY submit.js / pdf_engine.js
+============================================================================= */
+window.API = {
+
+  async validateDuplicate(data) {
+    return await checkDuplicate(data);
+  },
+
+  async getMonthlyCounts(cli_id) {
+    return await getCounts(cli_id);
+  },
+
+  async uploadPDF(base64, filename) {
+    return await uploadPDF(base64, filename);
+  },
+
+  async appendHistory(row) {
+    return await appendHistory(row);
+  }
 };
