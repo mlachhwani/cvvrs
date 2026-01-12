@@ -1,164 +1,123 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CVVRS ANALYSIS | SECR</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link href="styles/style.css" rel="stylesheet">
-
-<!-- libs -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<!-- CSV Parser -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
-<!-- app scripts (order = LOCKED) -->
-<script src="scripts/masters.js"></script>
-<script src="scripts/obs_master.js"></script>
-<script src="scripts/obs_ui.js"></script>
-<script src="scripts/pdf_engine.js"></script>
-<script src="scripts/api.js"></script>
-<script src="scripts/submit.js"></script>
+<!-- PDF Engine Dependency -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 
+<link href="styles/style.css" rel="stylesheet">
 </head>
 <body>
 
-<div class="main-wrapper">
+<div class="container">
 
-  <!-- HEADER -->
-  <div class="header">
-    <img src="assets/ir_logo.png" class="logo">
-    <div class="header-text">
-      <h1>SOUTH EAST CENTRAL RAILWAY</h1>
-      <h2>ELECTRICAL (OP) DEPARTMENT, RAIPUR DIVISION</h2>
-      <h3>CVVRS ANALYSIS REPORT</h3>
-    </div>
-  </div>
+  <h1>CVVRS ANALYSIS REPORT</h1>
 
-  <!-- ANALYSIS DATE + CLI -->
-  <section class="card">
-    <div class="row">
-      <div class="field">
-        <label>Analysis Date</label>
-        <input id="analysis_date" readonly>
-      </div>
-      <div class="field">
-        <label>CLI ID</label>
-        <input id="cli_id" placeholder="Enter CLI ID">
-      </div>
-      <div class="field">
-        <label>CLI Name</label>
-        <input id="cli_name" readonly placeholder="Auto Filled">
-      </div>
-    </div>
+  <!-- ANALYSIS DATE -->
+  <section>
+    <label>Analysis Date</label>
+    <input id="analysis_date" readonly>
+  </section>
+
+  <!-- CLI DETAILS -->
+  <section>
+    <label>CLI ID</label>
+    <input id="cli_id" placeholder="Enter CLI ID">
+
+    <label>CLI NAME</label>
+    <input id="cli_name" placeholder="Auto Filled" readonly>
   </section>
 
   <!-- TRAIN DETAILS -->
-  <section class="card">
-    <h3>TRAIN DETAILS</h3>
-    <div class="row">
-      <div class="field">
-        <label>Train No</label>
-        <input id="train_no">
-      </div>
-      <div class="field">
-        <label>Date of Working (YYYY-MM-DD)</label>
-        <input type="date" id="date_work">
-      </div>
-      <div class="field">
-        <label>Loco No</label>
-        <input id="loco_no">
-      </div>
-    </div>
+  <section>
+    <label>Train No</label>
+    <input id="train_no">
 
-    <div class="row">
-      <div class="field">
-        <label>From (Code)</label>
-        <input id="from_station">
-      </div>
-      <div class="field">
-        <label>From (Name)</label>
-        <input id="from_station_name" readonly>
-      </div>
-      <div class="field">
-        <label>Departure (YYYY-MM-DD HH:MM)</label>
-        <input type="datetime-local" id="dept_time">
-      </div>
-    </div>
+    <label>Date of Working</label>
+    <input id="date_work" type="datetime-local">
 
-    <div class="row">
-      <div class="field">
-        <label>To (Code)</label>
-        <input id="to_station">
-      </div>
-      <div class="field">
-        <label>To (Name)</label>
-        <input id="to_station_name" readonly>
-      </div>
-      <div class="field">
-        <label>Arrival (YYYY-MM-DD HH:MM)</label>
-        <input type="datetime-local" id="arr_time">
-      </div>
-    </div>
+    <label>Loco No</label>
+    <input id="loco_no">
+
+    <label>From Station (CODE)</label>
+    <input id="from_station">
+
+    <label>From Station (NAME)</label>
+    <input id="from_station_name" readonly>
+
+    <label>To Station (CODE)</label>
+    <input id="to_station">
+
+    <label>To Station (NAME)</label>
+    <input id="to_station_name" readonly>
   </section>
 
   <!-- CREW DETAILS -->
-  <section class="card">
+  <section>
     <h3>CREW DETAILS</h3>
 
-    <div class="row">
-      <div class="field">
-        <label>LP ID</label>
-        <input id="lp_id">
-      </div>
-      <div class="field">
-        <label>LP Name</label>
-        <input id="lp_name" readonly>
-      </div>
-      <div class="field">
-        <label>LP Designation</label>
-        <input id="lp_desig" readonly>
-      </div>
-      <div class="field">
-        <label>LP G/CLI</label>
-        <input id="lp_gcli" readonly>
-      </div>
-    </div>
+    <label>LP ID</label>
+    <input id="lp_id">
 
-    <div class="row">
-      <div class="field">
-        <label>ALP ID</label>
-        <input id="alp_id">
-      </div>
-      <div class="field">
-        <label>ALP Name</label>
-        <input id="alp_name" readonly>
-      </div>
-      <div class="field">
-        <label>ALP Designation</label>
-        <input id="alp_desig" readonly>
-      </div>
-      <div class="field">
-        <label>ALP G/CLI</label>
-        <input id="alp_gcli" readonly>
-      </div>
-    </div>
+    <label>LP NAME</label>
+    <input id="lp_name" readonly>
+
+    <label>LP DESIGNATION</label>
+    <input id="lp_desig" readonly>
+
+    <label>LP G/CLI</label>
+    <input id="lp_gcli" readonly>
+
+    <label>ALP ID</label>
+    <input id="alp_id">
+
+    <label>ALP NAME</label>
+    <input id="alp_name" readonly>
+
+    <label>ALP DESIGNATION</label>
+    <input id="alp_desig" readonly>
+
+    <label>ALP G/CLI</label>
+    <input id="alp_gcli" readonly>
   </section>
 
   <!-- OBSERVATIONS -->
-  <section class="card">
+  <section>
     <h3>OBSERVATIONS</h3>
     <div id="obs_container"></div>
   </section>
 
-  <!-- REMARKS -->
-  <section class="card">
+  <!-- FINAL REMARKS -->
+  <section>
     <h3>FINAL REMARKS</h3>
     <textarea id="remarks" rows="3">NO ABNORMALITIES OBSERVED</textarea>
   </section>
 
-  <button id="submit_btn" class="primary-btn">SAVE & GENERATE PDF</button>
+  <button id="submit_btn">SAVE & GENERATE PDF</button>
+
 </div>
+
+<script src="scripts/masters.js"></script>
+<script src="scripts/obs_master.js"></script>
+<script src="scripts/obs_ui.js"></script>
+
+<script>
+/* Set analysis date (read-only) */
+const d = new Date();
+document.getElementById("analysis_date").value = d.toISOString().split("T")[0];
+
+/* Auto-run UI render */
+document.addEventListener("DOMContentLoaded", () => {
+  if (window.OBS_UI) window.OBS_UI.render();
+});
+</script>
 
 </body>
 </html>
