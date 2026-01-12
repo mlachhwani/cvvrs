@@ -1,39 +1,78 @@
-/* ============================================================================
-    FRONTEND API LAYER — Delivery-3
-    Connects frontend → Apps Script Backend
-============================================================================ */
+/* =============================================================================
+     API BRIDGE — Delivery-7 (FULL | ML/01)
+     Works with code.gs backend
+============================================================================= */
 
+console.log("api.js loaded");
+
+/* ===== WebApp URL (paste your deployed URL) ===== */
 const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbz5AxnfgmXXiYaxh9faTcS9oqGcy0duAZ9kXEV53YVCv3JqS8r43sBjejBB_Iwg9c1U/exec";
 
-/* =================== DUPLICATE + COUNT CHECK =================== */
-async function validateDuplicate(data) {
+/* ===== Helper: POST JSON ===== */
+async function postJSON(payload) {
   const res = await fetch(WEBAPP_URL, {
     method:"POST",
-    body:JSON.stringify({ checkDuplicate:true, ...data }),
-    headers:{ "Content-Type":"application/json" }
+    body:JSON.stringify(payload),
+    headers:{"Content-Type":"application/json"}
   });
-  return res.json();
+  return await res.json();
 }
 
-/* =================== UPLOAD PDF =================== */
+/* =============================================================================
+   ACTION: DUPLICATE + COUNT CHECK
+============================================================================= */
+async function duplicateAndCounts(pay) {
+  const out = await postJSON({
+    action:"checkDuplicate",
+    payload:{
+      cli_id:pay.cli_id,
+      train_no:pay.train_no,
+      date_working:pay.date_working,
+      loco_no:pay.loco_no,
+      from_station:pay.from_station,
+      to_station:pay.to_station,
+      lp_id:pay.lp_id,
+      alp_id:pay.alp_id
+    }
+  });
+
+  if (!out.success) return {duplicate:false, divCount:1, cliCount:1};
+  return out;
+}
+
+/* =============================================================================
+   ACTION: UPLOAD PDF
+============================================================================= */
 async function uploadPDF(base64, filename) {
-  const res = await fetch(WEBAPP_URL, {
-    method:"POST",
-    body:JSON.stringify({ uploadPDF:true, base64, filename }),
-    headers:{ "Content-Type":"application/json" }
+  const out = await postJSON({
+    action:"uploadPDF",
+    payload:{
+      base64,
+      filename
+    }
   });
-  return res.json();
+
+  if (!out.success) return {success:false};
+  return {success:true, link:out.link};
 }
 
-/* =================== APPEND HISTORY =================== */
-async function appendHistory(rec) {
-  const res = await fetch(WEBAPP_URL, {
-    method:"POST",
-    body:JSON.stringify({ appendHistory:true, ...rec }),
-    headers:{ "Content-Type":"application/json" }
+/* =============================================================================
+   ACTION: APPEND HISTORY
+============================================================================= */
+async function appendHistory(pay) {
+  const out = await postJSON({
+    action:"appendHistory",
+    payload:pay
   });
-  return res.json();
+
+  return {success: out.success ? true : false};
 }
 
-/* EXPORT */
-window.API = { validateDuplicate, uploadPDF, appendHistory };
+/* =============================================================================
+   EXPORT API
+============================================================================= */
+window.API = {
+  duplicateAndCounts,
+  uploadPDF,
+  appendHistory
+};
