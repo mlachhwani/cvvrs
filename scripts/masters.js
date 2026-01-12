@@ -1,104 +1,74 @@
-/* ===================================================================
-   masters.js
-   MASTER LOADING + AUTOFILL ENGINE (CLI / CREW / STATION)
-   ML/PHASE1 LOCKED — FULL FILE — ML/01 COMPLIANT
-   =================================================================== */
+/* ==============================
+   MASTER LOADER FOR CSV FILES
+   ============================== */
 
-console.log("masters.js loaded");
+const MASTER_PATH = "masters/";
 
-/* ---------------- PATH (GitHub Pages) ---------------- */
-const MASTER_PATH = "/cvvrs/masters/";
-
-/* ---------------- MASTER ARRAYS ---------------- */
 let stationMaster = [];
 let crewMaster = [];
 let cliMaster = [];
 
-/* ---------------- CSV LOADER ---------------- */
-async function loadCSV(file) {
-  const url = MASTER_PATH + file;
-  const res = await fetch(url);
-
-  if (!res.ok) {
-    console.error("❌ Failed loading:", file);
-    return [];
-  }
+/* Load single master CSV */
+async function loadCSV(filename) {
+  const res = await fetch(MASTER_PATH + filename);
+  if (!res.ok) return [];
   const text = await res.text();
-  return Papa.parse(text.trim(), { header: true }).data;
+  return Papa.parse(text, { header: true }).data;
 }
 
-/* ---------------- MASTER LOADER ---------------- */
+/* Load all masters on startup */
 async function loadMasters() {
-  console.log("📁 Loading master CSVs…");
-
+  cliMaster = await loadCSV("cli_master.csv");
+  crewMaster = await loadCSV("crew_master.csv");
   stationMaster = await loadCSV("station_master.csv");
-  crewMaster    = await loadCSV("crew_master.csv");
-  cliMaster     = await loadCSV("cli_master.csv");
-
-  console.log("✔ Station Master:", stationMaster.length);
-  console.log("✔ Crew Master:", crewMaster.length);
-  console.log("✔ CLI Master:", cliMaster.length);
 }
 
-/* ---------------- LOOKUP UTILS ---------------- */
-function findStation(code) {
-  if (!code) return null;
-  code = code.trim().toUpperCase();
-  return stationMaster.find(x => x.STATION_CODE === code) || null;
-}
+loadMasters();
 
-function findCrew(id) {
-  if (!id) return null;
-  id = id.trim().toUpperCase();
-  return crewMaster.find(x => x.CREW_ID === id) || null;
-}
+/* ===== LOOKUP FUNCTIONS ===== */
 
 function findCLI(id) {
-  if (!id) return null;
   id = id.trim().toUpperCase();
   return cliMaster.find(x => x.CLI_ID === id) || null;
 }
 
-/* ---------------- AUTOFILL HANDLERS ---------------- */
-document.addEventListener("DOMContentLoaded", () => {
+function findCrew(id) {
+  id = id.trim().toUpperCase();
+  return crewMaster.find(x => x.CREW_ID === id) || null;
+}
 
-  const cli = document.getElementById("cli_id");
-  if (cli) cli.addEventListener("change", () => {
-    const match = findCLI(cli.value);
-    document.getElementById("cli_name").value = match ? match.CLI_NAME : "";
-  });
+function findStation(code) {
+  code = code.trim().toUpperCase();
+  return stationMaster.find(x => x.STATION_CODE === code) || null;
+}
 
-  const fs = document.getElementById("from_station");
-  if (fs) fs.addEventListener("change", () => {
-    const st = findStation(fs.value);
-    document.getElementById("from_station_name").value = st ? st.STATION_NAME : "";
-  });
+/* ===== UI Autofill Hooks ===== */
 
-  const ts = document.getElementById("to_station");
-  if (ts) ts.addEventListener("change", () => {
-    const st = findStation(ts.value);
-    document.getElementById("to_station_name").value = st ? st.STATION_NAME : "";
-  });
-
-  const lp = document.getElementById("lp_id");
-  if (lp) lp.addEventListener("change", () => {
-    const c = findCrew(lp.value);
-    document.getElementById("lp_name").value  = c ? c.CREW_NAME     : "";
-    document.getElementById("lp_desig").value = c ? c.DESIGNATION   : "";
-    document.getElementById("lp_gcli").value  = c ? c.G_CLI         : "";
-  });
-
-  const alp = document.getElementById("alp_id");
-  if (alp) alp.addEventListener("change", () => {
-    const c = findCrew(alp.value);
-    document.getElementById("alp_name").value  = c ? c.CREW_NAME    : "";
-    document.getElementById("alp_desig").value = c ? c.DESIGNATION  : "";
-    document.getElementById("alp_gcli").value  = c ? c.G_CLI        : "";
-  });
+document.getElementById("cli_id").addEventListener("change", () => {
+  const item = findCLI(cli_id.value);
+  cli_name.value = item ? item.CLI_NAME : "";
 });
 
-/* ---------------- INIT ---------------- */
-loadMasters();
+document.getElementById("from_station").addEventListener("change", () => {
+  const st = findStation(from_station.value);
+  from_station_name.value = st ? st.STATION_NAME : "";
+});
 
-/* ---------------- EXPORT (IF NEEDED) ---------------- */
-window.MASTERS = { findStation, findCrew, findCLI };
+document.getElementById("to_station").addEventListener("change", () => {
+  const st = findStation(to_station.value);
+  to_station_name.value = st ? st.STATION_NAME : "";
+});
+
+document.getElementById("lp_id").addEventListener("change", () => {
+  const c = findCrew(lp_id.value);
+  lp_name.value = c ? c.CREW_NAME : "";
+  lp_desig.value = c ? c.DESIGNATION : "";
+  lp_gcli.value = c ? c.G_CLI : "";
+});
+
+document.getElementById("alp_id").addEventListener("change", () => {
+  const c = findCrew(alp_id.value);
+  alp_name.value = c ? c.CREW_NAME : "";
+  alp_desig.value = c ? c.DESIGNATION : "";
+  alp_gcli.value = c ? c.G_CLI : "";
+});
