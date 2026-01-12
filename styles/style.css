@@ -1,156 +1,199 @@
-/* ============================================================================
-   style.css — ML/01 FULL FILE
-   Modern dark-light mix with glossy UI cards
-============================================================================ */
+/* =============================================================================
+   ML/01 — STYLE.CSS (FULL FILE, NO PATCHING)
+   MODE: Clean Corporate (Light) + Soft Cards + Input Clarity
+============================================================================= */
 
 :root {
-  --bg: #f3f5f7;
-  --card-bg: #ffffff;
-  --text: #222;
-  --border: #c7ccd1;
-  --primary: #004fbf;
-  --primary-text: #fff;
+  --bg-main: #f4f6f9;
+  --bg-card: #ffffff;
+  --border: #d9d9d9;
+  --text-main: #222;
+  --text-muted: #666;
+  --primary: #0057e7;
+  --primary-hover: #0042b8;
+  --danger: #cc0000;
+  --ok: #009900;
+  --radius: 8px;
+  --font: 'Segoe UI', Arial, sans-serif;
 }
 
-body {
+html, body {
   margin:0;
   padding:0;
-  font-family: 'Segoe UI', sans-serif;
-  background: var(--bg);
-  color: var(--text);
+  width:100%;
+  height:100%;
+  background:var(--bg-main);
+  font-family:var(--font);
+  color:var(--text-main);
 }
 
-.main-wrapper {
-  width: 1200px;
-  margin: 0 auto;
-  padding: 15px;
+/* --------------------------- MAIN CONTAINER --------------------------- */
+.container {
+  max-width:1200px;
+  margin:20px auto;
+  padding:15px;
 }
 
+/* --------------------------- HEADER --------------------------- */
 .header {
   display:flex;
   align-items:center;
-  justify-content:center;
-  background: var(--card-bg);
-  padding: 15px;
-  border-radius:8px;
-  box-shadow:0 2px 4px rgba(0,0,0,0.08);
-  margin-bottom:15px;
+  justify-content:flex-start;
+  gap:20px;
+  padding:15px;
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  margin-bottom:20px;
 }
 
-.logo {
+.header img {
   width:70px;
-  margin-right:20px;
 }
 
-.header-text h1 {
-  font-size:20px;
+.header h1 {
   margin:0;
+  font-size:20px;
+  font-weight:700;
 }
-.header-text h2 {
+
+.header h2 {
+  margin:0;
   font-size:14px;
-  margin:2px 0;
-}
-.header-text h3 {
-  font-size:16px;
-  margin:4px 0 0 0;
+  color:var(--text-muted);
   font-weight:600;
 }
 
+.header h3 {
+  margin-top:2px;
+  font-size:16px;
+  color:var(--primary);
+  font-weight:600;
+}
+
+/* --------------------------- SECTIONS (CARDS) --------------------------- */
 .card {
-  background: var(--card-bg);
-  padding: 15px;
-  border-radius:8px;
-  margin-bottom:15px;
+  background:var(--bg-card);
   border:1px solid var(--border);
-  box-shadow:0 2px 4px rgba(0,0,0,0.07);
+  border-radius:var(--radius);
+  padding:15px;
+  margin-bottom:20px;
 }
 
 .card h3 {
   margin-top:0;
-  margin-bottom:10px;
-  border-bottom:1px solid var(--border);
-  padding-bottom:4px;
+  font-size:17px;
   font-weight:600;
-}
-
-.row {
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
   margin-bottom:10px;
+  color:var(--primary);
 }
 
-.field {
-  display:flex;
-  flex-direction:column;
-  flex:1;
-  min-width:220px;
-}
-
+/* --------------------------- FORM INPUTS --------------------------- */
 label {
+  display:block;
   font-size:13px;
-  margin-bottom:3px;
-  font-weight:500;
+  font-weight:600;
+  margin-top:8px;
+  color:var(--text-main);
 }
 
-input, select, textarea {
-  padding:6px 8px;
-  border:1px solid var(--border);
-  border-radius:6px;
+input[type="text"],
+input[type="date"],
+input[type="datetime-local"],
+select,
+textarea {
+  width:100%;
+  padding:7px 8px;
   font-size:13px;
-  background:white;
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  margin-top:4px;
+  box-sizing:border-box;
 }
 
 textarea {
-  resize:none;
+  resize:vertical;
 }
 
-/* OBS LAYOUT */
-.obs-row {
+/* --------------------------- FLEX UTILITY --------------------------- */
+.flex {
   display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  padding:6px 0;
-  border-bottom:1px dashed #d0d0d0;
+  gap:15px;
 }
 
-.obs-label {
-  flex:2;
-  font-weight:600;
-  font-size:13px;
-}
+.flex-2 > div { width:50%; }
 
-.obs-select {
-  flex:1;
-  max-width:100px;
-  padding:5px;
-}
-
-.obs-photo {
-  flex:1;
-  max-width:140px;
-}
-
-.obs-abn {
-  flex:2;
-  min-width:200px;
-}
-
-/* BUTTON */
-.primary-btn {
+/* --------------------------- BUTTONS --------------------------- */
+button.primary {
   width:100%;
   padding:12px;
   background:var(--primary);
-  color:var(--primary-text);
+  color:white;
   border:none;
-  border-radius:6px;
+  border-radius:var(--radius);
   font-size:15px;
-  cursor:pointer;
   font-weight:600;
-  margin-bottom:30px;
+  cursor:pointer;
+  margin-top:10px;
 }
 
-.primary-btn:disabled {
-  opacity:0.6;
-  cursor:not-allowed;
+button.primary:hover {
+  background:var(--primary-hover);
 }
+
+/* --------------------------- OBSERVATION TABLE --------------------------- */
+.obs-table {
+  width:100%;
+  border-collapse:collapse;
+  margin-bottom:20px;
+  font-size:13px;
+}
+
+.obs-table tr td {
+  border:1px solid var(--border);
+  padding:6px;
+  vertical-align:middle;
+}
+
+.obs-table tr:nth-child(even) {
+  background:#fafafa;
+}
+
+.obs-table select {
+  width:100%;
+  height:30px;
+  font-size:12px;
+}
+
+.obs-table input[type="file"] {
+  width:100%;
+  font-size:12px;
+  border:1px dashed var(--border);
+  padding:4px;
+  border-radius:var(--radius);
+}
+
+.obs-table input[type="text"].obs-abn {
+  margin-top:4px;
+}
+
+/* --------------------------- STATUS COLORS --------------------------- */
+.status-ok {
+  color:var(--ok);
+  font-weight:600;
+}
+
+.status-bad {
+  color:var(--danger);
+  font-weight:600;
+}
+
+/* --------------------------- MISC --------------------------- */
+h4 {
+  margin:10px 0 8px 0;
+  font-size:15px;
+  font-weight:600;
+  color:var(--primary);
+}
+
+.hidden { display:none; }
