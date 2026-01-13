@@ -1,8 +1,7 @@
 /**************************************************************
  * submit.js — Final Frontend Submission + Validation Logic
- * CVVRS — ML/01 LOCKED DELIVERY-21
+ * CVVRS — ML/01 LOCKED Delivery-22
  **************************************************************/
-
 console.log("submit.js loaded");
 
 /* ------------------------------------------------------------
@@ -37,7 +36,6 @@ async function onSubmitReport() {
   btn.disabled = true;
   btn.textContent = "PROCESSING...";
 
-  /* VALIDATION */
   const v = validateFields();
   if (!v.ok) {
     alert("❌ VALIDATION ERROR:\n" + v.msg.join("\n"));
@@ -46,12 +44,21 @@ async function onSubmitReport() {
     return;
   }
 
-  /* BUILD PAYLOAD */
   const payload = buildPayload();
 
-  /* SEND → BACKEND */
-  try {
+  /* PHOTO MANDATORY CHECK */
+  const chk = checkPhotoMandatories(payload.observations);
+  if (!chk.ok) {
+    alert("❌ PHOTO REQUIRED:\n" + chk.msg.join("\n"));
+    btn.disabled = false;
+    btn.textContent = "SAVE & GENERATE PDF";
+    return;
+  }
 
+  /* ATTACH BASE64 PHOTOS */
+  await attachPhotosToPayload(payload);
+
+  try {
     const res = await fetch(WEBAPP_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -69,7 +76,7 @@ async function onSubmitReport() {
 
   } catch(err) {
     console.error(err);
-    alert("❌ NETWORK ERROR — See console");
+    alert("❌ NETWORK ERROR");
   }
 
   btn.disabled = false;
@@ -114,25 +121,18 @@ function validateFields() {
   if (alp_id === "") msg.push("ALP ID missing");
   if (alp_name === "") msg.push("ALP NAME missing/invalid");
 
-  /* DATE LOGIC */
-  if (!isValidPastOrToday(date_work)) {
-    msg.push("Date of Working cannot be future date");
-  }
+  if (!isPastOrToday(date_work)) msg.push("Date of Working cannot be future date");
 
   return { ok: msg.length === 0, msg };
 }
 
-/* Field helper */
 function val(id) {
   return document.getElementById(id)?.value.trim() || "";
 }
 
-/* Date check helper (no future dates) */
-function isValidPastOrToday(input) {
+function isPastOrToday(input) {
   if (!input) return false;
-  const d = new Date(input);
-  const now = new Date();
-  return d <= now;
+  return new Date(input) <= new Date();
 }
 
 /* ------------------------------------------------------------
@@ -157,20 +157,18 @@ function buildPayload() {
     remarks: val("remarks")
   };
 
-  /* OBS VALUES */
   const observations = [];
-  for (const obs of OBS_MASTER) {
-    const sel = document.getElementById("obs_select_" + obs.id);
-    const rec = {
-      id: obs.id,
-      title: obs.title,
-      role: obs.role,
-      sec: obs.sec,
-      type: obs.type,
-      value: sel?.value || "",
-      default: obs.def || ""
-    };
-    observations.push(rec);
+  for (const o of OBS_MASTER) {
+    const sel = document.getElementById("obs_select_" + o.id);
+    observations.push({
+      id: o.id,
+      title: o.title,
+      role: o.role,
+      sec: o.sec,
+      type: o.type,
+      default: o.default || "",
+      value: sel?.value || ""
+    });
   }
 
   return { base, observations };
