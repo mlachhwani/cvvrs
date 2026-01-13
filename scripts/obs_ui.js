@@ -1,101 +1,125 @@
-/* =============================================================================
-   obs_ui.js — RENDER OBSERVATIONS INTO UI (FULL FILE)
-   DEPENDS ON:
-     → obs_master.js
-   ============================================================================= */
+/* ============================================================
+ * obs_ui.js — Render Observations UI (ML/01 LOCKED)
+ * Author: CVVRS
+ * ============================================================
+ */
 
 console.log("obs_ui.js loaded");
 
-/* -----------------------------------------------------------------------------
-   OPTION SETS PER TYPE
-   ----------------------------------------------------------------------------- */
-const OPTS_YESNO     = ["YES","NO"];
-const OPTS_YESNO_DAY = ["YES","NO","DAY TIME"];
-const OPTS_RATING    = ["VERY GOOD","FAIR","POOR"];
-
-/* -----------------------------------------------------------------------------
-   SECTION HEADERS
-   ----------------------------------------------------------------------------- */
-const SECTION_TITLES = {
-  1: "SECTION-1: DURING CTO",
-  2: "SECTION-2: ON RUN",
-  3: "SECTION-3: AT HALTS",
-  4: "SECTION-4: AT CHO"
-};
-
-/* -----------------------------------------------------------------------------
-   Render helper: returns <option> HTML for dropdown
-   ----------------------------------------------------------------------------- */
-function buildSelectOptions(type, defVal) {
-  let opts = [];
-
-  if (type === "YESNO")      opts = OPTS_YESNO;
-  if (type === "YESNO_DAY")  opts = OPTS_YESNO_DAY;
-  if (type === "RATING")     opts = OPTS_RATING;
-
-  return opts.map(v => `<option value="${v}" ${v===defVal ? "selected" : ""}>${v}</option>`).join("");
-}
-
-/* -----------------------------------------------------------------------------
-   MAIN RENDER — called on DOMContentLoaded
-   ----------------------------------------------------------------------------- */
+// Called when OBS_MASTER is ready
 document.addEventListener("DOMContentLoaded", () => {
-
-  const lpBox  = document.getElementById("obs_container_lp");
-  const alpBox = document.getElementById("obs_container_alp");
-
-  if (!lpBox || !alpBox) {
-    console.error("❌ obs_ui.js: Container missing in index.html");
+  if (typeof OBS_MASTER === "undefined") {
+    console.error("❌ OBS_MASTER missing");
     return;
   }
+  renderObservations();
+});
 
-  /* group by section then role */
-  for (let sec = 1; sec <= 4; sec++) {
+/* ============================================================
+ * SECTION ORDER (LOCKED)
+ *
+ * LP & ALP both follow same sequence:
+ *  1. During CTO
+ *  2. On Run
+ *  3. At Halts
+ *  4. At the time of CHO
+ * ============================================================
+ */
+const SECTION_ORDER = [
+  { sec: "CTO",   title: "SECTION-1: DURING CTO" },
+  { sec: "RUN",   title: "SECTION-2: ON RUN" },
+  { sec: "HALT",  title: "SECTION-3: AT HALTS" },
+  { sec: "CHO",   title: "SECTION-4: AT THE TIME OF CHO" },
+];
 
-    // Section header LP
-    const lpHeader = document.createElement("h4");
-    lpHeader.textContent = SECTION_TITLES[sec];
-    lpHeader.style.marginTop = "12px";
-    lpBox.appendChild(lpHeader);
+/* ============================================================
+ * MAIN RENDER
+ * ============================================================
+ */
+function renderObservations() {
+  const root = document.getElementById("obs_container");
+  root.innerHTML = "";
 
-    // Section header ALP
-    const alpHeader = document.createElement("h4");
-    alpHeader.textContent = SECTION_TITLES[sec];
-    alpHeader.style.marginTop = "12px";
-    alpBox.appendChild(alpHeader);
+  /* LP BLOCK */
+  const lpBlock = document.createElement("div");
+  lpBlock.className = "obs-role-block";
+  lpBlock.innerHTML = `<h3 class="obs-role-title">LOCO PILOT (LP)</h3>`;
+  renderRole(lpBlock, "LP");
+  root.appendChild(lpBlock);
 
-    // LP items for section
-    OBS_MASTER.filter(o => o.sec===sec && o.role==="LP").forEach(o => {
-      const row = document.createElement("div");
-      row.className = "obs-row";
-
-      row.innerHTML = `
-        <label class="obs-title">${o.title}</label>
-        <select id="obs_sel_${o.id}" data-type="${o.type}" data-def="${o.def}">
-          ${buildSelectOptions(o.type, o.def)}
-        </select>
-        <input type="file" id="obs_pic_${o.id}" accept="image/*" style="display:none;">
-      `;
-
-      lpBox.appendChild(row);
-    });
-
-    // ALP items for section
-    OBS_MASTER.filter(o => o.sec===sec && o.role==="ALP").forEach(o => {
-      const row = document.createElement("div");
-      row.className = "obs-row";
-
-      row.innerHTML = `
-        <label class="obs-title">${o.title}</label>
-        <select id="obs_sel_${o.id}" data-type="${o.type}" data-def="${o.def}">
-          ${buildSelectOptions(o.type, o.def)}
-        </select>
-        <input type="file" id="obs_pic_${o.id}" accept="image/*" style="display:none;">
-      `;
-
-      alpBox.appendChild(row);
-    });
-  }
+  /* ALP BLOCK */
+  const alpBlock = document.createElement("div");
+  alpBlock.className = "obs-role-block";
+  alpBlock.innerHTML = `<h3 class="obs-role-title">ASSISTANT LOCO PILOT (ALP)</h3>`;
+  renderRole(alpBlock, "ALP");
+  root.appendChild(alpBlock);
 
   console.log("obs_ui.js → Observations rendered ✔");
-});
+}
+
+/* ============================================================
+ * RENDER BY ROLE
+ * ============================================================
+ */
+function renderRole(container, role) {
+  for (const secDef of SECTION_ORDER) {
+    const items = OBS_MASTER.filter(o => o.role === role && o.sec === secDef.sec);
+    if (items.length === 0) continue;
+
+    const sec = document.createElement("div");
+    sec.className = "obs-section";
+    sec.innerHTML = `<h4 class="obs-sec-title">${secDef.title}</h4>`;
+    container.appendChild(sec);
+
+    for (const obs of items) {
+      sec.appendChild(renderObsRow(obs));
+    }
+  }
+}
+
+/* ============================================================
+ * RENDER SINGLE ROW
+ * ============================================================
+ */
+function renderObsRow(obs) {
+  const row = document.createElement("div");
+  row.className = "obs-row";
+
+  const title = document.createElement("div");
+  title.className = "obs-title";
+  title.textContent = obs.title;
+
+  const ctrl = document.createElement("div");
+  ctrl.className = "obs-ctrl";
+
+  /* DROPDOWN */
+  const sel = document.createElement("select");
+  sel.id = "obs_select_" + obs.id;
+  sel.dataset.default = obs.def || "";
+
+  // Build dropdown options
+  if (obs.opts && Array.isArray(obs.opts)) {
+    for (const opt of obs.opts) {
+      const op = document.createElement("option");
+      op.value = opt;
+      op.textContent = opt;
+      if (opt === obs.def) op.selected = true;
+      sel.appendChild(op);
+    }
+  }
+
+  ctrl.appendChild(sel);
+
+  /* NO BUTTON (visual helper only for now) */
+  const btnNo = document.createElement("button");
+  btnNo.type = "button";
+  btnNo.className = "obs-btn-no";
+  btnNo.textContent = "NO";
+  btnNo.addEventListener("click", () => sel.value = "NO");
+  ctrl.appendChild(btnNo);
+
+  row.appendChild(title);
+  row.appendChild(ctrl);
+
+  return row;
+}
