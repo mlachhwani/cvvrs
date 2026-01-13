@@ -1,275 +1,247 @@
-/* =============================================================================
-   pdf_engine.js — FINAL PDF BUILDER (ML/01 COMPLIANT)
-   Project: CVVRS (SECR/R)
-   Output: Base64 + Browser Download
-============================================================================= */
+/************************************************************
+ * pdf_engine.js — CVVRS PDF BUILDER (ML/01 LOCKED)
+ * Produces BASE64 + filename for backend storage
+ ************************************************************/
 
-/* ---------------------------------------------------------------------------
-   LOGO LOADER (BASE64)
---------------------------------------------------------------------------- */
-function toBase64(fileOrBlob) {
+console.log("pdf_engine.js loaded");
+
+/* ==========================================================
+   HELPER — CONVERT FILE/BLOB TO BASE64 (RAW without prefix)
+   ========================================================== */
+function fileToBase64Raw(file) {
   return new Promise((resolve, reject) => {
     const r = new FileReader();
-    r.onload = () => resolve(r.result.split(",")[1]);
+    r.onload = () => {
+      const base64 = r.result.split(",")[1];
+      resolve(base64);
+    };
     r.onerror = reject;
-    r.readAsDataURL(fileOrBlob);
+    r.readAsDataURL(file);
   });
 }
 
+/* ==========================================================
+   LOAD LOGO AS BASE64
+   ========================================================== */
 async function loadLogoBase64() {
   const res = await fetch("assets/ir_logo.png");
   const blob = await res.blob();
-  const b64 = await toBase64(blob);
-  return `data:image/png;base64,${b64}`;
+  const raw = await fileToBase64Raw(blob);
+  return `data:image/png;base64,${raw}`;
 }
 
-/* ---------------------------------------------------------------------------
-   DATE HELPERS 
---------------------------------------------------------------------------- */
-function IST() {
+/* ==========================================================
+   AUTO FILENAME BUILDER
+   ========================================================== */
+function buildFilename(base) {
   const d = new Date();
-  const utc = d.getTime() + d.getTimezoneOffset() * 60000;
-  return new Date(utc + 3600000 * 5.5);
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const dd = String(d.getDate()).padStart(2,'0');
+
+  const train = base.train_no ? base.train_no.replace(/\s+/g,'') : "NA";
+  const cli   = base.cli_id ? base.cli_id.replace(/\s+/g,'') : "NA";
+
+  return `${yyyy}${mm}${dd}_CVVRS_${train}_${cli}.pdf`;
 }
 
-function DD(v) {
-  return (v < 10 ? "0" : "") + v;
-}
+/* ==========================================================
+   OBSERVATION TABLE BUILDER (SECTION SPLIT)
+   ========================================================== */
+function buildObsTables(obsList) {
 
-/* ---------------------------------------------------------------------------
-   FILENAME BUILDER
---------------------------------------------------------------------------- */
-function buildPDFname(base) {
-  const now = IST();
-  return `CVVRS_${base.cli_id}_${now.getFullYear()}-${DD(now.getMonth()+1)}-${DD(now.getDate())}.pdf`;
-}
+  const S1 = obsList.filter(o => o.sec === "CTO");
+  const S2 = obsList.filter(o => o.sec === "ONRUN");
+  const S3 = obsList.filter(o => o.sec === "HALTS");
+  const S4 = obsList.filter(o => o.sec === "CHO");
 
-/* ---------------------------------------------------------------------------
-   OBS → SECTIONS SPLIT
---------------------------------------------------------------------------- */
-function sectionSplit(obsList) {
-  return {
-    CTO:   obsList.filter(o => o.sec === "CTO"),
-    ONRUN: obsList.filter(o => o.sec === "ONRUN"),
-    HALTS: obsList.filter(o => o.sec === "HALTS"),
-    CHO:   obsList.filter(o => o.sec === "CHO"),
-  };
-}
+  function makeTable(title, rows) {
+    const body = [
+      [
+        {text:"ID", bold:true, fontSize:9},
+        {text:"OBSERVATION", bold:true, fontSize:9},
+        {text:"ROLE", bold:true, fontSize:9},
+        {text:"VALUE", bold:true, fontSize:9},
+        {text:"ABNORMALITIES", bold:true, fontSize:9},
+      ]
+    ];
 
-/* ---------------------------------------------------------------------------
-   LP/ALP SPLIT (inside section)
---------------------------------------------------------------------------- */
-function splitRole(rows) {
-  return {
-    LP:  rows.filter(r => r.role === "LP"),
-    ALP: rows.filter(r => r.role === "ALP")
-  };
-}
+    rows.forEach(r => {
+      const borderColor = (r.value === r.default) ? "#009900" : "#CC0000";
+      body.push([
+        {text:String(r.id), fontSize:8, color:borderColor},
+        {text:r.title, fontSize:8, color:borderColor},
+        {text:r.role, fontSize:8, color:borderColor},
+        {text:r.value, fontSize:8, color:borderColor},
+        {text:r.abnormal || "-", fontSize:8, color:borderColor},
+      ]);
+    });
 
-/* ---------------------------------------------------------------------------
-   YES/NO/RATING Color Logic
---------------------------------------------------------------------------- */
-function cellColor(type, val, def) {
-  if (type === "RATING") {
-    return (val === "VERY GOOD") ? "#008000" : "#CC0000";
+    return [
+      {text:title, bold:true, fontSize:10, margin:[0,6,0,2]},
+      {
+        table: {
+          widths: ["auto","*","auto","auto","*"],
+          body: body
+        },
+        layout: "lightHorizontalLines",
+        margin:[0,0,0,6]
+      }
+    ];
   }
-  return (val === def) ? "#008000" : "#CC0000";
-}
-
-/* ---------------------------------------------------------------------------
-   SECTION TABLE BUILDER
---------------------------------------------------------------------------- */
-function buildRoleTable(title, rows) {
-
-  const body = [[
-    {text:"Obs#", bold:true},
-    {text:"Observation", bold:true},
-    {text:"Status", bold:true},
-    {text:"Remarks", bold:true}
-  ]];
-
-  rows.forEach(r => {
-    const clr = cellColor(r.type, r.value, r.def);
-    body.push([
-      {text:String(r.id), color:clr},
-      {text:r.title, color:clr},
-      {text:r.value, color:clr},
-      {text:(r.value === r.def ? "-" : "ABNORMAL"), color:clr}
-    ]);
-  });
 
   return [
-    {text:title, bold:true, margin:[0,8,0,4]},
-    {
-      table:{widths:["auto","*","auto","*"], body},
-      layout:"lightHorizontalLines"
-    }
+    ...makeTable("SECTION-1: DURING CTO", S1),
+    ...makeTable("SECTION-2: ON RUN",      S2),
+    ...makeTable("SECTION-3: AT HALTS",    S3),
+    ...makeTable("SECTION-4: AT CHO",      S4),
   ];
 }
 
-/* ---------------------------------------------------------------------------
-   PHOTO PAGE BUILDER
---------------------------------------------------------------------------- */
-async function buildPhotoSection(allObs) {
-  const list = allObs.filter(o => o.photo);
-  if (list.length === 0) return [];
+/* ==========================================================
+   PHOTO PAGES (6 per page, 3 per row)
+   ========================================================== */
+async function buildPhotoPages(obsList) {
+  const photoObs = obsList.filter(o => o.photo);
 
-  const out = [{text:"PHOTO EVIDENCE", style:"photoTitle", pageBreak:"before"}];
+  if (photoObs.length === 0) return [];
+
+  const blocks = [
+    {text:"PHOTO EVIDENCE", bold:true, fontSize:12, pageBreak:"before", margin:[0,0,0,8]}
+  ];
 
   let row = [];
   let count = 0;
 
-  for (const p of list) {
-    const base64 = p.photo;
-    const clr = cellColor(p.type, p.value, p.def);
+  for (const p of photoObs) {
+    const raw = await fileToBase64Raw(p.photo);
+    const borderColor = (p.value === p.default) ? "#009900" : "#CC0000";
 
     row.push({
       stack:[
         {
-          image: base64,
-          width:150,
+          image:`data:image/jpeg;base64,${raw}`,
+          width:160,
           border:[true,true,true,true],
-          borderColor:clr,
+          borderColor:borderColor,
           margin:[0,0,0,4]
         },
-        {text:`${p.id}. ${p.title}`, fontSize:9}
+        {text:`${p.id}. ${p.title}`, fontSize:8}
       ],
-      margin:[0,5,0,5]
+      margin:[2,2,2,2]
     });
 
     count++;
     if (count % 3 === 0) {
-      out.push({columns:row, columnGap:5});
+      blocks.push({columns: row, columnGap:4});
       row = [];
     }
     if (count % 6 === 0) {
-      out.push({text:"", pageBreak:"before"});
+      blocks.push({text:"", pageBreak:"before"});
     }
   }
 
   if (row.length > 0) {
-    out.push({columns:row, columnGap:5});
+    blocks.push({columns: row, columnGap:4});
   }
 
-  return out;
+  return blocks;
 }
 
-/* ---------------------------------------------------------------------------
-   PERFORMANCE EXTRACTION (RATING)
---------------------------------------------------------------------------- */
-function extractPerformance(allObs) {
-  const lp = allObs.find(o => o.role==="LP" && o.type==="RATING" && o.value);
-  const alp = allObs.find(o => o.role==="ALP" && o.type==="RATING" && o.value);
-
-  return {
-    lp_perf: lp ? lp.value : "N/A",
-    alp_perf: alp ? alp.value : "N/A"
-  };
-}
-
-/* ---------------------------------------------------------------------------
-   MAIN PDF BUILDER
---------------------------------------------------------------------------- */
-async function generatePDF(base, observations) {
+/* ==========================================================
+   FINAL PDF BUILDER
+   returns { filename, base64 }
+   ========================================================== */
+async function generateBase64PDF(base, obsList) {
 
   const logo = await loadLogoBase64();
-  const sec = sectionSplit(observations);
+  const filename = buildFilename(base);
 
   /* HEADER */
   const HEADER = {
     columns:[
-      { image:logo, width:60 },
+      { image:logo, width:55 },
       {
-        width:"*", alignment:"center",
+        alignment:"center",
+        width:"*",
         stack:[
-          {text:"SOUTH EAST CENTRAL RAILWAY", bold:true, fontSize:14},
+          {text:"SOUTH EAST CENTRAL RAILWAY", bold:true, fontSize:13},
           {text:"ELECTRICAL (OP) DEPARTMENT, RAIPUR DIVISION", fontSize:10},
-          {text:"CVVRS ANALYSIS REPORT", bold:true, margin:[0,3,0,0]}
+          {text:"CVVRS ANALYSIS REPORT", bold:true, fontSize:12, margin:[0,2,0,0]}
         ]
       },
-      {}
+      {
+        alignment:"right",
+        width:110,
+        text:`CLI (Observer):\n${base.cli_id}`,
+        fontSize:9
+      }
     ],
-    margin:[0,0,0,10]
+    margin:[0,0,0,8]
   };
 
-  /* BASE INFO TABLE */
+  /* SUMMARY INFO TABLE */
   const INFO = {
     table:{
       widths:["auto","*","auto","*"],
       body:[
-        ["Analysis Date:", base.analysis_date, "Train No:", base.train_no],
-        ["CLI:", base.cli_id, "Date of Working:", base.date_work],
-        ["Loco:", base.loco_no, "From:", base.from_station_name],
-        ["LP:", base.lp_name,   "To:", base.to_station_name],
-        ["ALP:", base.alp_name, "", ""]
+        ["Analysis Date:", base.analysis_date, "Train No:",   base.train_no],
+        ["Working Date:", base.date_work,     "Loco No:",     base.loco_no],
+        ["From:", base.from_station,          "To:",          base.to_station],
+        ["LP ID:", base.lp_id,                "ALP ID:",      base.alp_id],
+        ["LP Name:", base.lp_name,            "ALP Name:",    base.alp_name]
       ]
     },
     layout:"lightHorizontalLines",
+    fontSize:9,
     margin:[0,0,0,10]
   };
 
-  /* BUILD SECTION TABLES */
-  const CONTENT = [HEADER, INFO];
+  /* OBS TABLES */
+  const OBS = buildObsTables(obsList);
 
-  const order = [
-    {key:"CTO",   title:"DURING CTO"},
-    {key:"ONRUN", title:"ON RUN"},
-    {key:"HALTS", title:"AT HALTS"},
-    {key:"CHO",   title:"AT CHO"}
-  ];
-
-  order.forEach(s => {
-    const {LP, ALP} = splitRole(sec[s.key]);
-    CONTENT.push({text:s.title, bold:true, fontSize:12, margin:[0,6,0,2]});
-    CONTENT.push(...buildRoleTable("LOCO PILOT", LP));
-    CONTENT.push(...buildRoleTable("ASTT. LOCO PILOT", ALP));
-  });
-
-  /* PERFORMANCE BLOCK */
-  const perf = extractPerformance(observations);
-  CONTENT.push({
+  /* FINAL REMARKS */
+  const REMARKS = {
     table:{
-      widths:["auto","auto","auto","auto"],
+      widths:["auto","*"],
       body:[
-        ["LP Performance:", perf.lp_perf, "ALP Performance:", perf.alp_perf]
+        [{text:"FINAL REMARKS:", bold:true}, base.remarks || "—"]
       ]
     },
-    layout:"lightHorizontalLines",
-    margin:[0,10,0,10]
-  });
-
-  /* REMARKS */
-  CONTENT.push({
-    table:{widths:["auto","*"], body:[["Final Remarks:", base.remarks]]},
     layout:"noBorders",
-    margin:[0,0,0,10]
-  });
+    fontSize:9,
+    margin:[0,8,0,8]
+  };
 
   /* PHOTO PAGES */
-  const photos = await buildPhotoSection(observations);
-  CONTENT.push(...photos);
+  const PHOTOS = await buildPhotoPages(obsList);
 
-  /* FINAL DOC DEF */
-  const doc = {
+  const docDef = {
     pageSize:"A4",
-    pageMargins:[25,30,25,30],
-    footer:(pg,pc) => ({text:`Page ${pg} of ${pc}`, alignment:"center", fontSize:8}),
-    styles:{ photoTitle:{bold:true,fontSize:12,margin:[0,0,0,8]} },
-    content:CONTENT
+    pageMargins:[25,28,25,28],
+    content:[
+      HEADER,
+      INFO,
+      ...OBS,
+      REMARKS,
+      ...PHOTOS
+    ],
+    footer:(page,pageCount)=>({
+      text:`Page ${page} of ${pageCount}`,
+      alignment:"center",
+      fontSize:8
+    })
   };
 
-  /* RETURN + DOWNLOAD */
-  const fileName = buildPDFname(base);
-
-  return new Promise(res => {
-    const pdf = pdfMake.createPdf(doc);
-    pdf.getBase64(b64 => res({fileName, base64:b64}));
-    pdf.download(fileName);
+  return new Promise(resolve => {
+    const pdf = pdfMake.createPdf(docDef);
+    pdf.getBase64(b64 => resolve({filename, base64:b64}));
   });
 }
 
-/* =============================================================================
-   EXPORT (GLOBAL)
-============================================================================= */
-window.PDF_ENGINE = { generatePDF };
-console.log("pdf_engine.js loaded (ML/01 LOCKED)");
+/* ==========================================================
+   EXPORT
+   ========================================================== */
+window.PDF_ENGINE = {
+  generateBase64: generateBase64PDF
+};
