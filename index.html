@@ -1,106 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>CVVRS ANALYSIS | SECR</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CVVRS ANALYSIS | SECR</title>
 
-<!-- CSV Parser -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+  <!-- CSS -->
+  <link rel="stylesheet" href="styles/style.css">
 
-<!-- PDF Engine (will be activated later) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-
-<link rel="stylesheet" href="styles/style.css">
+  <!-- Roboto Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
-<div class="wrapper">
-
-  <!-- HEADER -->
-  <h1 style="text-align:center;">CVVRS ANALYSIS REPORT</h1>
-  <h3 style="text-align:center;">SOUTH EAST CENTRAL RAILWAY</h3>
-
-  <!-- ANALYSIS DATE -->
-  <div class="card">
-    <label>Analysis Date</label>
-    <input id="analysis_date" type="date" readonly>
-  </div>
-
-  <!-- CLI DETAILS -->
-  <div class="card">
-    <h2>CLI DETAILS</h2>
-    <label>CLI ID</label>
-    <input id="cli_id" placeholder="Enter CLI ID">
-    <label>CLI Name</label>
-    <input id="cli_name" readonly placeholder="Auto">
-  </div>
-
-  <!-- TRAIN DETAILS -->
-  <div class="card">
-    <h2>TRAIN DETAILS</h2>
-    <label>Train No</label>
-    <input id="train_no">
-
-    <label>Date of Working</label>
-    <input id="date_work" type="date">
-
-    <label>Loco No</label>
-    <input id="loco_no">
-
-    <label>From Station (CODE)</label>
-    <input id="from_station">
-    <input id="from_station_name" readonly placeholder="Station Name">
-
-    <label>To Station (CODE)</label>
-    <input id="to_station">
-    <input id="to_station_name" readonly placeholder="Station Name">
-  </div>
-
-  <!-- CREW DETAILS -->
-  <div class="card">
-    <h2>CREW DETAILS</h2>
-
-    <label>LP ID</label>
-    <input id="lp_id" placeholder="LP ID">
-    <input id="lp_name" readonly placeholder="LP Name">
-
-    <label>ALP ID</label>
-    <input id="alp_id" placeholder="ALP ID">
-    <input id="alp_name" readonly placeholder="ALP Name">
-  </div>
-
-  <!-- OBSERVATIONS SECTION -->
-  <div class="card">
-    <h2>OBSERVATIONS</h2>
-
-    <div id="obs_container_lp">
-      <h3>LOCO PILOT (LP)</h3>
-      <!-- LP OBS injected by obs_ui.js -->
+  <!-- ================= HEADER ================= -->
+  <header id="cvvrs-header">
+    <img src="assets/ir_logo.png" alt="IR Logo" id="header-logo">
+    <div id="header-title">
+      <h1>SOUTH EAST CENTRAL RAILWAY</h1>
+      <h2>ELECTRICAL (OP) DEPARTMENT, RAIPUR DIVISION</h2>
+      <h3>CVVRS ANALYSIS REPORT</h3>
     </div>
+  </header>
 
-    <div id="obs_container_alp">
-      <h3>ASSISTANT LOCO PILOT (ALP)</h3>
-      <!-- ALP OBS injected by obs_ui.js -->
-    </div>
-  </div>
+  <main>
 
-  <!-- FINAL REMARKS -->
-  <div class="card">
-    <h2>FINAL REMARKS</h2>
-    <textarea id="remarks" rows="3">NO ABNORMALITIES OBSERVED</textarea>
-  </div>
+    <!-- ================= SECTION A — ANALYSIS & CLI ================= -->
+    <section class="card">
+      <div class="section-title">ANALYSIS & CLI DETAILS</div>
 
-  <button id="submit_btn">Save & Generate PDF</button>
+      <div class="form-row">
+        <label>Analysis Date</label>
+        <input type="date" id="analysis_date" readonly>
+      </div>
 
-</div>
+      <div class="form-row-two">
+        <div>
+          <label>CLI ID</label>
+          <input type="text" id="cli_id" placeholder="Enter CLI ID">
+        </div>
+        <div>
+          <label>CLI Name</label>
+          <input type="text" id="cli_name" placeholder="Auto Filled" readonly>
+        </div>
+      </div>
 
-<!-- SCRIPT ORDER (CRITICAL FOR ML/01) -->
-<script src="scripts/masters.js"></script>
-<script src="scripts/obs_master.js"></script>
-<script src="scripts/obs_ui.js"></script>
-<script src="scripts/submit.js"></script>
+    </section>
+
+    <!-- ================= SECTION B — TRAIN DETAILS ================= -->
+    <section class="card">
+      <div class="section-title">TRAIN DETAILS</div>
+
+      <div class="form-row-two">
+        <div>
+          <label>Train No</label>
+          <input type="text" id="train_no" placeholder="Enter Train Number">
+        </div>
+        <div>
+          <label>Date of Working</label>
+          <input type="datetime-local" id="date_work">
+        </div>
+      </div>
+
+      <div class="form-row-two">
+        <div>
+          <label>From Station (CODE)</label>
+          <input type="text" id="from_station_code" placeholder="Code">
+        </div>
+        <div>
+          <label>From Station (NAME)</label>
+          <input type="text" id="from_station_name" readonly placeholder="Auto Filled">
+        </div>
+      </div>
+
+      <div class="form-row-two">
+        <div>
+          <label>To Station (CODE)</label>
+          <input type="text" id="to_station_code" placeholder="Code">
+        </div>
+        <div>
+          <label>To Station (NAME)</label>
+          <input type="text" id="to_station_name" readonly placeholder="Auto Filled">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label>Loco No</label>
+        <input type="text" id="loco_no" placeholder="Enter Loco Number">
+      </div>
+    </section>
+
+    <!-- ================= SECTION C — CREW DETAILS ================= -->
+    <section class="card">
+      <div class="section-title">CREW DETAILS</div>
+
+      <div class="form-row-two">
+        <div>
+          <label>LP ID</label>
+          <input type="text" id="lp_id" placeholder="LP ID">
+        </div>
+        <div>
+          <label>LP Name</label>
+          <input type="text" id="lp_name" readonly placeholder="Auto Filled">
+        </div>
+      </div>
+
+      <div class="form-row-two">
+        <div>
+          <label>LP Designation</label>
+          <input type="text" id="lp_desig" readonly placeholder="Auto Filled">
+        </div>
+        <div>
+          <label>LP G/CLI</label>
+          <input type="text" id="lp_gcli" readonly placeholder="Auto Filled">
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="form-row-two">
+        <div>
+          <label>ALP ID</label>
+          <input type="text" id="alp_id" placeholder="ALP ID">
+        </div>
+        <div>
+          <label>ALP Name</label>
+          <input type="text" id="alp_name" readonly placeholder="Auto Filled">
+        </div>
+      </div>
+
+      <div class="form-row-two">
+        <div>
+          <label>ALP Designation</label>
+          <input type="text" id="alp_desig" readonly placeholder="Auto Filled">
+        </div>
+        <div>
+          <label>ALP G/CLI</label>
+          <input type="text" id="alp_gcli" readonly placeholder="Auto Filled">
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ================= SECTION D — OBSERVATIONS (JS INJECTS) ================= -->
+    <section class="card">
+      <div class="section-title">OBSERVATIONS</div>
+      <div id="obs_container"></div>
+    </section>
+
+    <!-- ================= SECTION E — FINAL REMARKS ================= -->
+    <section class="card">
+      <div class="section-title">FINAL REMARKS</div>
+      <textarea id="final_remarks" rows="3">NO ABNORMALITIES OBSERVED</textarea>
+    </section>
+
+    <!-- ================= SECTION F — ACTION BUTTON ================= -->
+    <section class="action-bar">
+      <button id="btn_save">SAVE & GENERATE PDF</button>
+    </section>
+
+  </main>
+
+  <!-- ================= JS LOADERS ================= -->
+  <script src="scripts/masters.js"></script>
+  <script src="scripts/obs_master.js"></script>
+  <script src="scripts/obs_ui.js"></script>
+  <script src="scripts/submit.js"></script>
 
 </body>
 </html>
